@@ -24,8 +24,8 @@ class PrintingTests {
         )
         val expected = listOf(
             "29 October 2021",
-            "banana, -1, 42",
-            "kumquat, 1, 101",
+            "banana, 28 October 2021, -1, 42",
+            "kumquat, 30 October 2021, 1, 101",
         )
         assertEquals(expected, stock.printout(now))
     }

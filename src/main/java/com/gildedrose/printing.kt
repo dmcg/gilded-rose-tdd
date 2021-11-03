@@ -14,7 +14,7 @@ fun List<Item>.printout(now: LocalDate): List<String> =
         }
 
 private fun Item.toPrintout(now: LocalDate): String =
-    "$name, ${daysUntilSellBy(now)}, $quality"
+    "$name, ${dateFormat.format(sellByDate)}, ${daysUntilSellBy(now)}, $quality"
 
 private fun Item.daysUntilSellBy(now: LocalDate): Long =
     ChronoUnit.DAYS.between(now, this.sellByDate)
