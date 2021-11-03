@@ -5,9 +5,6 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class StockTests {
-
-    private val sellBy = LocalDate.parse("2021-10-29")
-
     @Test
     fun `add item to stock`() {
         val stock = listOf<Item>()
@@ -16,10 +13,12 @@ class StockTests {
             stock
         )
 
-        val newStock = stock + Item("banana", sellBy, 42u)
+        val newStock = stock + Item("banana", oct29, 42u)
         assertEquals(
-            listOf(Item("banana", sellBy, 42u)),
+            listOf(Item("banana", oct29, 42u)),
             newStock
         )
     }
 }
+
+val oct29 = LocalDate.parse("2021-10-29")
