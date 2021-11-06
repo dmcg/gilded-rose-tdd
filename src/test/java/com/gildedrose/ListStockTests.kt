@@ -28,7 +28,14 @@ class ListStockTests {
 private val expected = """
     <html lang="en">
     <body>
+    <h1>29 October 2021</h1>
     <table>
+    <tr>
+        <th>Name</th>
+        <th>Sell By Date</th>
+        <th>Sell By Days</th>
+        <th>Quality</td>
+    </tr>
     <tr>
         <td>banana</td>
         <td>28 October 2021</td>
