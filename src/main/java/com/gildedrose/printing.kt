@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
 
-private val dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+val dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
 
 fun List<Item>.printout(now: LocalDate): List<String> =
     listOf(dateFormat.format(now)) +
