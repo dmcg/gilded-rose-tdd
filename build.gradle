@@ -8,10 +8,6 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
-    testImplementation 'com.approvaltests:approvaltests:5.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     implementation platform("org.http4k:http4k-bom:4.16.2.0")
@@ -19,6 +15,11 @@ dependencies {
     implementation "org.http4k:http4k-server-undertow"
     implementation "org.http4k:http4k-client-apache"
     implementation "org.http4k:http4k-template-handlebars"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+    testImplementation "org.http4k:http4k-testing-approval"
 }
 
 group = 'com.gildedrose'
