@@ -61,7 +61,7 @@ val templateSource = """
         <th>Name</th>
         <th>Sell By Date</th>
         <th>Sell By Days</th>
-        <th>Quality</td>
+        <th>Quality</th>
     </tr>
     {{#each this.items}}<tr>
         <td>{{this.name}}</td>
@@ -73,6 +73,7 @@ val templateSource = """
     </table>
     </body>
     </html>
+
 """.trimIndent()
 
 private fun Item.daysUntilSellBy(now: LocalDate): Long =
