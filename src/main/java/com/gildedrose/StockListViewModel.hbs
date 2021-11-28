@@ -1,0 +1,20 @@
+<html lang="en">
+    <body>
+    <h1>{{this.now}}</h1>
+    <table>
+    <tr>
+        <th>Name</th>
+        <th>Sell By Date</th>
+        <th>Sell By Days</th>
+        <th>Quality</th>
+    </tr>
+    {{#each this.items}}<tr>
+        <td>{{this.name}}</td>
+        <td>{{this.sellByDate}}</td>
+        <td style="text-align: right">{{this.sellByDays}}</td>
+        <td style="text-align: right">{{this.quality}}</td>
+    </tr>
+    {{/each}}
+    </table>
+    </body>
+</html>

@@ -1,26 +1,26 @@
 <html lang="en">
-<body>
-<h1>29 October 2021</h1>
-<table>
-<tr>
-    <th>Name</th>
-    <th>Sell By Date</th>
-    <th>Sell By Days</th>
-    <th>Quality</th>
-</tr>
-<tr>
-    <td>banana</td>
-    <td>28 October 2021</td>
-    <td>-1</td>
-    <td>42</td>
-</tr>
-<tr>
-    <td>kumquat</td>
-    <td>30 October 2021</td>
-    <td>1</td>
-    <td>101</td>
-</tr>
-
-</table>
-</body>
+    <body>
+    <h1>29 October 2021</h1>
+    <table>
+    <tr>
+        <th>Name</th>
+        <th>Sell By Date</th>
+        <th>Sell By Days</th>
+        <th>Quality</th>
+    </tr>
+    <tr>
+        <td>banana</td>
+        <td>28 October 2021</td>
+        <td style="text-align: right">-1</td>
+        <td style="text-align: right">42</td>
+    </tr>
+    <tr>
+        <td>kumquat</td>
+        <td>30 October 2021</td>
+        <td style="text-align: right">1</td>
+        <td style="text-align: right">101</td>
+    </tr>
+    
+    </table>
+    </body>
 </html>
