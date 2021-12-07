@@ -21,5 +21,7 @@ I want to load the stock list from disk and print it to the screen in the format
 I'm sick of the command line. I want to view the stock list in my browser.
 The format should be the same as previous.
 
-# When I View the Stock in a Browser it should update qualities
+# When I View the Stock in a Browser It Should Update Qualities
+
+Quality update is going to be complicated, but for now just reduce the quality of each item by one every day.
 
