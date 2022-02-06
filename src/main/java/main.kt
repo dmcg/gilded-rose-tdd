@@ -1,7 +1,6 @@
 import com.gildedrose.Server
 import com.gildedrose.loadItems
 import com.gildedrose.routes
-import com.gildedrose.saveTo
 import org.http4k.routing.RoutingHttpHandler
 import java.io.File
 import java.time.LocalDate
@@ -16,6 +15,8 @@ fun routesFor(
     stockFile: File,
     calender: () -> LocalDate = LocalDate::now
 ): RoutingHttpHandler {
-    val stock = stockFile.loadItems()
-    return routes(stock, calender)
+    return routes(
+        stock = { stockFile.loadItems() },
+        calender = calender
+    )
 }
