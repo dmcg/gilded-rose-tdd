@@ -16,6 +16,8 @@ dependencies {
     implementation "org.http4k:http4k-client-apache"
     implementation "org.http4k:http4k-template-handlebars"
 
+    implementation 'org.slf4j:slf4j-jdk14:1.7.36'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
