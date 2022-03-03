@@ -3,19 +3,21 @@ package com.gildedrose
 import routesFor
 import java.io.File
 import java.nio.file.Files
-import java.time.LocalDate
+import java.time.Instant
 
 class Fixture(
     initialStockList: StockList,
-    val now: LocalDate = oct29,
+    val now: Instant,
     val stockFile: File = Files.createTempFile("stock", ".tsv").toFile()
 ) {
-
     init {
         save(initialStockList)
     }
 
-    val routes = routesFor(stockFile) { now }
+    val routes = routesFor(
+        stockFile = stockFile,
+        clock = { now }
+    )
 
     fun save(stockList: StockList) {
         stockList.saveTo(stockFile)
