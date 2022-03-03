@@ -2,8 +2,8 @@ import com.gildedrose.Item
 import com.gildedrose.Server
 import com.gildedrose.Stock
 import com.gildedrose.listHandler
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
-import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import java.io.File
@@ -21,7 +21,7 @@ private val londonZoneId = ZoneId.of("Europe/London")
 fun routesFor(
     stockFile: File,
     clock: () -> Instant
-): RoutingHttpHandler {
+): HttpHandler {
     val stock = Stock(stockFile, londonZoneId, ::updateItems)
     return routes(
         "/" bind GET to listHandler(clock, londonZoneId, stock::stockList)

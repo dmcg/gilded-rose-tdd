@@ -1,12 +1,12 @@
 package com.gildedrose
 
-import org.http4k.routing.RoutingHttpHandler
+import org.http4k.core.HttpHandler
 import org.http4k.server.Undertow
 import org.http4k.server.asServer
 
 
 class Server(
-    routes: RoutingHttpHandler
+    routes: HttpHandler
 ) {
     private val http4kServer = routes.asServer(Undertow(8080))
 
