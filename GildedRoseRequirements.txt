@@ -25,3 +25,10 @@ The format should be the same as previous.
 
 Quality update is going to be complicated, but for now just reduce the quality of each item by one every day.
 
+# Quality Should Not Fall Below 0
+
+The Quality of an item is never negative.
+
+# Out of Date Items Degrade Faster
+
+Once the sell by date has passed, Quality degrades twice as fast.
