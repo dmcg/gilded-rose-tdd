@@ -52,6 +52,6 @@ private fun String.toItem(): Item {
     return Item(
         name = parts[0],
         sellByDate = LocalDate.parse(parts[1]),
-        quality = parts[2].toUInt()
+        quality = parts[2].toInt()
     )
 }

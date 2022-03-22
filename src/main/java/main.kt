@@ -1,7 +1,4 @@
-import com.gildedrose.Item
-import com.gildedrose.Server
-import com.gildedrose.Stock
-import com.gildedrose.listHandler
+import com.gildedrose.*
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.routing.bind
@@ -27,5 +24,3 @@ fun routesFor(
         "/" bind GET to listHandler(clock, londonZoneId, stock::stockList)
     )
 }
-
-private fun updateItems(items: List<Item>, days: Int) = items.map { it.copy(quality = it.quality - days.toUInt()) }

@@ -12,8 +12,8 @@ class PersistenceTests {
 
     private val now = Instant.now()
     private val items = listOf(
-        Item("banana", oct29, 42u),
-        Item("kumquat", oct29.plusDays(1), 101u)
+        Item("banana", oct29, 42),
+        Item("kumquat", oct29.plusDays(1), 101)
     )
 
     @Test
