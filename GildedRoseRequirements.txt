@@ -28,3 +28,7 @@ Quality update is going to be complicated, but for now just reduce the quality o
 # Quality Should Not Fall Below 0
 
 The Quality of an item is never negative.
+
+# Items Degrade Faster After Their Sell-By Date
+
+Once the sell-by date has passed items reduce in quality by two every day.
