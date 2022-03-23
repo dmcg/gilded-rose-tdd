@@ -13,7 +13,14 @@ data class Item(
         }
     }
 
-    fun updatedBy(days: Int) =
-        copy(quality = (quality - days).coerceAtLeast(0))
+    fun updatedBy(days: Int, on: LocalDate): Item {
+        val dates = (1 - days).rangeTo(0).map { on.plusDays(it.toLong())}
+        return dates.fold(this) { item, date -> item.update(date)}
+    }
+
+    private fun update(on: LocalDate): Item {
+        val degradation = if (on.isAfter(sellByDate)) 2 else 1
+        return copy(quality = (quality - degradation).coerceAtLeast(0))
+    }
 
 }

@@ -8,7 +8,7 @@ import java.time.ZoneId
 class Stock(
     private val stockFile: File,
     private val zoneId: ZoneId,
-    private val update: (items: List<Item>, days: Int) -> List<Item>
+    private val update: (items: List<Item>, days: Int, on: LocalDate) -> List<Item>
 ) {
     fun stockList(now: Instant): StockList {
         val loaded = stockFile.loadItems()
@@ -16,7 +16,7 @@ class Stock(
         val potentiallyUpdatedStockList = when {
             daysOutOfDate > 0L -> loaded.copy(
                 lastModified = now,
-                update(loaded.items, daysOutOfDate.toInt())
+                update(loaded.items, daysOutOfDate.toInt(), LocalDate.ofInstant(now, zoneId))
             )
             else -> loaded
         }
