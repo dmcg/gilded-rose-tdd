@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.6.0-RC'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.10'
 }
 
 repositories {
@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
-    implementation platform("org.http4k:http4k-bom:4.20.0.0")
+    implementation platform("org.http4k:http4k-bom:4.25.7.0")
     implementation "org.http4k:http4k-core"
     implementation "org.http4k:http4k-server-undertow"
     implementation "org.http4k:http4k-client-apache"
