@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10'
 
     implementation platform("org.http4k:http4k-bom:4.25.7.0")
     implementation "org.http4k:http4k-core"
@@ -26,7 +26,6 @@ dependencies {
 
 group = 'com.gildedrose'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
 
 test {
     useJUnitPlatform()
