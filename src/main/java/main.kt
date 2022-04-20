@@ -7,6 +7,7 @@ import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.then
 import org.http4k.filter.ResponseFilters
 import org.http4k.filter.ServerFilters
+import org.http4k.filter.ServerFilters.RequestTracing
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import java.io.File
@@ -34,11 +35,13 @@ fun routesFor(
     analytics: Analytics
 ): HttpHandler {
     val stock = Stock(stockFile, londonZoneId, ::updateItems)
-    return reportHttpTransactions(analytics).then(
-        catchAll(analytics).then(
-            routes(
-                "/" bind GET to listHandler(clock, londonZoneId, stock::stockList),
-                "/error" bind GET to { error("deliberate") }
+    return RequestTracing().then(
+        reportHttpTransactions(analytics).then(
+            catchAll(analytics).then(
+                routes(
+                    "/" bind GET to listHandler(clock, londonZoneId, stock::stockList),
+                    "/error" bind GET to { error("deliberate") }
+                )
             )
         )
     )
