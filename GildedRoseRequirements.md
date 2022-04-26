@@ -34,3 +34,5 @@ The Quality of an item is never negative.
 Once the sell-by date has passed items reduce in quality by two every day.
 
 # Sulphuras has no Sell-By Date and doesn't degrade
+
+Items without a sell by date don't degrade.

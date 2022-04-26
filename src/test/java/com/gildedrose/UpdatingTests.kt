@@ -49,4 +49,11 @@ class UpdatingTests {
             Item("banana", oct29, 42).updatedBy(days = 2, on = oct29.plusDays(1))
         )
     }
+
+    @Test fun `items with no sellBy don't change quality`() {
+        assertEquals(
+            Item("banana", null, 42),
+            Item("banana", null, 42).updatedBy(days = 1, on = oct29)
+        )
+    }
 }

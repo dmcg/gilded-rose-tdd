@@ -34,14 +34,15 @@ fun listHandler(
 private data class StockListViewModel(
     val now: String,
     val items: List<Map<String, String>>
-): ViewModel
+) : ViewModel
 
 private fun Item.toMap(now: LocalDate): Map<String, String> = mapOf(
     "name" to name,
-    "sellByDate" to dateFormat.format(sellByDate),
+    "sellByDate" to if (sellByDate == null) "" else dateFormat.format(sellByDate),
     "sellByDays" to this.daysUntilSellBy(now).toString(),
     "quality" to this.quality.toString()
 )
 
 private fun Item.daysUntilSellBy(now: LocalDate): Long =
-    ChronoUnit.DAYS.between(now, this.sellByDate)
+    if (sellByDate == null) 0 else
+        ChronoUnit.DAYS.between(now, this.sellByDate)

@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 data class Item(
     val name: String,
-    val sellByDate: LocalDate,
+    val sellByDate: LocalDate?,
     val quality: Int
 ) {
     init {
@@ -19,7 +19,11 @@ data class Item(
     }
 
     private fun update(on: LocalDate): Item {
-        val degradation = if (on.isAfter(sellByDate)) 2 else 1
+        val degradation = when {
+            sellByDate == null -> 0
+            on.isAfter(sellByDate) -> 2
+            else -> 1
+        }
         return copy(quality = (quality - degradation).coerceAtLeast(0))
     }
 
