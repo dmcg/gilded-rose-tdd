@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="All in gilded-rose-kata.test" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
-    <module name="gilded-rose-kata.test" />
+  <configuration default="false" name="All in gilded-rose.test" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+    <module name="gilded-rose.test" />
     <option name="PACKAGE_NAME" value="" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
