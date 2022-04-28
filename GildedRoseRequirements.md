@@ -33,6 +33,11 @@ The Quality of an item is never negative.
 
 Once the sell-by date has passed items reduce in quality by two every day.
 
-# Sulphuras has no Sell-By Date and doesn't degrade
+# Sulphuras Has No Sell-By Date and Doesn't Degrade
 
 Items without a sell by date don't degrade.
+
+# Aged Brie Gets Better With Age
+
+It increases in quality by one every day until its sell-by date, then two after.
+Its quality is capped at 50.
