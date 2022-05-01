@@ -41,3 +41,15 @@ Items without a sell by date don't degrade.
 
 It increases in quality by one every day until its sell-by date, then two after.
 Its quality is capped at 50.
+
+# Backstage Passes Increase in Value Until SellBy, Then Worthless
+
+Quality increases by 2 when there are 10 days or less and by 3 when there are 5 days or less.
+Quality drops to 0 after the concert.
+Quality is capped at 50
+
+# Quality Caps
+
+No item can ever have a negative quality.
+No item should have its quality raised above 50 by updating,
+but items can be taken into stock with > 50 quality, and then degrade gradually.
