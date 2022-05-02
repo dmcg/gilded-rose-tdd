@@ -49,7 +49,7 @@ private fun String.toInstant() = try {
 
 private fun String.toItem(): Item {
     val parts: List<String> = this.split('\t')
-    return Item(
+    return itemOf(
         name = parts[0],
         sellByDate = parts[1].toLocalDate(),
         quality = parts[2].toInt()
