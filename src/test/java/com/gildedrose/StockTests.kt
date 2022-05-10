@@ -92,4 +92,8 @@ class StockTests {
     }
 }
 
-private fun simpleUpdateItems(items: List<Item>, days: Int, @Suppress("UNUSED_PARAMETER") on: LocalDate) = items.map { it.copy(quality = it.quality - days) }
+private fun simpleUpdateItems(
+    items: List<Item>,
+    days: Int,
+    @Suppress("UNUSED_PARAMETER") on: LocalDate
+) = items.map { it.withQuality(quality = it.quality - days) }

@@ -38,11 +38,18 @@ private data class StockListViewModel(
 
 private fun Item.toMap(now: LocalDate): Map<String, String> = mapOf(
     "name" to name,
-    "sellByDate" to if (sellByDate == null) "" else dateFormat.format(sellByDate),
+    "sellByDate" to this.sellByDateString(),
     "sellByDays" to this.daysUntilSellBy(now).toString(),
     "quality" to this.quality.toString()
 )
 
+private fun Item.sellByDateString() = when (this) {
+    is DatedItem -> dateFormat.format(this.sellByDate)
+    else -> ""
+}
+
 private fun Item.daysUntilSellBy(now: LocalDate): Long =
-    if (sellByDate == null) 0 else
-        ChronoUnit.DAYS.between(now, this.sellByDate)
+    when (this) {
+        is DatedItem -> ChronoUnit.DAYS.between(now, this.sellByDate)
+        else -> 0
+    }

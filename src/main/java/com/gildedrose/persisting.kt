@@ -30,8 +30,11 @@ fun Sequence<String>.toStockList(): StockList {
     )
 }
 
-private fun Item.toLine() = "$name\t${sellByDate ?: ""}\t$quality"
-
+private fun Item.toLine() = "$name\t${sellByDateString()}\t$quality"
+private fun Item.sellByDateString(): String = when(this) {
+    is DatedItem -> sellByDate.toString()
+    else -> ""
+}
 
 private fun lastModifiedFrom(
     header: List<String>
