@@ -19,7 +19,10 @@ class Item(
         return dates.fold(this) { item, date -> item.updater(date) }
     }
 
-    fun withQuality(quality: Int): Item = itemOf(name, sellByDate, quality)
+    fun withQuality(quality: Int): Item {
+        val qualityCap = this.quality.coerceAtLeast(50)
+        return itemOf(name, sellByDate, quality.coerceIn(0, qualityCap))
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -40,5 +43,7 @@ class Item(
         result = 31 * result + quality
         return result
     }
+
+    override fun toString() = "Item(name='$name', sellByDate=$sellByDate, quality=$quality)"
 }
 

@@ -22,7 +22,7 @@ private fun Item.updateStandard(on: LocalDate): Item {
         on.isAfter(sellByDate) -> 2
         else -> 1
     }
-    return withQuality(quality = (quality - degradation).coerceAtLeast(0))
+    return withQuality(quality - degradation)
 }
 
 private fun Item.updateBrie(on: LocalDate): Item {
@@ -31,7 +31,7 @@ private fun Item.updateBrie(on: LocalDate): Item {
         on.isAfter(sellByDate) -> 2
         else -> 1
     }
-    return withQuality(quality = (quality + improvement).coerceAtMost(50))
+    return withQuality(quality + improvement)
 }
 
 private fun Item.updatePass(on: LocalDate): Item {
@@ -43,5 +43,5 @@ private fun Item.updatePass(on: LocalDate): Item {
         daysUntilSellBy < 10 -> 2 + quality
         else -> 1 + quality
     }
-    return withQuality(quality = newQuality.coerceAtMost(50))
+    return withQuality(newQuality)
 }
