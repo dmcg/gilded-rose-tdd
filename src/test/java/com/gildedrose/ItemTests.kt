@@ -1,6 +1,7 @@
 package com.gildedrose
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -43,4 +44,18 @@ class ItemTests {
             itemOf("banana", null, -1)
         }
     }
+
+    @Test fun `item types for equality`() {
+        assertNotEquals(
+            itemOf("Conjured banana", oct29, 50),
+            itemOf("Conjured Aged Brie", oct29, 50).copy(name = "Conjured banana")
+        )
+    }
+
+    @Test fun `item types for toString`() {
+        assertEquals("Item(name=Conjured banana, sellByDate=2021-10-29, quality=50, type=CONJURED STANDARD)",
+            itemOf("Conjured banana", oct29, 50).toString()
+        )
+    }
+
 }
