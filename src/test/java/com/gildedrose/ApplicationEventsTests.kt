@@ -1,7 +1,8 @@
 package com.gildedrose
 
-import HttpEvent
-import UncaughtExceptionEvent
+import com.gildedrose.domain.StockList
+import com.gildedrose.http.HttpEvent
+import com.gildedrose.http.UncaughtExceptionEvent
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import org.http4k.core.Method.GET

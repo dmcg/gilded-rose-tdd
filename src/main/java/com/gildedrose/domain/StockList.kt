@@ -1,6 +1,5 @@
-package com.gildedrose
+package com.gildedrose.domain
 
-import com.gildedrose.domain.Item
 import java.time.Instant
 
 data class StockList(
