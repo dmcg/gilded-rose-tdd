@@ -1,5 +1,6 @@
 package com.gildedrose
 
+import com.gildedrose.domain.Item
 import java.io.File
 import java.time.Instant
 import java.time.LocalDate

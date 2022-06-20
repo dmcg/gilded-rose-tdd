@@ -1,5 +1,6 @@
 package com.gildedrose
 
+import com.gildedrose.domain.itemOf
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test

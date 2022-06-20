@@ -1,5 +1,7 @@
 package com.gildedrose
 
+import com.gildedrose.domain.Item
+import com.gildedrose.domain.itemOf
 import java.io.File
 import java.io.IOException
 import java.time.Instant

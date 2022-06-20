@@ -1,5 +1,6 @@
 package com.gildedrose
 
+import com.gildedrose.domain.itemOf
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Status.Companion.OK

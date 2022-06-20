@@ -1,5 +1,6 @@
-package com.gildedrose
+package com.gildedrose.domain
 
+import com.gildedrose.oct29
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

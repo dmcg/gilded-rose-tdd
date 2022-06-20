@@ -1,4 +1,4 @@
-package com.gildedrose
+package com.gildedrose.domain
 
 import java.time.LocalDate
 
@@ -25,3 +25,8 @@ data class Item(
     }
 }
 
+fun itemOf(
+    name: String,
+    sellByDate: LocalDate?,
+    quality: Int,
+) = Item(name, sellByDate, quality, typeFor(sellByDate, name))
