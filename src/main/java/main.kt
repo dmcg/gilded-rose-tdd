@@ -1,5 +1,6 @@
 import com.gildedrose.*
 import com.gildedrose.domain.updateItems
+import com.gildedrose.persistence.Stock
 import org.http4k.core.HttpHandler
 import org.http4k.core.HttpTransaction
 import org.http4k.core.Method.GET

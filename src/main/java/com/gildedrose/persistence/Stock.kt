@@ -1,5 +1,6 @@
-package com.gildedrose
+package com.gildedrose.persistence
 
+import com.gildedrose.StockList
 import com.gildedrose.domain.Item
 import java.io.File
 import java.time.Instant

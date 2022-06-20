@@ -1,6 +1,8 @@
-package com.gildedrose
+package com.gildedrose.persistence
 
+import com.gildedrose.StockList
 import com.gildedrose.domain.itemOf
+import com.gildedrose.oct29
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test

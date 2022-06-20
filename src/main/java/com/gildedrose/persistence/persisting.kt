@@ -1,5 +1,6 @@
-package com.gildedrose
+package com.gildedrose.persistence
 
+import com.gildedrose.StockList
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.itemOf
 import java.io.File
@@ -19,7 +20,6 @@ fun StockList.saveTo(file: File) {
 fun StockList.toLines(): Sequence<String> = sequenceOf("$lastModifiedHeader $lastModified") +
     items.map { it.toLine() }
 
-
 fun File.loadItems(): StockList = useLines { lines ->
     lines.toStockList()
 }
@@ -33,7 +33,6 @@ fun Sequence<String>.toStockList(): StockList {
 }
 
 private fun Item.toLine() = "$name\t${sellByDate ?: ""}\t$quality"
-
 
 private fun lastModifiedFrom(
     header: List<String>
