@@ -1,4 +1,4 @@
-package com.gildedrose
+package com.gildedrose.foundation
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -14,6 +14,11 @@ interface AnalyticsEvent {
 }
 
 typealias Analytics = (AnalyticsEvent) -> Unit
+
+infix fun Analytics.then(that: Analytics): Analytics = { event ->
+    this(event)
+    that(event)
+}
 
 class LoggingAnalytics(
     private val logger: (String) -> Unit,

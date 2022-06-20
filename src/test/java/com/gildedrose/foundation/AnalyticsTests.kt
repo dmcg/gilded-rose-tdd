@@ -1,4 +1,4 @@
-package com.gildedrose
+package com.gildedrose.foundation
 
 import org.http4k.filter.TraceId
 import org.http4k.filter.ZipkinTraces
