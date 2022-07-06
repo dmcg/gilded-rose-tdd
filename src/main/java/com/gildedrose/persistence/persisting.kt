@@ -19,16 +19,20 @@ fun StockList.saveTo(file: File) {
 fun StockList.toLines(): Sequence<String> = sequenceOf("$lastModifiedHeader $lastModified") +
     items.map { it.toLine() }
 
-fun File.loadItems(): StockList = useLines { lines ->
+fun File.loadItems(): StockList? = useLines { lines ->
     lines.toStockList()
 }
 
-fun Sequence<String>.toStockList(): StockList {
+fun Sequence<String>.toStockList(): StockList? {
     val (header, body) = partition { it.startsWith("#") }
-    return StockList(
-        lastModified = lastModifiedFrom(header) ?: Instant.EPOCH,
-        items = body.map { line -> line.toItem() }.toList()
-    )
+    val items = body.map { line -> line.toItem() }
+    return if (items.any { it == null })
+        null
+    else
+        StockList(
+            lastModified = lastModifiedFrom(header) ?: Instant.EPOCH,
+            items = items.filterNotNull()
+        )
 }
 
 private fun Item.toLine() = "$name\t${sellByDate ?: ""}\t$quality"
@@ -47,13 +51,13 @@ private fun String.toInstant() = try {
     throw IOException("Could not parse LastModified header: " + x.message)
 }
 
-private fun String.toItem(): Item {
+private fun String.toItem(): Item? {
     val parts: List<String> = this.split('\t')
     return Item(
         name = parts[0],
         sellByDate = parts[1].toLocalDate(),
         quality = parts[2].toInt()
-    ) ?: error("Cannot create item")
+    )
 }
 
 private fun String.toLocalDate() = if (this.isBlank()) null else LocalDate.parse(this)

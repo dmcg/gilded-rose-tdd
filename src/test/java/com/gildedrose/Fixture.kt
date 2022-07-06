@@ -29,7 +29,7 @@ class Fixture(
     }
 
     fun load(): StockList {
-        return stockFile.loadItems()
+        return stockFile.loadItems() ?: error("Could not load stock")
     }
 }
 

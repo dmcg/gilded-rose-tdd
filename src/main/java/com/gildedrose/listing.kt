@@ -20,11 +20,11 @@ private val handlebars = HandlebarsTemplates().HotReload("src/main/java")
 fun listHandler(
     clock: () -> Instant,
     zoneId: ZoneId,
-    listing: (Instant) -> StockList
+    listing: (Instant) -> StockList?
 ): HttpHandler = { _ ->
     val now = clock()
     val today = LocalDate.ofInstant(now, zoneId)
-    val stockList = listing(now)
+    val stockList = listing(now) ?: error("Could not load stock list")
     Response(OK).body(handlebars(
         StockListViewModel(
             now = dateFormat.format(today),

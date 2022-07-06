@@ -12,8 +12,8 @@ class Stock(
     private val zoneId: ZoneId,
     private val update: (items: List<Item>, days: Int, on: LocalDate) -> List<Item>
 ) {
-    fun stockList(now: Instant): StockList {
-        val loaded = stockFile.loadItems()
+    fun stockList(now: Instant): StockList? {
+        val loaded = stockFile.loadItems() ?: return null
         val daysOutOfDate = loaded.lastModified.daysTo(now, zoneId)
         val potentiallyUpdatedStockList = when {
             daysOutOfDate > 0L -> loaded.copy(
