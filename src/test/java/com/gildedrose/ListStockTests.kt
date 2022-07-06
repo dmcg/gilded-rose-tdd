@@ -1,7 +1,6 @@
 package com.gildedrose
 
 import com.gildedrose.domain.StockList
-import com.gildedrose.domain.itemOf
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Status.Companion.OK
@@ -20,9 +19,9 @@ class ListStockTests {
     private val stockList = StockList(
         lastModified = Instant.parse("2022-02-09T12:00:00Z"),
         items = listOf(
-            itemOf("banana", oct29.minusDays(1), 42),
-            itemOf("kumquat", oct29.plusDays(1), 101),
-            itemOf("undated", null, 50)
+            testItem("banana", oct29.minusDays(1), 42),
+            testItem("kumquat", oct29.plusDays(1), 101),
+            testItem("undated", null, 50)
         )
     )
 

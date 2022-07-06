@@ -2,12 +2,25 @@ package com.gildedrose.domain
 
 import java.time.LocalDate
 
-data class Item(
+@Suppress("DataClassPrivateConstructor") // protected by requires in init
+data class Item private constructor(
     val name: String,
     val sellByDate: LocalDate?,
     val quality: Int,
     private val type: ItemType
 ) {
+    companion object {
+        operator fun invoke(
+            name: String,
+            sellByDate: LocalDate?,
+            quality: Int,
+        ): Item? = try {
+            Item(name, sellByDate, quality, typeFor(sellByDate, name))
+        } catch (x: Exception) {
+            null
+        }
+    }
+
     init {
         require(quality >= 0) {
             "Quality is $quality but should not be negative"
@@ -25,8 +38,4 @@ data class Item(
     }
 }
 
-fun itemOf(
-    name: String,
-    sellByDate: LocalDate?,
-    quality: Int,
-) = Item(name, sellByDate, quality, typeFor(sellByDate, name))
+
