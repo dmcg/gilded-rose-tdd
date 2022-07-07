@@ -2,6 +2,7 @@ package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
 import com.gildedrose.domain.Item
+import dev.forkhandles.result4k.*
 import java.io.File
 import java.time.Instant
 import java.time.LocalDate
@@ -12,8 +13,8 @@ class Stock(
     private val zoneId: ZoneId,
     private val update: (items: List<Item>, days: Int, on: LocalDate) -> List<Item>
 ) {
-    fun stockList(now: Instant): StockList? {
-        val loaded = stockFile.loadItems() ?: return null
+    fun stockList(now: Instant): Result4k<StockList, Nothing?> {
+        val loaded = stockFile.loadItems().recover { return Failure(null) }
         val daysOutOfDate = loaded.lastModified.daysTo(now, zoneId)
         val potentiallyUpdatedStockList = when {
             daysOutOfDate > 0L -> loaded.copy(
@@ -24,7 +25,7 @@ class Stock(
         }
         if (potentiallyUpdatedStockList.lastModified != loaded.lastModified)
             save(potentiallyUpdatedStockList, now)
-        return potentiallyUpdatedStockList
+        return Success(potentiallyUpdatedStockList)
     }
 
     private fun save(stockList: StockList, now: Instant) {

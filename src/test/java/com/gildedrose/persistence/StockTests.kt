@@ -5,6 +5,7 @@ import com.gildedrose.domain.StockList
 import com.gildedrose.domain.Item
 import com.gildedrose.testItem
 import com.gildedrose.oct29
+import dev.forkhandles.result4k.valueOrNull
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -35,7 +36,7 @@ class StockTests {
     @Test
     fun `loads stock from file`() {
         val now = Instant.parse("2022-02-09T23:59:59Z")
-        assertEquals(initialStockList, stock.stockList(now))
+        assertEquals(initialStockList, stock.stockList(now).valueOrNull())
     }
 
     @Test
@@ -48,7 +49,7 @@ class StockTests {
                 testItem("kumquat", oct29.plusDays(1), 100)
             )
         )
-        assertEquals(expectedUpdatedResult, stock.stockList(now))
+        assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
         assertEquals(expectedUpdatedResult, fixture.load())
     }
 
@@ -62,14 +63,14 @@ class StockTests {
                 testItem("kumquat", oct29.plusDays(1), 99)
             )
         )
-        assertEquals(expectedUpdatedResult, stock.stockList(now))
+        assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
         assertEquals(expectedUpdatedResult, fixture.load())
     }
 
     @Test
     fun `does not update stock if modified tomorrow`() {
         val now = Instant.parse("2022-02-08T00:00:01Z")
-        assertEquals(initialStockList, stock.stockList(now))
+        assertEquals(initialStockList, stock.stockList(now).valueOrNull())
         assertEquals(initialStockList, fixture.load())
     }
 

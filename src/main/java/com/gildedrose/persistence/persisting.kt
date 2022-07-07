@@ -3,7 +3,7 @@ package com.gildedrose.persistence
 import com.gildedrose.domain.StockList
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Item.Companion.invoke
-import dev.forkhandles.result4k.valueOrNull
+import dev.forkhandles.result4k.*
 import java.io.File
 import java.io.IOException
 import java.time.Instant
@@ -21,20 +21,19 @@ fun StockList.saveTo(file: File) {
 fun StockList.toLines(): Sequence<String> = sequenceOf("$lastModifiedHeader $lastModified") +
     items.map { it.toLine() }
 
-fun File.loadItems(): StockList? = useLines { lines ->
+fun File.loadItems(): Result4k<StockList, Nothing?> = useLines { lines ->
     lines.toStockList()
 }
 
-fun Sequence<String>.toStockList(): StockList? {
+fun Sequence<String>.toStockList(): Result4k<StockList, Nothing?> {
     val (header, body) = partition { it.startsWith("#") }
-    val items = body.map { line -> line.toItem() }
-    return if (items.any { it == null })
-        null
-    else
+    val items: List<Item> = body.map { line -> line.toItem().onFailure { return Failure(null) } }
+    return Success(
         StockList(
             lastModified = lastModifiedFrom(header) ?: Instant.EPOCH,
-            items = items.filterNotNull()
+            items = items
         )
+    )
 }
 
 private fun Item.toLine() = "$name\t${sellByDate ?: ""}\t$quality"
@@ -53,13 +52,13 @@ private fun String.toInstant() = try {
     throw IOException("Could not parse LastModified header: " + x.message)
 }
 
-private fun String.toItem(): Item? {
+private fun String.toItem(): Result4k<Item, Nothing?> {
     val parts: List<String> = this.split('\t')
     return Item(
         name = parts[0],
         sellByDate = parts[1].toLocalDate(),
         quality = parts[2].toInt()
-    ).valueOrNull()
+    )
 }
 
 private fun String.toLocalDate() = if (this.isBlank()) null else LocalDate.parse(this)
