@@ -2,6 +2,8 @@ package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
 import com.gildedrose.domain.Item
+import com.gildedrose.domain.Item.Companion.invoke
+import dev.forkhandles.result4k.valueOrNull
 import java.io.File
 import java.io.IOException
 import java.time.Instant
@@ -57,7 +59,7 @@ private fun String.toItem(): Item? {
         name = parts[0],
         sellByDate = parts[1].toLocalDate(),
         quality = parts[2].toInt()
-    )
+    ).valueOrNull()
 }
 
 private fun String.toLocalDate() = if (this.isBlank()) null else LocalDate.parse(this)
