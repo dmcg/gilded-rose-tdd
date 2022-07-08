@@ -17,16 +17,20 @@ data class Item private constructor(
             name: String,
             sellByDate: LocalDate?,
             quality: Int,
-        ): Result4k<Item, Nothing?> = try {
+        ): Result4k<Item, ItemCreationError> = try {
             Success(Item(name, sellByDate, quality, typeFor(sellByDate, name)))
         } catch (x: Exception) {
-            Failure(null)
+            if (x is ItemCreationError) Failure(x)
+            else error("Unexpected")
         }
     }
 
     init {
-        require(quality >= 0) {
-            "Quality is $quality but should not be negative"
+        if (quality < 0) {
+            throw ItemCreationError.NegativeQuality(quality)
+        }
+        if (name.isBlank()) {
+            throw ItemCreationError.BlankName
         }
     }
 
@@ -39,6 +43,11 @@ data class Item private constructor(
         val qualityCap = this.quality.coerceAtLeast(50)
         return copy(quality = quality.coerceIn(0, qualityCap))
     }
+}
+
+sealed interface ItemCreationError {
+    data class NegativeQuality(val actual: Int) : ItemCreationError, Exception()
+    object BlankName : ItemCreationError, Exception()
 }
 
 

@@ -43,8 +43,15 @@ class ItemTests {
 
     @Test fun `cannot create an item with negative quality`() {
         assertEquals(
-            Failure(null),
+            Failure(ItemCreationError.NegativeQuality(-1)),
             Item("banana", null, -1)
+        )
+    }
+
+    @Test fun `cannot create an item with blank name`() {
+        assertEquals(
+            Failure(ItemCreationError.BlankName),
+            Item("", null, 42)
         )
     }
 

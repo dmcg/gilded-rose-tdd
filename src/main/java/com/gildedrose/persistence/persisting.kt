@@ -58,7 +58,7 @@ private fun String.toItem(): Result4k<Item, Nothing?> {
         name = parts[0],
         sellByDate = parts[1].toLocalDate(),
         quality = parts[2].toInt()
-    )
+    ).mapFailure { null }
 }
 
 private fun String.toLocalDate() = if (this.isBlank()) null else LocalDate.parse(this)
