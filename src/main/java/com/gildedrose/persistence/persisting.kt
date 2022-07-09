@@ -3,7 +3,6 @@ package com.gildedrose.persistence
 import com.gildedrose.domain.StockList
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Item.Companion.invoke
-import com.gildedrose.domain.ItemCreationError
 import com.gildedrose.persistence.StockListLoadingError.*
 import dev.forkhandles.result4k.*
 import java.io.File
@@ -14,6 +13,7 @@ import java.time.format.DateTimeParseException
 
 private const val lastModifiedHeader = "# LastModified:"
 
+@kotlin.jvm.Throws(IOException::class)
 fun StockList.saveTo(file: File) {
     file.writer().buffered().use { writer ->
         this.toLines().forEach(writer::appendLine)
@@ -81,11 +81,3 @@ private fun String.toLocalDate(line: String): Result<LocalDate?, CouldntParseSel
         Failure(CouldntParseSellBy(line))
     }
 
-sealed interface StockListLoadingError {
-    data class CouldntParseLastModified(val message: String) : StockListLoadingError
-    data class CouldntCreateItem(val reason: ItemCreationError) : StockListLoadingError
-    data class NotEnoughFields(val line: String) : StockListLoadingError
-    data class CouldntParseSellBy(val message: String) : StockListLoadingError
-    data class CouldntParseQuality(val line: String) : StockListLoadingError
-    data class IO(val message: String) : StockListLoadingError
-}
