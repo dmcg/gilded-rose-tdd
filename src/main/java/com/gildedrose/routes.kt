@@ -28,7 +28,7 @@ fun routesFor(
         reportHttpTransactions(analytics).then(
             catchAll(analytics).then(
                 routes(
-                    "/" bind Method.GET to listHandler(clock, londonZoneId, stock::stockList),
+                    "/" bind Method.GET to listHandler(clock, londonZoneId, analytics, stock::stockList),
                     "/error" bind Method.GET to { error("deliberate") }
                 )
             )

@@ -1,8 +1,11 @@
 package com.gildedrose
 
+import com.gildedrose.domain.ItemCreationError
 import com.gildedrose.domain.StockList
+import com.gildedrose.persistence.StockListLoadingError.CouldntCreateItem
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
+import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.OK
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
@@ -65,6 +68,20 @@ class ListStockTests {
         ) {
             approver.assertApproved(routes(Request(GET, "/")), OK)
             Assertions.assertNotEquals(stockList, load())
+        }
+    }
+
+    @Test
+    fun `reports errors`(approver: Approver) {
+        with(
+            Fixture(stockList, now = Instant.parse("2022-02-10T00:00:00Z"))
+        ) {
+            stockFile.writeText(stockFile.readText().replace("banana", ""))
+            approver.assertApproved(routes(Request(GET, "/")), INTERNAL_SERVER_ERROR)
+            assertEquals(
+                CouldntCreateItem(ItemCreationError.BlankName),
+                events.first()
+            )
         }
     }
 }

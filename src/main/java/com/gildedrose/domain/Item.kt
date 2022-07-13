@@ -1,5 +1,6 @@
 package com.gildedrose.domain
 
+import com.gildedrose.domain.ItemCreationError.*
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
@@ -19,18 +20,17 @@ data class Item private constructor(
             quality: Int,
         ): Result4k<Item, ItemCreationError> = try {
             Success(Item(name, sellByDate, quality, typeFor(sellByDate, name)))
-        } catch (x: Exception) {
-            if (x is ItemCreationError) Failure(x)
-            else error("Unexpected")
+        } catch (x: ItemCreationException) {
+            Failure(x.error)
         }
     }
 
     init {
         if (quality < 0) {
-            throw ItemCreationError.NegativeQuality(quality)
+            throw ItemCreationException(NegativeQuality(quality))
         }
         if (name.isBlank()) {
-            throw ItemCreationError.BlankName
+            throw ItemCreationException(BlankName)
         }
     }
 
@@ -46,8 +46,13 @@ data class Item private constructor(
 }
 
 sealed interface ItemCreationError {
-    data class NegativeQuality(val actual: Int) : ItemCreationError, Exception()
-    object BlankName : ItemCreationError, Exception()
+    @Suppress("unused")
+    val errorName: String get() = this::class.simpleName ?: "Error Name Unknown"
+
+    data class NegativeQuality(val actual: Int) : ItemCreationError
+    object BlankName : ItemCreationError
+
+    class ItemCreationException(val error: ItemCreationError) : Exception()
 }
 
 
