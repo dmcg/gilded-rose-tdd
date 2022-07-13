@@ -3,6 +3,7 @@ package com.gildedrose
 import com.gildedrose.domain.updateItems
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.LoggingAnalytics
+import com.gildedrose.http.ResponseErrors
 import com.gildedrose.http.catchAll
 import com.gildedrose.http.reportHttpTransactions
 import com.gildedrose.persistence.Stock
@@ -27,9 +28,11 @@ fun routesFor(
     return ServerFilters.RequestTracing().then(
         reportHttpTransactions(analytics).then(
             catchAll(analytics).then(
-                routes(
-                    "/" bind Method.GET to listHandler(clock, londonZoneId, analytics, stock::stockList),
-                    "/error" bind Method.GET to { error("deliberate") }
+                ResponseErrors.reportTo(analytics).then(
+                    routes(
+                        "/" bind Method.GET to listHandler(clock, londonZoneId, stock::stockList),
+                        "/error" bind Method.GET to { error("deliberate") }
+                    )
                 )
             )
         )
