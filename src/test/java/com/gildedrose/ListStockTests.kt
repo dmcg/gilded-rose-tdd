@@ -1,8 +1,7 @@
 package com.gildedrose
 
-import com.gildedrose.domain.ItemCreationError
 import com.gildedrose.domain.StockList
-import com.gildedrose.persistence.StockListLoadingError.CouldntCreateItem
+import com.gildedrose.persistence.StockListLoadingError
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
@@ -79,7 +78,7 @@ class ListStockTests {
             stockFile.writeText(stockFile.readText().replace("banana", ""))
             approver.assertApproved(routes(Request(GET, "/")), INTERNAL_SERVER_ERROR)
             assertEquals(
-                CouldntCreateItem(ItemCreationError.BlankName),
+                StockListLoadingError.BlankName("\t2021-10-28\t42"),
                 events.first()
             )
         }

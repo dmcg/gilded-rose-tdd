@@ -48,7 +48,7 @@ private data class StockListViewModel(
 ) : ViewModel
 
 private fun Item.toMap(now: LocalDate): Map<String, String> = mapOf(
-    "name" to name,
+    "name" to name.value,
     "sellByDate" to if (sellByDate == null) "" else dateFormat.format(sellByDate),
     "sellByDays" to this.daysUntilSellBy(now).toString(),
     "quality" to this.quality.toString()

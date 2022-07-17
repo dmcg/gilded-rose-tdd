@@ -1,8 +1,8 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.domain.StockList
 import com.gildedrose.domain.Item
-import com.gildedrose.domain.Item.Companion.invoke
+import com.gildedrose.domain.NonBlankString
+import com.gildedrose.domain.StockList
 import com.gildedrose.persistence.StockListLoadingError.*
 import dev.forkhandles.result4k.*
 import java.io.File
@@ -63,10 +63,11 @@ private fun String.toInstant(): Result<Instant, CouldntParseLastModified> =
 private fun String.toItem(): Result4k<Item, StockListLoadingError> {
     val parts: List<String> = this.split('\t')
     if (parts.size < 3) return Failure(NotEnoughFields(this))
-    val quality = parts[2].toIntOrNull() ?: return Failure(CouldntParseQuality(this))
+    val name = NonBlankString(parts[0]) ?: return Failure(BlankName(this))
     val sellByDate = parts[1].toLocalDate(this).onFailure { return it }
+    val quality = parts[2].toIntOrNull() ?: return Failure(CouldntParseQuality(this))
     return Item(
-        name = parts[0],
+        name = name,
         sellByDate = sellByDate,
         quality = quality
     ).mapFailure {

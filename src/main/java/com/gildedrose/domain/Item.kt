@@ -8,29 +8,28 @@ import java.time.LocalDate
 
 @Suppress("DataClassPrivateConstructor") // protected by requires in init
 data class Item private constructor(
-    val name: String,
+    val name: NonBlankString,
     val sellByDate: LocalDate?,
     val quality: Int,
     private val type: ItemType
 ) {
     companion object {
         operator fun invoke(
-            name: String,
+            name: NonBlankString,
             sellByDate: LocalDate?,
             quality: Int,
-        ): Result4k<Item, ItemCreationError> = try {
-            Success(Item(name, sellByDate, quality, typeFor(sellByDate, name)))
-        } catch (x: ItemCreationException) {
-            Failure(x.error)
+        ): Result4k<Item, ItemCreationError> {
+            return try {
+                Success(Item(name, sellByDate, quality, typeFor(sellByDate, name.value)))
+            } catch (x: ItemCreationException) {
+                Failure(x.error)
+            }
         }
     }
 
     init {
         if (quality < 0) {
             throw ItemCreationException(NegativeQuality(quality))
-        }
-        if (name.isBlank()) {
-            throw ItemCreationException(BlankName)
         }
     }
 
@@ -50,7 +49,6 @@ sealed interface ItemCreationError {
     val errorName: String get() = this::class.simpleName ?: "Error Name Unknown"
 
     data class NegativeQuality(val actual: Int) : ItemCreationError
-    object BlankName : ItemCreationError
 
     class ItemCreationException(val error: ItemCreationError) : Exception()
 }

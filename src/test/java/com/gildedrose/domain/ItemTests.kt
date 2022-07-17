@@ -44,21 +44,14 @@ class ItemTests {
     @Test fun `cannot create an item with negative quality`() {
         assertEquals(
             Failure(ItemCreationError.NegativeQuality(-1)),
-            Item("banana", null, -1)
-        )
-    }
-
-    @Test fun `cannot create an item with blank name`() {
-        assertEquals(
-            Failure(ItemCreationError.BlankName),
-            Item("", null, 42)
+            Item(NonBlankString("banana")!!, null, -1)
         )
     }
 
     @Test fun `item types for equality`() {
         assertNotEquals(
             testItem("Conjured banana", oct29, 50),
-            testItem("Conjured Aged Brie", oct29, 50).copy(name = "Conjured banana")
+            testItem("Conjured Aged Brie", oct29, 50).copy(name = NonBlankString("Conjured banana")!!)
         )
     }
 

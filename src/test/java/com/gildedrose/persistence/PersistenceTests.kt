@@ -78,7 +78,7 @@ class PersistenceTests {
     @Test
     fun `fails to load with blank name`() {
         assertEquals(
-            Failure(CouldntCreateItem(ItemCreationError.BlankName)),
+            Failure(BlankName("\t2022-07-08\t42")),
             sequenceOf("\t2022-07-08\t42").toStockList()
         )
     }
