@@ -20,7 +20,7 @@ data class Item private constructor(
             quality: Int,
         ): Result4k<Item, ItemCreationError> {
             return try {
-                Success(Item(name, sellByDate, quality, typeFor(sellByDate, name.value)))
+                Success(Item(name, sellByDate, quality, typeFor(sellByDate, name)))
             } catch (x: ItemCreationException) {
                 Failure(x.error)
             }

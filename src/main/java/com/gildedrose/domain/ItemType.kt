@@ -6,7 +6,7 @@ fun interface ItemType {
     fun update(item: Item, on: LocalDate): Item
 }
 
-fun typeFor(sellByDate: LocalDate?, name: String): ItemType {
+fun typeFor(sellByDate: LocalDate?, name: NonBlankString): ItemType {
     val baseType = when {
         sellByDate == null -> UndatedType
         name.contains("Aged Brie", ignoreCase = true) -> BrieType
