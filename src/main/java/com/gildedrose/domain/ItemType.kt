@@ -21,8 +21,8 @@ fun typeFor(sellByDate: LocalDate?, name: NonBlankString): ItemType {
 
 fun conjured(baseType: ItemType) = typeFor("CONJURED $baseType") { item, on ->
     val updated = baseType.update(item, on)
-    val change = item.quality.value - updated.quality.value
-    item.withQuality(item.quality.value - 2 * change)
+    val change = item.quality - updated.quality
+    item.degradedBy(2 * change)
 }
 
 val StandardType = typeFor("STANDARD") { item, on ->
@@ -31,7 +31,7 @@ val StandardType = typeFor("STANDARD") { item, on ->
         on.isAfter(item.sellByDate) -> 2
         else -> 1
     }
-    item.withQuality(item.quality.value - degradation)
+    item.degradedBy(degradation)
 }
 
 val UndatedType = typeFor("UNDATED") { item, _ -> item }
@@ -42,19 +42,19 @@ val BrieType = typeFor("BRIE") { item, on ->
         on.isAfter(item.sellByDate) -> 2
         else -> 1
     }
-    item.withQuality(item.quality.value + improvement)
+    item.degradedBy(-improvement)
 }
 
 val PassType = typeFor("PASS") { item, on ->
     requireNotNull(item.sellByDate)
     val daysUntilSellBy = item.sellByDate.toEpochDay() - on.toEpochDay()
-    val newQuality = when {
-        daysUntilSellBy < 0 -> 0
-        daysUntilSellBy < 5 -> 3 + item.quality.value
-        daysUntilSellBy < 10 -> 2 + item.quality.value
-        else -> 1 + item.quality.value
+    val improvement = when {
+        daysUntilSellBy < 0 -> -item.quality
+        daysUntilSellBy < 5 -> 3
+        daysUntilSellBy < 10 -> 2
+        else -> 1
     }
-    item.withQuality(newQuality)
+    item.degradedBy(-improvement)
 }
 
 private fun typeFor(name: String, updater: ItemType) =

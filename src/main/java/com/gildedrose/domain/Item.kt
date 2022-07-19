@@ -2,8 +2,7 @@ package com.gildedrose.domain
 
 import java.time.LocalDate
 
-@Suppress("DataClassPrivateConstructor") // protected by requires in init
-data class Item private constructor(
+data class Item(
     val name: NonBlankString,
     val sellByDate: LocalDate?,
     val quality: NonNegativeInt,
@@ -20,11 +19,10 @@ data class Item private constructor(
         return dates.fold(this, type::update)
     }
 
-    fun withQuality(quality: Int): Item {
-        val qualityCap = this.quality.value.coerceAtLeast(50)
-        return copy(
-            quality = NonNegativeInt(quality.coerceIn(0, qualityCap)) ?: error("tried to create a negative int")
-        )
+    fun degradedBy(degradation: Int): Item {
+        val qualityCap = quality.value.coerceAtLeast(50)
+        val newQuality = NonNegativeInt((quality - degradation).coerceIn(0, qualityCap)) ?: error("tried to create a negative int")
+        return copy(quality = newQuality)
     }
 }
 
