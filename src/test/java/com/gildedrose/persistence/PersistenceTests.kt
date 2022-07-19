@@ -1,10 +1,9 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.domain.ItemCreationError
 import com.gildedrose.domain.StockList
-import com.gildedrose.testItem
 import com.gildedrose.oct29
 import com.gildedrose.persistence.StockListLoadingError.*
+import com.gildedrose.testItem
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -70,7 +69,7 @@ class PersistenceTests {
     @Test
     fun `fails to load with negative quality`() {
         assertEquals(
-            Failure(CouldntCreateItem(ItemCreationError.NegativeQuality(-1))),
+            Failure(CouldntParseQuality("banana\t2022-07-08\t-1")),
             sequenceOf("banana\t2022-07-08\t-1").toStockList()
         )
     }

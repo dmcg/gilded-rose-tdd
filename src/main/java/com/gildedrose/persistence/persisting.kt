@@ -2,6 +2,7 @@ package com.gildedrose.persistence
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.NonBlankString
+import com.gildedrose.domain.NonNegativeInt
 import com.gildedrose.domain.StockList
 import com.gildedrose.persistence.StockListLoadingError.*
 import dev.forkhandles.result4k.*
@@ -28,7 +29,7 @@ fun File.loadItems(): Result4k<StockList, StockListLoadingError> =
         useLines { lines ->
             lines.toStockList()
         }
-    } catch(x: IOException) {
+    } catch (x: IOException) {
         Failure(IO(x.message ?: "no message"))
     }
 
@@ -65,14 +66,8 @@ private fun String.toItem(): Result4k<Item, StockListLoadingError> {
     if (parts.size < 3) return Failure(NotEnoughFields(this))
     val name = NonBlankString(parts[0]) ?: return Failure(BlankName(this))
     val sellByDate = parts[1].toLocalDate(this).onFailure { return it }
-    val quality = parts[2].toIntOrNull() ?: return Failure(CouldntParseQuality(this))
-    return Item(
-        name = name,
-        sellByDate = sellByDate,
-        quality = quality
-    ).mapFailure {
-        CouldntCreateItem(it)
-    }
+    val quality = parts[2].toIntOrNull()?.let { NonNegativeInt(it) } ?: return Failure(CouldntParseQuality(this))
+    return Success(Item(name, sellByDate, quality))
 }
 
 private fun String.toLocalDate(line: String): Result<LocalDate?, CouldntParseSellBy> =
