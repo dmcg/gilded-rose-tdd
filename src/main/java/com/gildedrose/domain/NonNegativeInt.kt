@@ -17,4 +17,5 @@ private constructor(val value: Int)  {
     operator fun minus(rhs: NonNegativeInt): Int = this.value - rhs.value
     operator fun minus(rhs: Int): Int = this.value - rhs
     operator fun unaryMinus(): Int = -this.value
+    operator fun plus(rhs: Int): Int = value + rhs
 }
