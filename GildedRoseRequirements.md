@@ -58,3 +58,10 @@ but items can be taken into stock with > 50 quality, and then degrade gradually.
 
 Conjured items degrade in quality twice as fast as normal items.
 Any item can be conjured, and if they get better with time, then conjuring makes them get better twice as fast too.
+
+# Identify Individual Items
+
+Magical items are more like used cars than cartons of milk - their identity is important.
+We might bring three items with the same name, quality and sell-by into stock, but need to know which individual one we sold.
+Sometimes items have a serial number or distinguishing feature that we can use as identifier. Where they don't, we can attach a label with a code to an item.
+
