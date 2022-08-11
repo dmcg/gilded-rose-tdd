@@ -41,7 +41,11 @@ fun Sequence<String>.toStockList(): Result4k<StockList, StockListLoadingError> {
     }
 }
 
-private fun Item.toLine() = "$name\t${sellByDate ?: ""}\t$quality"
+private fun Item.toLine() =
+    when (this.id) {
+        null -> "$name\t${sellByDate ?: ""}\t$quality"
+        else -> "$id\t$name\t${sellByDate ?: ""}\t$quality"
+    }
 
 private fun lastModifiedFrom(
     header: List<String>
@@ -60,11 +64,26 @@ private fun String.toInstant(): Result<Instant, CouldntParseLastModified> =
 
 private fun String.toItem(): Result4k<Item, StockListLoadingError> {
     val parts: List<String> = this.split('\t')
-    if (parts.size < 3) return Failure(NotEnoughFields(this))
+    return when {
+        parts.size < 3 -> Failure(NotEnoughFields(this))
+        parts.size == 3 -> itemWithoutIdFrom(parts)
+        else -> itemWithIdFrom(parts)
+    }
+}
+
+private fun String.itemWithoutIdFrom(parts: List<String>): Result<Item, StockListLoadingError> {
     val name = NonBlankString(parts[0]) ?: return Failure(BlankName(this))
     val sellByDate = parts[1].toLocalDate(this).onFailure { return it }
     val quality = parts[2].toIntOrNull()?.let { Quality(it) } ?: return Failure(CouldntParseQuality(this))
     return Success(Item(name, sellByDate, quality))
+}
+
+private fun String.itemWithIdFrom(parts: List<String>): Result<Item, StockListLoadingError> {
+    val id = ID<Item>(parts[0]) ?: return Failure(BlankID(this))
+    val name = NonBlankString(parts[1]) ?: return Failure(BlankName(this))
+    val sellByDate = parts[2].toLocalDate(this).onFailure { return it }
+    val quality = parts[3].toIntOrNull()?.let { Quality(it) } ?: return Failure(CouldntParseQuality(this))
+    return Success(Item(id, name, sellByDate, quality))
 }
 
 private fun String.toLocalDate(line: String): Result<LocalDate?, CouldntParseSellBy> =
