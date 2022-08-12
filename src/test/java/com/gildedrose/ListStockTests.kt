@@ -78,7 +78,7 @@ class ListStockTests {
             stockFile.writeText(stockFile.readText().replace("banana", ""))
             approver.assertApproved(routes(Request(GET, "/")), INTERNAL_SERVER_ERROR)
             assertEquals(
-                StockListLoadingError.BlankName("\t2021-10-28\t42"),
+                StockListLoadingError.BlankName("B1\t\t2021-10-28\t42"),
                 events.first()
             )
         }

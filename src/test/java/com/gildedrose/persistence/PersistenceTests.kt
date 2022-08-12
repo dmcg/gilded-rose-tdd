@@ -69,48 +69,56 @@ class PersistenceTests {
     @Test
     fun `fails to load with negative quality`() {
         assertEquals(
-            Failure(CouldntParseQuality("banana\t2022-07-08\t-1")),
-            sequenceOf("banana\t2022-07-08\t-1").toStockList()
+            Failure(CouldntParseQuality("id\tbanana\t2022-07-08\t-1")),
+            sequenceOf("id\tbanana\t2022-07-08\t-1").toStockList()
+        )
+    }
+
+    @Test
+    fun `fails to load with blank id`() {
+        assertEquals(
+            Failure(BlankID("\tbanana\t2022-07-08\t42")),
+            sequenceOf("\tbanana\t2022-07-08\t42").toStockList()
         )
     }
 
     @Test
     fun `fails to load with blank name`() {
         assertEquals(
-            Failure(BlankName("\t2022-07-08\t42")),
-            sequenceOf("\t2022-07-08\t42").toStockList()
+            Failure(BlankName("id\t\t2022-07-08\t42")),
+            sequenceOf("id\t\t2022-07-08\t42").toStockList()
         )
     }
 
     @Test
     fun `fails to load with too few fields`() {
         assertEquals(
-            Failure(NotEnoughFields("banana\t2022-07-08")),
-            sequenceOf("banana\t2022-07-08").toStockList()
+            Failure(NotEnoughFields("id\tbanana\t2022-07-08")),
+            sequenceOf("id\tbanana\t2022-07-08").toStockList()
         )
     }
 
     @Test
     fun `fails to load with no quality`() {
         assertEquals(
-            Failure(CouldntParseQuality("banana\t2022-07-08\t")),
-            sequenceOf("banana\t2022-07-08\t").toStockList()
+            Failure(CouldntParseQuality("id\tbanana\t2022-07-08\t")),
+            sequenceOf("id\tbanana\t2022-07-08\t").toStockList()
         )
     }
 
     @Test
     fun `fails to load with duff quality`() {
         assertEquals(
-            Failure(CouldntParseQuality("banana\t2022-07-08\teh?")),
-            sequenceOf("banana\t2022-07-08\teh?").toStockList()
+            Failure(CouldntParseQuality("id\tbanana\t2022-07-08\teh?")),
+            sequenceOf("id\tbanana\t2022-07-08\teh?").toStockList()
         )
     }
 
     @Test
     fun `fails to load with bad sell by`() {
         assertEquals(
-            Failure(CouldntParseSellBy("banana\teh?\t42")),
-            sequenceOf("banana\teh?\t42").toStockList()
+            Failure(CouldntParseSellBy("id\tbanana\teh?\t42")),
+            sequenceOf("id\tbanana\teh?\t42").toStockList()
         )
     }
 }
