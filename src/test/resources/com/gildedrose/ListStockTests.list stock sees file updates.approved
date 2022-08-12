@@ -3,6 +3,7 @@
     <h1>29 October 2021</h1>
     <table>
     <tr>
+        <th>ID</th>
         <th>Name</th>
         <th>Sell By Date</th>
         <th>Sell By Days</th>
