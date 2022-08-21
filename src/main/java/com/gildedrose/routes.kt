@@ -1,6 +1,6 @@
 package com.gildedrose
 
-import com.gildedrose.domain.updateItems
+import com.gildedrose.domain.Item
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.http.ResponseErrors
@@ -24,7 +24,7 @@ fun routesFor(
     clock: () -> Instant,
     analytics: Analytics
 ): HttpHandler {
-    val stock = Stock(stockFile, londonZoneId, ::updateItems)
+    val stock = Stock(stockFile, londonZoneId, Item::updatedBy)
     return ServerFilters.RequestTracing().then(
         reportHttpTransactions(analytics).then(
             catchAll(analytics).then(

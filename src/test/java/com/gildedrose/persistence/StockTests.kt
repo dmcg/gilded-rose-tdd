@@ -2,14 +2,12 @@ package com.gildedrose.persistence
 
 import com.gildedrose.Fixture
 import com.gildedrose.domain.StockList
-import com.gildedrose.domain.Item
-import com.gildedrose.testItem
 import com.gildedrose.oct29
+import com.gildedrose.testItem
 import dev.forkhandles.result4k.valueOrNull
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import java.util.concurrent.Callable
 import java.util.concurrent.CyclicBarrier
@@ -29,9 +27,8 @@ class StockTests {
 
     private val stock = Stock(
         stockFile = fixture.stockFile,
-        zoneId = ZoneId.of("Europe/London"),
-        update = ::simpleUpdateItems
-    )
+        zoneId = ZoneId.of("Europe/London")
+    ) { days, _ -> this.copy(quality = this.quality - days) }
 
     @Test
     fun `loads stock from file`() {
@@ -92,15 +89,8 @@ class StockTests {
 
     @Test
     fun `sanity check`() {
-        for (i in 1 .. 10) {
+        for (i in 1..10) {
             `parallel execution`()
         }
     }
 }
-
-private fun simpleUpdateItems(
-    items: List<Item>,
-    days: Int,
-    @Suppress("UNUSED_PARAMETER") on: LocalDate
-) =
-    items.map { it.copy(quality = it.quality - days) }
