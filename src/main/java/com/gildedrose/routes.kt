@@ -2,7 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.domain.updateItems
 import com.gildedrose.foundation.Analytics
-import com.gildedrose.foundation.LoggingAnalytics
+import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.http.ResponseErrors
 import com.gildedrose.http.catchAll
 import com.gildedrose.http.reportHttpTransactions
@@ -15,7 +15,7 @@ import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 
-val analytics = LoggingAnalytics(::println)
+val analytics = loggingAnalytics(::println)
 
 private val londonZoneId = ZoneId.of("Europe/London")
 

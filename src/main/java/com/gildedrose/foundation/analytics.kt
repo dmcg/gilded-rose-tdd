@@ -20,33 +20,30 @@ infix fun Analytics.then(that: Analytics): Analytics = { event ->
     that(event)
 }
 
-class LoggingAnalytics(
-    private val logger: (String) -> Unit,
-    private val objectMapper: ObjectMapper = loggingObjectMapper(),
-    private val clock: () -> Instant = Instant::now
-) : Analytics {
-
-    override fun invoke(event: AnalyticsEvent) {
-        val traces = ZipkinTraces.forCurrentThread()
-        val envelope = Envelope(
-            clock(),
-            traces.traceId.value,
-            traces.spanId.value,
-            traces.parentSpanId?.value,
-            event
-        )
-        logger(objectMapper.writeValueAsString(envelope))
-    }
-
-    @Suppress("unused")
-    class Envelope(
-        val timestamp: Instant,
-        val traceId: String,
-        val spanId: String,
-        val parentSpanId: String?,
-        val event: AnalyticsEvent
+fun loggingAnalytics(
+    logger: (String) -> Unit,
+    objectMapper: ObjectMapper = loggingObjectMapper(),
+    clock: () -> Instant = Instant::now
+) : Analytics = { event: AnalyticsEvent ->
+    val traces = ZipkinTraces.forCurrentThread()
+    val envelope = Envelope(
+        clock(),
+        traces.traceId.value,
+        traces.spanId.value,
+        traces.parentSpanId?.value,
+        event
     )
+    logger(objectMapper.writeValueAsString(envelope))
 }
+
+@Suppress("unused")
+class Envelope(
+    val timestamp: Instant,
+    val traceId: String,
+    val spanId: String,
+    val parentSpanId: String?,
+    val event: AnalyticsEvent
+)
 
 private fun loggingObjectMapper(): ObjectMapper = ObjectMapper().apply {
     registerModule(ParameterNamesModule())
