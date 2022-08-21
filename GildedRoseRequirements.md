@@ -65,3 +65,10 @@ Magical items are more like used cars than cartons of milk - their identity is i
 We might bring three items with the same name, quality and sell-by into stock, but need to know which individual one we sold.
 Sometimes items have a serial number or distinguishing feature that we can use as identifier. Where they don't, we can attach a label with a code to an item.
 
+# Display Item Price
+
+Computers can't determine the value of magical items, that requires magic. There are three online interfaces to the required magic, we need to ask all three.
+
+If two or more agree use that value, otherwise the average. If any service is down (or doesn't respond in time) use those that aren't.
+
+Display the price in the stock list screen.
