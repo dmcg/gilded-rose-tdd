@@ -21,7 +21,8 @@ class ApplicationEventsTests {
         StockList(
             lastModified = Instant.parse("2022-02-09T12:00:00Z"),
             items = emptyList()
-        ), now = Instant.now()
+        ),
+        now = Instant.now(),
     )
 
     @Test

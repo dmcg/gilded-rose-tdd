@@ -24,6 +24,7 @@ private val handlebars = HandlebarsTemplates().HotReload("src/main/java")
 fun listHandler(
     clock: () -> Instant,
     zoneId: ZoneId,
+    isPricingEnabled: Boolean,
     listing: (Instant) -> Result4k<StockList, StockListLoadingError>
 ): HttpHandler = { _ ->
     val now = clock()
@@ -32,7 +33,8 @@ fun listHandler(
         Response(OK).body(handlebars(
             StockListViewModel(
                 now = dateFormat.format(today),
-                items = stockList.map { it.toMap(today) }
+                items = stockList.map { it.toMap(today) },
+                isPricingEnabled = isPricingEnabled
             )
         ))
     }.recover { error ->
@@ -44,7 +46,8 @@ fun listHandler(
 
 private data class StockListViewModel(
     val now: String,
-    val items: List<Map<String, String>>
+    val items: List<Map<String, String>>,
+    val isPricingEnabled: Boolean
 ) : ViewModel
 
 private fun Item.toMap(now: LocalDate): Map<String, String> = mapOf(

@@ -23,7 +23,7 @@ class StockTests {
             testItem("kumquat", oct29.plusDays(1), 101)
         )
     )
-    private val fixture = Fixture(initialStockList, now = initialStockList.lastModified)
+    private val fixture = Fixture(initialStockList, now = initialStockList.lastModified,)
 
     private val stock = Stock(
         stockFile = fixture.stockFile,

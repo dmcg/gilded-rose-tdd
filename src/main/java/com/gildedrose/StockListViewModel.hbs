@@ -1,20 +1,22 @@
 <html lang="en">
     <body>
-    <h1>{{this.now}}</h1>
+    <h1>{{now}}</h1>
     <table>
     <tr>
         <th>ID</th>
         <th>Name</th>
         <th>Sell By Date</th>
         <th>Sell By Days</th>
-        <th>Quality</th>
+        <th>Quality</th>{{#if isPricingEnabled}}
+        <th>Price</th>{{/if}}
     </tr>
     {{#each this.items}}<tr>
-        <td>{{this.id}}</td>
-        <td>{{this.name}}</td>
-        <td>{{this.sellByDate}}</td>
-        <td style="text-align: right">{{this.sellByDays}}</td>
-        <td style="text-align: right">{{this.quality}}</td>
+        <td>{{id}}</td>
+        <td>{{name}}</td>
+        <td>{{sellByDate}}</td>
+        <td style="text-align: right">{{sellByDays}}</td>
+        <td style="text-align: right">{{quality}}</td>{{#if isPricingEnabled}}
+        <td style="text-align: right">{{price}}</td>{{/if}}
     </tr>
     {{/each}}
     </table>

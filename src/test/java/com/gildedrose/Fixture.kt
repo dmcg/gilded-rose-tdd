@@ -13,7 +13,8 @@ class Fixture(
     initialStockList: StockList,
     val now: Instant,
     val events: MutableList<Any> = mutableListOf(),
-    val stockFile: File = Files.createTempFile("stock", ".tsv").toFile()
+    val stockFile: File = Files.createTempFile("stock", ".tsv").toFile(),
+    features: Features = Features()
 ) {
     init {
         save(initialStockList)
@@ -22,7 +23,8 @@ class Fixture(
     val routes = routesFor(
         stockFile = stockFile,
         clock = { now },
-        analytics = analytics then { events.add(it) }
+        analytics = analytics then { events.add(it) },
+        features = features
     )
 
     fun save(stockList: StockList) {
