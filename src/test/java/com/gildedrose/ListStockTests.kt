@@ -1,5 +1,7 @@
 package com.gildedrose
 
+import com.gildedrose.domain.Item
+import com.gildedrose.domain.Price
 import com.gildedrose.domain.StockList
 import com.gildedrose.persistence.StockListLoadingError
 import org.http4k.core.Method.GET
@@ -30,7 +32,7 @@ class ListStockTests {
     @Test
     fun `list stock`(approver: Approver) {
         with(
-            Fixture(stockList, now = Instant.parse("2021-10-29T12:00:00Z"),)
+            Fixture(stockList, now = Instant.parse("2021-10-29T12:00:00Z"))
         ) {
             approver.assertApproved(routes(Request(GET, "/")), OK)
         }
@@ -38,10 +40,16 @@ class ListStockTests {
 
     @Test
     fun `list stock with pricing enabled`(approver: Approver) {
+        val priceLookup: Map<Item, Price?> = mapOf(
+            stockList.items[0] to Price(100),
+            stockList.items[1] to Price(401),
+            stockList.items[2] to null
+        )
         with(
             Fixture(
                 initialStockList = stockList,
                 now = Instant.parse("2021-10-29T12:00:00Z"),
+                pricing = priceLookup::getValue,
                 features = Features(pricing = true)
             )
         ) {
@@ -52,7 +60,7 @@ class ListStockTests {
     @Test
     fun `list stock sees file updates`(approver: Approver) {
         with(
-            Fixture(stockList, now = Instant.parse("2021-10-29T12:00:00Z"),)
+            Fixture(stockList, now = Instant.parse("2021-10-29T12:00:00Z"))
         ) {
             assertEquals(OK, routes(Request(GET, "/")).status)
 
@@ -65,7 +73,7 @@ class ListStockTests {
     fun `doesn't update when lastModified is today`(approver: Approver) {
         val sameDayAsLastModified = Instant.parse("2022-02-09T23:59:59Z")
         with(
-            Fixture(stockList, now = sameDayAsLastModified,)
+            Fixture(stockList, now = sameDayAsLastModified)
         ) {
             approver.assertApproved(routes(Request(GET, "/")), OK)
             assertEquals(stockList, load())
@@ -76,7 +84,7 @@ class ListStockTests {
     fun `does update when lastModified was yesterday`(approver: Approver) {
         val nextDayFromLastModified = Instant.parse("2022-02-10T00:00:00Z")
         with(
-            Fixture(stockList, now = nextDayFromLastModified,)
+            Fixture(stockList, now = nextDayFromLastModified)
         ) {
             approver.assertApproved(routes(Request(GET, "/")), OK)
             Assertions.assertNotEquals(stockList, load())
@@ -86,7 +94,7 @@ class ListStockTests {
     @Test
     fun `reports errors`(approver: Approver) {
         with(
-            Fixture(stockList, now = Instant.parse("2022-02-10T00:00:00Z"),)
+            Fixture(stockList, now = Instant.parse("2022-02-10T00:00:00Z"))
         ) {
             stockFile.writeText(stockFile.readText().replace("banana", ""))
             approver.assertApproved(routes(Request(GET, "/")), INTERNAL_SERVER_ERROR)
