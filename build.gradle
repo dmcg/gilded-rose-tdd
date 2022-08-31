@@ -17,6 +17,7 @@ dependencies {
     implementation "org.http4k:http4k-server-undertow"
     implementation "org.http4k:http4k-client-apache"
     implementation "org.http4k:http4k-template-handlebars"
+    implementation "org.http4k:http4k-client-apache"
 
     implementation 'org.slf4j:slf4j-jdk14:1.7.36'
 

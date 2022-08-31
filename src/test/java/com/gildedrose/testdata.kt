@@ -11,8 +11,15 @@ fun testItem(
     name: String,
     sellByDate: LocalDate?,
     quality: Int,
+): Item = testItem(initialsFrom(name) + "1", name, sellByDate, quality)
+
+fun testItem(
+    id: String,
+    name: String,
+    sellByDate: LocalDate?,
+    quality: Int,
 ): Item = Item(
-    ID(initialsFrom(name) + "1")!!,
+    ID(id)!!,
     NonBlankString(name)!!,
     sellByDate,
     Quality(quality)!!
