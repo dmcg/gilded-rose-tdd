@@ -1,14 +1,14 @@
 import com.gildedrose.*
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
-import com.gildedrose.http.Server
+import com.gildedrose.http.serverFor
 import java.io.File
 import java.time.Instant
 
 fun main() {
     val features = Features()
     val file = File("stock.tsv")
-    val server = Server(
+    val server = serverFor(
         routesFor(
             stockFile = file,
             clock = { Instant.now() },

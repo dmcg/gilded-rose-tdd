@@ -5,12 +5,6 @@ import org.http4k.server.Undertow
 import org.http4k.server.asServer
 
 
-class Server(
+fun serverFor(
     routes: HttpHandler
-) {
-    private val http4kServer = routes.asServer(Undertow(8080))
-
-    fun start() {
-        http4kServer.start()
-    }
-}
+) = routes.asServer(Undertow(8080))
