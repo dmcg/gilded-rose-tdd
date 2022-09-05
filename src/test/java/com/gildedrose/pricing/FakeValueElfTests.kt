@@ -63,18 +63,7 @@ class FakeValueElfTests {
     }
 }
 
-/**
- * Starts a fake server for demos
- */
-fun main() {
-    fakeValueElfServer(8080) { id, quality ->
-        when {
-            id.toString() == "no-such" -> null
-            else -> Price(id.value.length * 100L + quality.valueInt)!!
-        }
-    }.start()
-}
-
+@Suppress("SameParameterValue")
 private fun fakeValueElfServer(port: Int, pricing: (ID<Item>, Quality) -> Price?) = serverFor(port,
     fakeValueElfRoutes(pricing)
 )

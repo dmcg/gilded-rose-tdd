@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import java.net.URI
 import java.time.LocalDate
 
-@Disabled("Talks to outside test resources")
+@Disabled("Talks to outside test resources, with results subject to change")
 class ValueElfTests {
     val uri = URI.create("http://value-elf.com:8080/prices")
     val client: (Item) -> Price? = valueElfClient(uri)
