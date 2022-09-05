@@ -4,6 +4,7 @@ package com.gildedrose.domain
 value class Quality(
     private val value: NonNegativeInt
 ) {
+    val valueInt get() = value.value
 
     companion object {
         val ZERO: Quality = Quality(0)!!

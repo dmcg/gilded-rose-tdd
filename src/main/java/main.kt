@@ -9,6 +9,7 @@ fun main() {
     val features = Features()
     val file = File("stock.tsv")
     val server = serverFor(
+        port = 8080,
         routesFor(
             stockFile = file,
             clock = { Instant.now() },

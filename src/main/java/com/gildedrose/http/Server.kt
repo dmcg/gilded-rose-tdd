@@ -6,5 +6,6 @@ import org.http4k.server.asServer
 
 
 fun serverFor(
+    port: Int,
     routes: HttpHandler
-) = routes.asServer(Undertow(8080))
+) = routes.asServer(Undertow(port))

@@ -4,7 +4,7 @@ import java.text.NumberFormat
 
 @JvmInline
 value class Price
-private constructor(private val value: Long)  {
+private constructor(val pence: Long)  {
     companion object {
         operator fun invoke(value: Long): Price? =
             if (value >= 0) Price(value)
@@ -13,5 +13,5 @@ private constructor(private val value: Long)  {
         private val numberFormat: NumberFormat = NumberFormat.getCurrencyInstance()
     }
 
-    override fun toString(): String = numberFormat.format(value / 100.0)
+    override fun toString(): String = numberFormat.format(pence / 100.0)
 }
