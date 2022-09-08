@@ -17,30 +17,34 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.net.URI
 import java.time.LocalDate
 
+private val aUri: URI = URI.create("http://localhost:8888/prices")
+private val anItem = testItem("banana", "doesn't matter", LocalDate.now(), 9)
+private val aNotFoundItem = testItem("no-such", "doesn't matter", LocalDate.now(), 9)
+
 class FakeValueElfTests {
 
-    val uri: URI = URI.create("http://localhost:8888/prices")
-    val item = testItem("banana", "doesn't matter", LocalDate.now(), 9)
-    val priceLookup: MutableMap<Pair<ID<Item>, Quality>, Price?> = mutableMapOf()
+    val priceLookup: Map<Pair<ID<Item>, Quality>, Price?> = mapOf(
+        (anItem.id to anItem.quality) to Price(609),
+        (aNotFoundItem.id to aNotFoundItem.quality) to null,
+    )
     val routes = fakeValueElfRoutes { id, quality ->
         priceLookup[id to quality]
     }
-    val client = valueElfClient(uri, routes)
+    val client = valueElfClient(aUri, routes)
 
     @Test
     fun `returns price that does exist`() {
-        priceLookup[(item.id to item.quality)] = Price(609)
-        assertEquals(Price(609), client.invoke(item))
+        assertEquals(Price(609), client.invoke(anItem))
     }
 
     @Test
     fun `returns null for no price`() {
-        assertEquals(null, client.invoke(item))
+        assertEquals(null, client.invoke(aNotFoundItem))
     }
 
     @Test
     fun `returns BAD_REQUEST for invalid query strings`() {
-        val baseRequest = Request(Method.GET, uri.toString())
+        val baseRequest = Request(Method.GET, aUri.toString())
         assertThat(routes(baseRequest), hasStatus(BAD_REQUEST))
         assertThat(routes(baseRequest.query("id", "some-id")), hasStatus(BAD_REQUEST))
         assertThat(routes(baseRequest.query("id", "")), hasStatus(BAD_REQUEST))
@@ -52,19 +56,19 @@ class FakeValueElfTests {
     @EnabledIfSystemProperty(named = "run-slow-tests", matches = "true")
     @Test
     fun `actually call server`() {
-        priceLookup[(item.id to item.quality)] = Price(609)
         val server = fakeValueElfServer(8888) { id, quality ->
             priceLookup[id to quality]
         }
-        val client: (Item) -> Price? = valueElfClient(uri)
+        val client: (Item) -> Price? = valueElfClient(aUri)
         server.start().use {
-            assertEquals(Price(609), client.invoke(item))
+            assertEquals(Price(609), client.invoke(anItem))
         }
     }
 }
 
 @Suppress("SameParameterValue")
-private fun fakeValueElfServer(port: Int, pricing: (ID<Item>, Quality) -> Price?) = serverFor(port,
+private fun fakeValueElfServer(port: Int, pricing: (ID<Item>, Quality) -> Price?) = serverFor(
+    port,
     fakeValueElfRoutes(pricing)
 )
 
