@@ -4,12 +4,12 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.testItem
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.net.URI
 import java.time.LocalDate
 
-@Disabled("Talks to outside test resources, with results subject to change")
+@EnabledIfSystemProperty(named = "run-external-tests", matches = "true")
 class ValueElfTests {
     val uri = URI.create("http://value-elf.com:8080/prices")
     val client: (Item) -> Price? = valueElfClient(uri)

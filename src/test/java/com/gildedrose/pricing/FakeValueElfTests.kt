@@ -12,8 +12,8 @@ import org.http4k.core.Request
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.net.URI
 import java.time.LocalDate
 
@@ -26,19 +26,6 @@ class FakeValueElfTests {
         priceLookup[id to quality]
     }
     val client = valueElfClient(uri, routes)
-
-    @Disabled("slows tests")
-    @Test
-    fun `actually call server`() {
-        priceLookup[(item.id to item.quality)] = Price(609)
-        val server = fakeValueElfServer(8888) { id, quality ->
-            priceLookup[id to quality]
-        }
-        val client: (Item) -> Price? = valueElfClient(uri)
-        server.start().use {
-            assertEquals(Price(609), client.invoke(item))
-        }
-    }
 
     @Test
     fun `returns price that does exist`() {
@@ -60,6 +47,19 @@ class FakeValueElfTests {
         assertThat(routes(baseRequest.query("id", "some-id").query("quality", "")), hasStatus(BAD_REQUEST))
         assertThat(routes(baseRequest.query("id", "some-id").query("quality", "nan")), hasStatus(BAD_REQUEST))
         assertThat(routes(baseRequest.query("id", "some-id").query("quality", "-1")), hasStatus(BAD_REQUEST))
+    }
+
+    @EnabledIfSystemProperty(named = "run-slow-tests", matches = "true")
+    @Test
+    fun `actually call server`() {
+        priceLookup[(item.id to item.quality)] = Price(609)
+        val server = fakeValueElfServer(8888) { id, quality ->
+            priceLookup[id to quality]
+        }
+        val client: (Item) -> Price? = valueElfClient(uri)
+        server.start().use {
+            assertEquals(Price(609), client.invoke(item))
+        }
     }
 }
 
