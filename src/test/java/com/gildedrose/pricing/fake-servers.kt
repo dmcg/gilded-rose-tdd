@@ -23,6 +23,6 @@ fun main() {
 private fun pricingWithMultiplier(multiplier: Int): (ID<Item>, Quality) -> Price? = { id, quality ->
     when {
         id.toString() == "no-such" -> null
-        else -> Price(id.value.length * multiplier.toLong() + quality.valueInt)!!
+        else -> Price((id.value.length + 1) * multiplier.toLong() + quality.valueInt)!!
     }
 }

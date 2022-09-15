@@ -6,37 +6,43 @@ import com.gildedrose.domain.Price
 import com.gildedrose.domain.Quality
 import com.gildedrose.http.serverFor
 import org.http4k.client.ApacheClient
-import org.http4k.core.HttpHandler
+import org.http4k.core.Response
+import org.http4k.core.Status
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.net.URI
 
-private val aUri: URI = URI.create("http://localhost:8888/prices")
+private val baseFixture = ValueElfContract.Fixture(
+    uri = URI.create("http://localhost:8888/prices"),
+    handler = { Response(Status.I_M_A_TEAPOT) },
+    expectedPrice = Price(609)!!
+)
 
 private val priceLookup: Map<Pair<ID<Item>, Quality>, Price?> =
-    mapOf(
-        (anItem.id to anItem.quality) to Price(609),
-        (aNotFoundItem.id to aNotFoundItem.quality) to null,
-    )
-private val routes: HttpHandler =
-    fakeValueElfRoutes { id, quality ->
-        priceLookup[id to quality]
+    with(baseFixture) {
+        mapOf(
+            (aFoundItem.id to aFoundItem.quality) to expectedPrice,
+            (aNotFoundItem.id to aNotFoundItem.quality) to null,
+        )
     }
 
 class FakeValueElfTests : ValueElfContract(
-    uri = aUri,
-    handler = routes
+    baseFixture.copy(handler = fakeValueElfRoutes { id, quality ->
+        priceLookup[id to quality]
+    })
 )
 
 @EnabledIfSystemProperty(named = "run-slow-tests", matches = "true")
 class FakeValueElfHttpTests : ValueElfContract(
-    uri = aUri,
-    handler = ApacheClient()
+    baseFixture.copy(handler = ApacheClient())
 ) {
     companion object {
-        val server = fakeValueElfServer(8888) { id, quality ->
-            priceLookup[id to quality]
-        }
+        val server = serverFor(
+            port = 8888,
+            fakeValueElfRoutes { id: ID<Item>, quality: Quality ->
+                priceLookup[id to quality]
+            }
+        )
 
         @BeforeAll
         @JvmStatic
@@ -51,14 +57,5 @@ class FakeValueElfHttpTests : ValueElfContract(
         }
     }
 }
-
-@Suppress("SameParameterValue")
-private fun fakeValueElfServer(
-    port: Int,
-    pricing: (ID<Item>, Quality) -> Price?
-) = serverFor(
-    port,
-    fakeValueElfRoutes(pricing)
-)
 
 
