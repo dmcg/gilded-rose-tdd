@@ -13,13 +13,15 @@ import java.net.URI
 
 private val aUri: URI = URI.create("http://localhost:8888/prices")
 
-private val priceLookup: Map<Pair<ID<Item>, Quality>, Price?> = mapOf(
-    (anItem.id to anItem.quality) to Price(609),
-    (aNotFoundItem.id to aNotFoundItem.quality) to null,
-)
-private val routes: HttpHandler = fakeValueElfRoutes { id, quality ->
-    priceLookup[id to quality]
-}
+private val priceLookup: Map<Pair<ID<Item>, Quality>, Price?> =
+    mapOf(
+        (anItem.id to anItem.quality) to Price(609),
+        (aNotFoundItem.id to aNotFoundItem.quality) to null,
+    )
+private val routes: HttpHandler =
+    fakeValueElfRoutes { id, quality ->
+        priceLookup[id to quality]
+    }
 
 class FakeValueElfTests : ValueElfContract(
     uri = aUri,
@@ -36,12 +38,14 @@ class FakeValueElfHttpTests : ValueElfContract(
             priceLookup[id to quality]
         }
 
-        @BeforeAll @JvmStatic
+        @BeforeAll
+        @JvmStatic
         fun startServer() {
             server.start()
         }
 
-        @AfterAll @JvmStatic
+        @AfterAll
+        @JvmStatic
         fun stopServer() {
             server.stop()
         }
@@ -49,7 +53,10 @@ class FakeValueElfHttpTests : ValueElfContract(
 }
 
 @Suppress("SameParameterValue")
-private fun fakeValueElfServer(port: Int, pricing: (ID<Item>, Quality) -> Price?) = serverFor(
+private fun fakeValueElfServer(
+    port: Int,
+    pricing: (ID<Item>, Quality) -> Price?
+) = serverFor(
     port,
     fakeValueElfRoutes(pricing)
 )

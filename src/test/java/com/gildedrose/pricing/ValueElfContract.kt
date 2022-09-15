@@ -11,10 +11,10 @@ import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.net.URI
-import java.time.LocalDate
+import java.time.LocalDate.now
 
-val anItem = testItem("banana", "doesn't matter", LocalDate.now(), 9)
-val aNotFoundItem = testItem("no-such", "doesn't matter", LocalDate.now(), 9)
+val anItem = testItem("banana", "doesn't matter", now(), 9)
+val aNotFoundItem = testItem("no-such", "doesn't matter", now(), 9)
 
 abstract class ValueElfContract(
     val uri: URI,
