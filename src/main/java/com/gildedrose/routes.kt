@@ -28,22 +28,19 @@ fun routesFor(
     features: Features,
 ): HttpHandler {
     val stock = Stock(stockFile, londonZoneId, Item::updatedBy)
-    return ServerFilters.RequestTracing().then(
-        reportHttpTransactions(analytics).then(
-            catchAll(analytics).then(
-                ResponseErrors.reportTo(analytics).then(
-                    routes(
-                        "/" bind Method.GET to listHandler(
-                            clock = clock,
-                            zoneId = londonZoneId,
-                            pricing = pricing,
-                            isPricingEnabled = features.pricing,
-                            listing = stock::stockList
-                        ),
-                        "/error" bind Method.GET to { error("deliberate") }
-                    )
-                )
-            )
+    return ServerFilters.RequestTracing()
+        .then(reportHttpTransactions(analytics))
+        .then(catchAll(analytics))
+        .then(ResponseErrors.reportTo(analytics))
+        .then(routes(
+            "/" bind Method.GET to listHandler(
+                clock = clock,
+                zoneId = londonZoneId,
+                pricing = pricing,
+                isPricingEnabled = features.pricing,
+                listing = stock::stockList
+            ),
+            "/error" bind Method.GET to { error("deliberate") }
         )
     )
 }

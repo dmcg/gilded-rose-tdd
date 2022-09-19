@@ -7,7 +7,6 @@ import com.gildedrose.foundation.then
 import com.gildedrose.persistence.loadItems
 import com.gildedrose.persistence.saveTo
 import dev.forkhandles.result4k.onFailure
-import dummyPricing
 import java.io.File
 import java.nio.file.Files
 import java.time.Instant
@@ -15,7 +14,7 @@ import java.time.Instant
 class Fixture(
     initialStockList: StockList,
     val now: Instant,
-    pricing: (Item) -> Price? = ::dummyPricing,
+    pricing: (Item) -> Price? = ::noOpPricing,
     val events: MutableList<Any> = mutableListOf(),
     val stockFile: File = Files.createTempFile("stock", ".tsv").toFile(),
     features: Features = Features()

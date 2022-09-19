@@ -9,7 +9,7 @@ import org.http4k.routing.reverseProxy
 import kotlin.random.Random
 
 /**
- * Starts a fake server for demos
+ * Starts a fake com.gildedrose.server for demos
  */
 fun main() {
     val routes = reverseProxy(
