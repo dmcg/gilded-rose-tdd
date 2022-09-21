@@ -1,10 +1,12 @@
-package com.gildedrose.pricing
+@file:JvmName("🙈")
+package com.gildedrose.ignoreme
 
 import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.Quality
 import com.gildedrose.http.serverFor
+import com.gildedrose.pricing.fakeValueElfRoutes
 import org.http4k.routing.reverseProxy
 import kotlin.random.Random
 
