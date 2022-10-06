@@ -2,18 +2,13 @@ package com.gildedrose.domain
 
 import com.gildedrose.oct29
 import com.gildedrose.testItem
+import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.containsSubstring
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 
 class ItemTests {
-
-    @Test fun `toString shows type`() {
-        assertEquals(
-            "Item(id=B1, name=banana, sellByDate=2021-10-29, quality=50, type=STANDARD)",
-            testItem("banana", oct29, 50).toString()
-        )
-    }
 
     @Test fun `no item should have its quality raised above 50 by updating`() {
         val testItem = testItem("banana", null, 50)
@@ -52,9 +47,9 @@ class ItemTests {
     }
 
     @Test fun `item types for toString`() {
-        assertEquals("Item(id=CB1, name=Conjured banana, sellByDate=2021-10-29, quality=50, type=CONJURED STANDARD)",
-            testItem("Conjured banana", oct29, 50).toString()
+        assertThat(
+            testItem("Conjured banana", oct29, 50).toString(),
+            containsSubstring("type=CONJURED STANDARD")
         )
     }
-
 }
