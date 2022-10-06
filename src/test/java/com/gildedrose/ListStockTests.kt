@@ -40,16 +40,18 @@ class ListStockTests {
 
     @Test
     fun `list stock with pricing enabled`(approver: Approver) {
-        val priceLookup: Map<Item, Price?> = mapOf(
-            stockList.items[0] to Price(100),
-            stockList.items[1] to Price(401),
-            stockList.items[2] to null
-        )
+        val pricing: (Item) -> Price? = {
+            when(it) {
+                stockList.items[0] -> Price(100)
+                stockList.items[1] -> error("simulated price failure")
+                else -> null
+            }
+        }
         with(
             Fixture(
                 initialStockList = stockList,
                 now = Instant.parse("2021-10-29T12:00:00Z"),
-                pricing = priceLookup::getValue,
+                pricing = pricing,
                 features = Features(pricing = true)
             )
         ) {
