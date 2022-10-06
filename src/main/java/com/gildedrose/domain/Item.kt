@@ -1,5 +1,6 @@
 package com.gildedrose.domain
 
+import dev.forkhandles.result4k.Result4k
 import java.time.LocalDate
 
 data class Item(
@@ -7,7 +8,7 @@ data class Item(
     val name: NonBlankString,
     val sellByDate: LocalDate?,
     val quality: Quality,
-    val price: Price? = null,
+    val price: Result4k<Price?, Exception>? = null,
     private val type: ItemType
 ) {
     constructor(

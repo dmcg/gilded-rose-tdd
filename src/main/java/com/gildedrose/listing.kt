@@ -5,9 +5,7 @@ import com.gildedrose.domain.Price
 import com.gildedrose.domain.StockList
 import com.gildedrose.http.ResponseErrors.withError
 import com.gildedrose.persistence.StockListLoadingError
-import dev.forkhandles.result4k.Result4k
-import dev.forkhandles.result4k.map
-import dev.forkhandles.result4k.recover
+import dev.forkhandles.result4k.*
 import org.http4k.core.*
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.OK
@@ -35,15 +33,16 @@ fun listHandler(
     val now = clock()
     val today = LocalDate.ofInstant(now, zoneId)
     listing(now).map { stockList ->
+        val pricedStockList: StockList = stockList.pricedBy(pricing)
         Response(OK).with(
             view of
                 StockListViewModel(
                     now = dateFormat.format(today),
-                    items = stockList.map { item ->
-                        val priceString = try {
-                            pricing(item)?.toString() ?: ""
-                        } catch (x: Exception) {
-                            "error"
+                    items = pricedStockList.map { item ->
+                        val priceString = when(val price = item.price) {
+                            null -> ""
+                            is Success -> price.value?.toString().orEmpty()
+                            is Failure -> "error"
                         }
                         item.toMap(today, priceString) },
                     isPricingEnabled = isPricingEnabled
@@ -55,6 +54,12 @@ fun listHandler(
             .body("Something went wrong, we're really sorry.")
     }
 }
+
+private fun StockList.pricedBy(pricing: (Item) -> Price?): StockList =
+    this.copy(items = items.map { it.pricedBy(pricing)})
+
+private fun Item.pricedBy(pricing: (Item) -> Price?): Item =
+    this.copy(price = resultFrom { pricing(this) })
 
 private data class StockListViewModel(
     val now: String,
