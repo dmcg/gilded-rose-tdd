@@ -1,7 +1,8 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.Fixture
+import com.gildedrose.App
 import com.gildedrose.domain.StockList
+import com.gildedrose.fixture
 import com.gildedrose.oct29
 import com.gildedrose.testItem
 import dev.forkhandles.result4k.valueOrNull
@@ -23,7 +24,10 @@ class StockTests {
             testItem("kumquat", oct29.plusDays(1), 101)
         )
     )
-    private val fixture = Fixture(initialStockList, now = initialStockList.lastModified,)
+    private val fixture = App().fixture(
+        now = initialStockList.lastModified,
+        initialStockList = initialStockList
+    )
 
     private val stock = Stock(
         stockFile = fixture.stockFile,
@@ -78,7 +82,7 @@ class StockTests {
         val barrier = CyclicBarrier(count)
         val futures = executor.invokeAll(
             (1..count).map {
-                Callable() {
+                Callable {
                     barrier.await()
                     `updates stock if last modified yesterday`()
                 }

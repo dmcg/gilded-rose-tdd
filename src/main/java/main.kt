@@ -1,5 +1,5 @@
-import com.gildedrose.*
+import com.gildedrose.App
 
 fun main() {
-    server().start()
+    App().start()
 }

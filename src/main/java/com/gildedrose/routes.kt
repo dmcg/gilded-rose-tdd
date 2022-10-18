@@ -4,7 +4,6 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.Analytics
-import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.http.ResponseErrors
 import com.gildedrose.http.catchAll
 import com.gildedrose.http.reportHttpTransactions
@@ -22,8 +21,6 @@ import org.http4k.routing.routes
 import java.io.File
 import java.time.Instant
 import java.time.ZoneId
-
-val analytics = loggingAnalytics(::println)
 
 private val londonZoneId = ZoneId.of("Europe/London")
 

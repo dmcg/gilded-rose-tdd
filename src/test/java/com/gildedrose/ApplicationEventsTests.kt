@@ -17,13 +17,14 @@ import java.time.Instant
 
 class ApplicationEventsTests {
 
-    private val fixture = Fixture(
-        StockList(
-            lastModified = Instant.parse("2022-02-09T12:00:00Z"),
-            items = emptyList()
-        ),
-        now = Instant.now(),
-    )
+    private val fixture = App()
+        .fixture(
+            now = Instant.now(),
+            initialStockList = StockList(
+                lastModified = Instant.parse("2022-02-09T12:00:00Z"),
+                items = emptyList()
+            )
+        )
 
     @Test
     fun `uncaught exceptions raise an event`() {
@@ -31,7 +32,8 @@ class ApplicationEventsTests {
             assertEquals(0, events.size)
 
             val response = routes(Request(GET, "/error"))
-            assertThat(response,
+            assertThat(
+                response,
                 hasStatus(INTERNAL_SERVER_ERROR) and
                     hasBody("Something went wrong, sorry.")
             )
