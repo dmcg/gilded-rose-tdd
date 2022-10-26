@@ -7,8 +7,10 @@ import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.http.serverFor
 import java.io.File
 import java.time.Instant
+import java.time.ZoneId
 
 val stdOutAnalytics = loggingAnalytics(::println)
+val londonZoneId = ZoneId.of("Europe/London")
 
 data class App(
     val port: Int = 8080,

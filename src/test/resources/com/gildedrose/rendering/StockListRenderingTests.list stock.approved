@@ -1,0 +1,36 @@
+<html lang="en">
+    <body>
+    <h1>29 October 2021</h1>
+    <table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Sell By Date</th>
+        <th>Sell By Days</th>
+        <th>Quality</th>
+    </tr>
+    <tr>
+        <td>B1</td>
+        <td>banana</td>
+        <td>28 October 2021</td>
+        <td style="text-align: right">-1</td>
+        <td style="text-align: right">42</td>
+    </tr>
+    <tr>
+        <td>K1</td>
+        <td>kumquat</td>
+        <td>30 October 2021</td>
+        <td style="text-align: right">1</td>
+        <td style="text-align: right">101</td>
+    </tr>
+    <tr>
+        <td>U1</td>
+        <td>undated</td>
+        <td></td>
+        <td style="text-align: right">0</td>
+        <td style="text-align: right">50</td>
+    </tr>
+    
+    </table>
+    </body>
+</html>

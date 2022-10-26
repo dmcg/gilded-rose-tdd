@@ -20,9 +20,7 @@ import org.http4k.routing.bind
 import org.http4k.routing.routes
 import java.io.File
 import java.time.Instant
-import java.time.ZoneId
 
-private val londonZoneId = ZoneId.of("Europe/London")
 
 fun routesFor(
     stockFile: File,
