@@ -12,7 +12,7 @@ import java.nio.file.Files
 import java.time.Instant
 
 class Fixture(
-    private val app: App,
+    val app: App,
     val events: MutableList<Any>
 ) {
     val stockFile get() = app.stockFile
