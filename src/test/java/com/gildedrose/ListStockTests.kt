@@ -1,6 +1,7 @@
 package com.gildedrose
 
 import com.gildedrose.domain.Item
+import com.gildedrose.domain.Quality
 import com.gildedrose.domain.StockList
 import com.gildedrose.persistence.StockListLoadingError
 import com.natpryce.hamkrest.assertion.assertThat
@@ -18,24 +19,32 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
+import java.time.LocalDate
 
 @ExtendWith(ApprovalTest::class)
 class ListStockTests {
 
-    private val stockList = StockList(
-        lastModified = Instant.parse("2022-02-09T12:00:00Z"),
-        items = listOf(
-            testItem("banana", oct29.minusDays(1), 42),
-            testItem("kumquat", oct29.plusDays(1), 101),
-            testItem("undated", null, 50)
+    companion object {
+        private val lastModified = Instant.parse("2022-02-09T12:00:00Z")
+        private val sameDayAsLastModified = Instant.parse("2022-02-09T23:59:59Z")
+        private val nextDayFromLastModified = Instant.parse("2022-02-10T00:00:00Z")
+
+        private val stockList = StockList(
+            lastModified = lastModified,
+            items = listOf(
+                testItem("banana", LocalDate.parse("2022-02-08"), 42),
+                testItem("kumquat", LocalDate.parse("2022-02-10"), 101),
+                testItem("undated", null, 50)
+            )
         )
-    )
+        private val baseApp = App()
+    }
 
     @Test
     fun `list stock`(approver: Approver) {
         with(
-            App().fixture(
-                now = Instant.parse("2021-10-29T12:00:00Z"),
+            baseApp.fixture(
+                now = sameDayAsLastModified,
                 initialStockList = stockList
             )
         ) {
@@ -50,8 +59,8 @@ class ListStockTests {
     @Test
     fun `list stock sees file updates`() {
         with(
-            App().fixture(
-                now = Instant.parse("2021-10-29T12:00:00Z"),
+            baseApp.fixture(
+                now = sameDayAsLastModified,
                 initialStockList = stockList
             )
         ) {
@@ -66,9 +75,8 @@ class ListStockTests {
 
     @Test
     fun `doesn't update when lastModified is today`() {
-        val sameDayAsLastModified = Instant.parse("2022-02-09T23:59:59Z")
         with(
-            App().fixture(
+            baseApp.fixture(
                 now = sameDayAsLastModified,
                 initialStockList = stockList
             )
@@ -83,9 +91,8 @@ class ListStockTests {
 
     @Test
     fun `does update when lastModified was yesterday`() {
-        val nextDayFromLastModified = Instant.parse("2022-02-10T00:00:00Z")
         with(
-            App().fixture(
+            baseApp.fixture(
                 now = nextDayFromLastModified,
                 initialStockList = stockList
             )
@@ -93,9 +100,9 @@ class ListStockTests {
             val expectedUpdatedStockList = StockList(
                 lastModified = nextDayFromLastModified,
                 items = listOf(
-                    testItem("banana", oct29.minusDays(1), 40),
-                    testItem("kumquat", oct29.plusDays(1), 99),
-                    testItem("undated", null, 50)
+                    stockList.items[0].copy(quality = Quality(40)!!),
+                    stockList.items[1].copy(quality = Quality(100)!!),
+                    stockList.items[2]
                 )
             )
             assertEquals(
@@ -109,13 +116,13 @@ class ListStockTests {
     @Test
     fun `reports errors`() {
         with(
-            App().fixture(
-                now = Instant.parse("2022-02-10T00:00:00Z"),
+            baseApp.fixture(
+                now = sameDayAsLastModified,
                 initialStockList = stockList
             )
         ) {
             stockFile.writeText(stockFile.readText().replace("banana", ""))
-            val expectedFailure = StockListLoadingError.BlankName("B1\t\t2021-10-28\t42")
+            val expectedFailure = StockListLoadingError.BlankName("B1\t\t2022-02-08\t42")
             assertEquals(
                 Failure(expectedFailure),
                 app.loadStockList()
