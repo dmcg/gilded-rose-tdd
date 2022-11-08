@@ -74,22 +74,6 @@ class ListStockTests {
     }
 
     @Test
-    fun `doesn't update when lastModified is today`() {
-        with(
-            baseApp.fixture(
-                now = sameDayAsLastModified,
-                initialStockList = stockList
-            )
-        ) {
-            assertEquals(
-                Success(stockList.withNullPrices()),
-                app.loadStockList()
-            )
-            assertEquals(stockList, load())
-        }
-    }
-
-    @Test
     fun `does update when lastModified was yesterday`() {
         with(
             baseApp.fixture(
