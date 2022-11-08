@@ -57,7 +57,7 @@ class ListStockTests {
     }
 
     @Test
-    fun `list stock sees file updates`() {
+    fun `sees file updates`() {
         with(
             baseApp.fixture(
                 now = sameDayAsLastModified,
@@ -74,7 +74,7 @@ class ListStockTests {
     }
 
     @Test
-    fun `does update when lastModified was yesterday`() {
+    fun `updates stock quality when lastModified was yesterday`() {
         with(
             baseApp.fixture(
                 now = nextDayFromLastModified,
