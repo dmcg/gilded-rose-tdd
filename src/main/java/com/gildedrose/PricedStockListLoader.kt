@@ -3,7 +3,6 @@ package com.gildedrose
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.StockList
-import com.gildedrose.persistence.Stock
 import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
@@ -11,11 +10,11 @@ import dev.forkhandles.result4k.resultFrom
 import java.time.Instant
 
 class PricedStockListLoader(
-    val stock: Stock,
+    val loading: (Instant) -> Result<StockList, StockListLoadingError>,
     val pricing: (Item) -> Price?
 ) {
     fun load(now: Instant): Result<StockList, StockListLoadingError> =
-        stock.stockList(now).map { it.pricedBy(pricing) }
+        loading(now).map { it.pricedBy(pricing) }
 }
 
 private fun StockList.pricedBy(pricing: (Item) -> Price?): StockList =
