@@ -7,8 +7,8 @@ import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.http.serverFor
 import com.gildedrose.persistence.Stock
-import dev.forkhandles.result4k.map
-import dev.forkhandles.result4k.resultFrom
+import com.gildedrose.persistence.StockListLoadingError
+import dev.forkhandles.result4k.Result
 import java.io.File
 import java.time.Instant
 import java.time.ZoneId
@@ -25,6 +25,7 @@ data class App(
     val analytics: Analytics = stdOutAnalytics
 ) {
     private val stock = Stock(stockFile, londonZoneId, Item::updatedBy)
+    private val pricedLoader = PricedStockListLoader(stock, pricing)
     val routes = routesFor(
         clock = clock,
         analytics = analytics,
@@ -33,21 +34,13 @@ data class App(
     )
     private val server = serverFor(port = port, routes)
 
-    fun loadStockList(now: Instant = clock()) =
-        stock.stockList(now).map { it.pricedBy(pricing) }
+    fun loadStockList(now: Instant = clock()): Result<StockList, StockListLoadingError> =
+        pricedLoader.load(now)
 
     fun start() {
         server.start()
     }
 }
-
-
-
-private fun StockList.pricedBy(pricing: (Item) -> Price?): StockList =
-    this.copy(items = items.map { it.pricedBy(pricing) })
-
-private fun Item.pricedBy(pricing: (Item) -> Price?): Item =
-    this.copy(price = resultFrom { pricing(this) })
 
 @Suppress("UNUSED_PARAMETER")
 fun noOpPricing(item: Item): Price? = null
