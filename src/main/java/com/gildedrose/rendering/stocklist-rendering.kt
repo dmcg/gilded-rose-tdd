@@ -15,8 +15,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
+import java.util.Locale
 
-private val dateFormat: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+private val dateFormat: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.UK)
 private val handlebars = HandlebarsTemplates().HotReload("src/main/java")
 private val view = Body.viewModel(handlebars, ContentType.TEXT_HTML).toLens()
 
