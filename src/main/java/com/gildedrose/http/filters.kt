@@ -2,6 +2,7 @@ package com.gildedrose.http
 
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.AnalyticsEvent
+import com.gildedrose.foundation.UncaughtExceptionEvent
 import org.http4k.core.HttpTransaction
 import org.http4k.core.Response
 import org.http4k.core.Status
@@ -15,16 +16,6 @@ fun reportHttpTransactions(analytics: Analytics) = ResponseFilters.ReportHttpTra
 fun catchAll(analytics: Analytics) = ServerFilters.CatchAll {
     analytics(UncaughtExceptionEvent(it))
     Response(Status.INTERNAL_SERVER_ERROR).body("Something went wrong, sorry.")
-}
-
-data class UncaughtExceptionEvent(
-    val message: String,
-    val stackTrace: List<String>
-) : AnalyticsEvent {
-    constructor(exception: Throwable) : this(
-        exception.message.orEmpty(),
-        exception.stackTrace.map(StackTraceElement::toString)
-    )
 }
 
 data class HttpEvent(

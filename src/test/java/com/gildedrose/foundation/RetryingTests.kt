@@ -50,10 +50,11 @@ class RetryingTests {
         assertEquals(listOf("deliberate", "deliberate"), reported.map(Exception::message))
     }
 
-    private fun succeedAfter(exceptionCount: Int): (String) -> String {
-        var countdown = exceptionCount
-        val wrapped: (String) -> String = { if (countdown-- == 0) it else error("deliberate") }
-        return wrapped
-    }
+    private fun succeedAfter(exceptionCount: Int): (String) -> String =
+        succeedAfter(exceptionCount, raiseError = { error("deliberate") } ) { it }
+}
 
+fun <T, R> succeedAfter(exceptionCount: Int, raiseError: () -> Nothing, f: (T) -> R): (T) -> R {
+    var countdown = exceptionCount
+    return { if (countdown-- == 0) f(it) else raiseError() }
 }
