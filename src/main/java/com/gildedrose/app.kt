@@ -17,7 +17,7 @@ val stdOutAnalytics = loggingAnalytics(::println)
 val londonZoneId = ZoneId.of("Europe/London")
 
 data class App(
-    val port: Int = 8080,
+    val port: Int = 80,
     val stockFile: File = File("stock.tsv"),
     val features: Features = Features(),
     val pricing: (Item) -> Price? = ::noOpPricing,
