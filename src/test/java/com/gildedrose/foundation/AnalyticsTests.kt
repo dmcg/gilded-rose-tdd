@@ -2,6 +2,7 @@ package com.gildedrose.foundation
 
 import org.http4k.filter.TraceId
 import org.http4k.filter.ZipkinTraces
+import org.http4k.filter.ZipkinTracesStorage
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -32,11 +33,11 @@ class AnalyticsTests {
 data class TestEvent(val value: String) : AnalyticsEvent
 
 private fun withTraces(traces: ZipkinTraces, f: () -> Unit) {
-    val oldTraces = ZipkinTraces.forCurrentThread()
-    ZipkinTraces.setForCurrentThread(traces)
+    val oldTraces = ZipkinTracesStorage.THREAD_LOCAL.forCurrentThread()
+    ZipkinTracesStorage.THREAD_LOCAL.setForCurrentThread(traces)
     try {
         f()
     } finally {
-        ZipkinTraces.setForCurrentThread(oldTraces)
+        ZipkinTracesStorage.THREAD_LOCAL.setForCurrentThread(oldTraces)
     }
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import org.http4k.filter.ZipkinTraces
+import org.http4k.filter.ZipkinTracesStorage
 import java.time.Instant
 
 @Suppress("unused")
@@ -25,7 +25,7 @@ fun loggingAnalytics(
     objectMapper: ObjectMapper = loggingObjectMapper(),
     clock: () -> Instant = Instant::now
 ) : Analytics = { event: AnalyticsEvent ->
-    val traces = ZipkinTraces.forCurrentThread()
+    val traces = ZipkinTracesStorage.THREAD_LOCAL.forCurrentThread()
     val envelope = Envelope(
         clock(),
         traces.traceId.value,
