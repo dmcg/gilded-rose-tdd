@@ -1,9 +1,8 @@
 package com.gildedrose
 
-import com.gildedrose.domain.ID
-import com.gildedrose.domain.Item
-import com.gildedrose.domain.NonBlankString
-import com.gildedrose.domain.Quality
+import com.gildedrose.domain.*
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
 import java.time.LocalDate
 
 
@@ -26,5 +25,8 @@ fun testItem(
 )
 
 fun initialsFrom(name: String) = name.split(" ").map { it[0] }.joinToString("").uppercase()
+
+fun Item.withPrice(price: Price?) = this.withPrice(Success(price))
+fun Item.withPrice(price: Result<Price?, Exception>) = this.copy(price = price)
 
 val oct29: LocalDate = LocalDate.parse("2021-10-29")

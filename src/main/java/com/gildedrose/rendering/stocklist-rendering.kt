@@ -15,7 +15,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
-import java.util.Locale
+import java.util.*
 
 private val dateFormat: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.UK)
 private val handlebars = HandlebarsTemplates().HotReload("src/main/java")
@@ -24,8 +24,7 @@ private val view = Body.viewModel(handlebars, ContentType.TEXT_HTML).toLens()
 fun render(
     stockListResult: Result4k<StockList, StockListLoadingError>,
     now: Instant,
-    zoneId: ZoneId,
-    isPricingEnabled: Boolean
+    zoneId: ZoneId
 ): Response {
     val today = LocalDate.ofInstant(now, zoneId)
     return stockListResult.map { stockList ->
@@ -41,7 +40,6 @@ fun render(
                         }
                         item.toMap(today, priceString)
                     },
-                    isPricingEnabled = isPricingEnabled
                 )
         )
     }.recover { error ->
@@ -54,7 +52,6 @@ fun render(
 private data class StockListViewModel(
     val now: String,
     val items: List<Map<String, String>>,
-    val isPricingEnabled: Boolean
 ) : ViewModel
 
 private fun Item.toMap(now: LocalDate, priceString: String): Map<String, String> = mapOf(

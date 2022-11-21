@@ -19,7 +19,7 @@ import java.time.Instant
 fun routesFor(
     clock: () -> Instant,
     analytics: Analytics,
-    features: Features,
+    @Suppress("UNUSED_PARAMETER") features: Features,
     listing: (Instant) -> Result<StockList, StockListLoadingError>,
 ): HttpHandler =
     ServerFilters.RequestTracing()
@@ -31,7 +31,6 @@ fun routesFor(
                 "/" bind Method.GET to listHandler(
                     clock = clock,
                     zoneId = londonZoneId,
-                    isPricingEnabled = features.pricing,
                     listing = listing
                 ),
                 "/error" bind Method.GET to { error("deliberate") }

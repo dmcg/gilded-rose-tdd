@@ -8,6 +8,7 @@
         <th>Sell By Date</th>
         <th>Sell By Days</th>
         <th>Quality</th>
+        <th>Price</th>
     </tr>
     <tr>
         <td>B1</td>
@@ -15,6 +16,7 @@
         <td>8 February 2022</td>
         <td style="text-align: right">-1</td>
         <td style="text-align: right">42</td>
+        <td style="text-align: right"></td>
     </tr>
     <tr>
         <td>K1</td>
@@ -22,6 +24,7 @@
         <td>10 February 2022</td>
         <td style="text-align: right">1</td>
         <td style="text-align: right">101</td>
+        <td style="text-align: right"></td>
     </tr>
     <tr>
         <td>U1</td>
@@ -29,6 +32,7 @@
         <td></td>
         <td style="text-align: right">0</td>
         <td style="text-align: right">50</td>
+        <td style="text-align: right"></td>
     </tr>
     
     </table>

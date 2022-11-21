@@ -7,16 +7,16 @@
         <th>Name</th>
         <th>Sell By Date</th>
         <th>Sell By Days</th>
-        <th>Quality</th>{{#if isPricingEnabled}}
-        <th>Price</th>{{/if}}
+        <th>Quality</th>
+        <th>Price</th>
     </tr>
     {{#each this.items}}<tr>
         <td>{{id}}</td>
         <td>{{name}}</td>
         <td>{{sellByDate}}</td>
         <td style="text-align: right">{{sellByDays}}</td>
-        <td style="text-align: right">{{quality}}</td>{{#if isPricingEnabled}}
-        <td style="text-align: right">{{price}}</td>{{/if}}
+        <td style="text-align: right">{{quality}}</td>
+        <td style="text-align: right">{{price}}</td>
     </tr>
     {{/each}}
     </table>
