@@ -1,15 +1,16 @@
 package com.gildedrose
 
 import com.gildedrose.domain.Item
-import com.gildedrose.domain.Price
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.http.serverFor
 import com.gildedrose.persistence.Stock
 import com.gildedrose.persistence.StockListLoadingError
+import com.gildedrose.pricing.valueElfClient
 import dev.forkhandles.result4k.Result
 import java.io.File
+import java.net.URI
 import java.time.Instant
 import java.time.ZoneId
 
@@ -20,12 +21,16 @@ data class App(
     val port: Int = 80,
     val stockFile: File = File("stock.tsv"),
     val features: Features = Features(),
-    val pricing: (Item) -> Price? = ::noOpPricing,
+    val valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
     val clock: () -> Instant = Instant::now,
     val analytics: Analytics = stdOutAnalytics
 ) {
     private val stock = Stock(stockFile, londonZoneId, Item::updatedBy)
-    private val pricedLoader = PricedStockListLoader(stock::stockList, pricing, analytics)
+    private val pricedLoader = PricedStockListLoader(
+        loading = stock::stockList,
+        pricing = valueElfClient(valueElfUri),
+        analytics = analytics
+    )
     val routes = routesFor(
         clock = clock,
         analytics = analytics,
@@ -41,6 +46,3 @@ data class App(
         server.start()
     }
 }
-
-@Suppress("UNUSED_PARAMETER")
-fun noOpPricing(item: Item): Price? = null

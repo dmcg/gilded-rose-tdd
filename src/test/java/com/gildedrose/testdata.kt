@@ -29,4 +29,6 @@ fun initialsFrom(name: String) = name.split(" ").map { it[0] }.joinToString("").
 fun Item.withPrice(price: Price?) = this.withPrice(Success(price))
 fun Item.withPrice(price: Result<Price?, Exception>) = this.copy(price = price)
 
+fun StockList.withItems(vararg items: Item) = this.copy(items = items.toList())
+
 val oct29: LocalDate = LocalDate.parse("2021-10-29")
