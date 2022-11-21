@@ -9,6 +9,9 @@ fun main() {
         port = 8088,
         features = Features(pricing = true),
         pricing = retry(1, function = valueElfClient(URI.create("http://value-elf.com:8080/prices")))
-    ).start()
+    ).apply {
+        start()
+        println("Running test-main at http://localhost:$port/")
+    }
 }
 
