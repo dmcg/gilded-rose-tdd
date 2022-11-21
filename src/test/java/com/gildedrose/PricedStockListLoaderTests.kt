@@ -29,21 +29,19 @@ class PricedStockListLoaderTests {
                 testItem("undated", null, 50)
             )
         )
-        private val expectedPricedStockList = StockList(
-            lastModified = lastModified,
-            items = listOf(
-                testItem("banana", localdate("2022-02-08"), 42).copy(price = Success(Price(666))),
-                testItem("kumquat", localdate("2022-02-10"), 101).copy(price = Success(null)),
-                testItem("undated", null, 50).copy(price = Success(Price(999)))
-            )
+        private val expectedPricedStockList = loadedStockList.withItems(
+            loadedStockList[0].withPrice(Price(666)),
+            loadedStockList[1].withPrice(null),
+            loadedStockList[2].withPrice(Price(999))
         )
     }
 
     private val stockValues = mutableMapOf<Instant, StockLoadingResult>(
         sameDayAsLastModified to Success(loadedStockList)
     )
-    private val priceList = mutableMapOf<Item, (Item) ->Price?>(
+    private val priceList = mutableMapOf<Item, (Item) -> Price?>(
         loadedStockList[0] to { Price(666) },
+        loadedStockList[1] to { null },
         loadedStockList[2] to { Price(999) }
     )
     private val analyticsEvents = mutableListOf<AnalyticsEvent>()
