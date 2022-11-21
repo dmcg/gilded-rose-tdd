@@ -24,6 +24,7 @@ fun main() {
 }
 
 private fun pricingWithMultiplier(multiplier: Int): (ID<Item>, Quality) -> Price? = { id, quality ->
+    Thread.sleep(50)
     when {
         Random.nextDouble() > 0.95 -> error("Random failure")
         id.value.value == "banana" -> Price(709)!!
