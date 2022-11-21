@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 
-    implementation 'dev.forkhandles:result4k:2.2.0.0'
+    implementation 'dev.forkhandles:result4k:2.3.0.0'
 
     implementation platform('org.http4k:http4k-bom:4.33.3.0')
     implementation "org.http4k:http4k-core"
