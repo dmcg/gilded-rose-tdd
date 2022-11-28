@@ -8,7 +8,6 @@ import com.gildedrose.domain.Quality
 import com.gildedrose.http.serverFor
 import com.gildedrose.pricing.fakeValueElfRoutes
 import org.http4k.routing.reverseProxy
-import kotlin.random.Random
 
 /**
  * Starts a fake com.gildedrose.server for demos
@@ -26,7 +25,6 @@ fun main() {
 private fun pricingWithMultiplier(multiplier: Int): (ID<Item>, Quality) -> Price? = { id, quality ->
     Thread.sleep(100)
     when {
-        Random.nextDouble() > 0.95 -> error("Random failure")
         id.value.value == "banana" -> Price(709)!!
         id.toString() == "no-such" -> null
         else -> Price((id.value.length + 1 + quality.valueInt) * multiplier.toLong())!!
