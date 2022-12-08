@@ -24,6 +24,12 @@ class ParallelMapTests {
     private val listSize = 100
     private val threadPool = ForkJoinPool(50)
     private val sleepMs: Long = 25
+    private lateinit var testInfo: TestInfo
+
+    @BeforeEach
+    fun rememberName(testInfo: TestInfo) {
+        this.testInfo = testInfo
+    }
 
     @AfterEach
     fun shutDown() {
@@ -33,47 +39,47 @@ class ParallelMapTests {
     }
 
     @Test
-    fun `01 kotlin version`(testInfo: TestInfo) {
-        val parallelism = checkAndTime(testInfo) {
+    fun `01 kotlin version`() {
+        val parallelism = checkAndTime {
             map(it)
-        }
+        }.also(::printDouble)
         assertTrue(parallelism <= 1.0)
     }
 
     @Test
-    fun `02 parallel stream version`(testInfo: TestInfo) {
-        val parallelism = checkAndTime(testInfo) {
+    fun `02 parallel stream version`() {
+        val parallelism = checkAndTime {
             parallelMapStream(it)
-        }
+        }.also(::printDouble)
         assertTrue(parallelism > 1)
     }
 
     @Test
-    fun `03 parallel stream forkJoinPool version`(testInfo: TestInfo) {
-        val parallelism = checkAndTime(testInfo) {
+    fun `03 parallel stream forkJoinPool version`() {
+        val parallelism = checkAndTime {
             parallelMapStream(threadPool, it)
-        }
+        }.also(::printDouble)
         assertTrue(parallelism > 1)
     }
 
     @Test
-    fun `04 threads version`(testInfo: TestInfo) {
-        val parallelism = checkAndTime(testInfo) {
+    fun `04 threads version`() {
+        val parallelism = checkAndTime {
             parallelMapThreads(it)
-        }
+        }.also(::printDouble)
         assertTrue(parallelism > 1)
     }
 
     @Test
-    fun `05 threadPool version`(testInfo: TestInfo) {
-        val parallelism = checkAndTime(testInfo) {
+    fun `05 threadPool version`() {
+        val parallelism = checkAndTime {
             parallelMapThreadPool(threadPool, it)
-        }
+        }.also(::printDouble)
         assertTrue(parallelism > 1)
     }
 
     @Test
-    fun `06 coroutines version`(testInfo: TestInfo) {
+    fun `06 coroutines version`() {
         // Coroutines run quicker when warmed up
         runBlocking(threadPool.asCoroutineDispatcher()) {
             coroutineScope {
@@ -82,29 +88,28 @@ class ParallelMapTests {
                 }
             }
         }
-        val parallelism = checkAndTime(testInfo) {
+        val parallelism = checkAndTime {
             runBlocking(threadPool.asCoroutineDispatcher()) {
                 parallelMapCoroutines(it)
             }
-        }
+        }.also(::printDouble)
         assertTrue(parallelism > 1)
     }
 
     @Test
-    fun `07 coroutines delay version`(testInfo: TestInfo) {
-        val parallelism = checkAndTime(testInfo) {
+    fun `07 coroutines delay version`() {
+        val parallelism = checkAndTime {
             runBlocking {
                 parallelMapCoroutines {
                     delay(sleepMs)
                     it.length
                 }
             }
-        }
+        }.also(::printDouble)
         assertTrue(parallelism > 1)
     }
 
     private fun checkAndTime(
-        testInfo: TestInfo,
         mapFunction: List<String>.((String) -> Int) -> List<Int>
     ): Double {
         val totalSleepMs = listSize * sleepMs
@@ -119,8 +124,11 @@ class ParallelMapTests {
         assertEquals(2, output[9])
         assertEquals(2, output[98])
         assertEquals(3, output[99])
-        val parallelism = totalSleepMs / timeMs.toDouble()
-        return parallelism.also { println("${testInfo.displayName} : ${"%.1f".format(it)}") }
+        return totalSleepMs / timeMs.toDouble()
+    }
+
+    private fun printDouble(value: Double) {
+        println("${this.testInfo.displayName} : ${"%.1f".format(value)}")
     }
 }
 
