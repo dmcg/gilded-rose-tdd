@@ -8,6 +8,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
+import kotlin.math.sqrt
 import kotlin.streams.toList
 import kotlin.system.measureTimeMillis
 
@@ -40,76 +41,61 @@ class ParallelMapTests {
 
     @Test
     fun `01 kotlin version`() {
-        val parallelism = checkAndTime {
+        measureAndCheck {
             map(it)
-        }.also(::printDouble)
-        assertTrue(parallelism <= 1.0)
+        }.assertThat { it <= 1.0 }
     }
 
-    @Test
+    @RepeatedTest(10, name = RepeatedTest.LONG_DISPLAY_NAME)
     fun `02 parallel stream version`() {
-        val parallelism = checkAndTime {
+        measureAndCheck {
             parallelMapStream(it)
-        }.also(::printDouble)
-        assertTrue(parallelism > 1)
+        }.assertThat { it > 1 }
     }
 
-    @Test
+    @RepeatedTest(20, name = RepeatedTest.LONG_DISPLAY_NAME)
     fun `03 parallel stream forkJoinPool version`() {
-        val parallelism = checkAndTime {
+        measureAndCheck {
             parallelMapStream(threadPool, it)
-        }.also(::printDouble)
-        assertTrue(parallelism > 1)
+        }.assertThat { it > 1 }
     }
 
-    @Test
+    @RepeatedTest(20, name = RepeatedTest.LONG_DISPLAY_NAME)
     fun `04 threads version`() {
-        val parallelism = checkAndTime {
+        measureAndCheck {
             parallelMapThreads(it)
-        }.also(::printDouble)
-        assertTrue(parallelism > 1)
+        }.assertThat { it > 1 }
     }
 
-    @Test
+    @RepeatedTest(20, name = RepeatedTest.LONG_DISPLAY_NAME)
     fun `05 threadPool version`() {
-        val parallelism = checkAndTime {
+        measureAndCheck {
             parallelMapThreadPool(threadPool, it)
-        }.also(::printDouble)
-        assertTrue(parallelism > 1)
+        }.assertThat { it > 1 }
     }
 
-    @Test
+    @RepeatedTest(20, name = RepeatedTest.LONG_DISPLAY_NAME)
     fun `06 coroutines version`() {
-        // Coroutines run quicker when warmed up
-        runBlocking(threadPool.asCoroutineDispatcher()) {
-            coroutineScope {
-                for (i in 1..1000) {
-                    async { 1 }.await()
-                }
-            }
-        }
-        val parallelism = checkAndTime {
+        measureAndCheck {
             runBlocking(threadPool.asCoroutineDispatcher()) {
                 parallelMapCoroutines(it)
             }
-        }.also(::printDouble)
-        assertTrue(parallelism > 1)
+        }.assertThat { it > 1 }
     }
 
-    @Test
+    @RepeatedTest(20, name = RepeatedTest.LONG_DISPLAY_NAME)
     fun `07 coroutines delay version`() {
-        val parallelism = checkAndTime {
+        measureAndCheck {
             runBlocking {
                 parallelMapCoroutines {
                     delay(sleepMs)
                     it.length
                 }
             }
-        }.also(::printDouble)
-        assertTrue(parallelism > 1)
+        }.assertThat { it > 1 }
     }
 
-    private fun checkAndTime(
+    private fun measureAndCheck(
         mapFunction: List<String>.((String) -> Int) -> List<Int>
     ): Double {
         val totalSleepMs = listSize * sleepMs
@@ -124,13 +110,51 @@ class ParallelMapTests {
         assertEquals(2, output[9])
         assertEquals(2, output[98])
         assertEquals(3, output[99])
-        return totalSleepMs / timeMs.toDouble()
+        val throughput = totalSleepMs / timeMs.toDouble()
+        runs.add(testInfo to throughput)
+        return throughput
     }
 
-    private fun printDouble(value: Double) {
-        println("${this.testInfo.displayName} : ${"%.1f".format(value)}")
+    companion object {
+        private val runs = mutableListOf<Pair<TestInfo, Double>>()
+
+        @JvmStatic
+        @AfterAll
+        fun report() {
+            runs.toNameAndThroughput().forEach { (name, throughput) ->
+                println("$name : ${throughput.first.toOneDP()} [${throughput.second.toOneDP()}]")
+            }
+        }
     }
 }
+
+private fun List<Pair<TestInfo, Double>>.toNameAndThroughput() = map { (testInfo, throughput) ->
+    testInfo.displayName.split("() :: ")[0] to throughput
+}.groupBy(
+    keySelector = { it.first },
+    valueTransform = { it.second }
+).map { (name, throughputs) ->
+    name to throughputs.culledMeanAndDeviation()
+}
+
+private fun <T> T.assertThat(f: (T) -> Boolean): T = this.also {
+    assertTrue(f(this))
+}
+
+private fun List<Double>.culledMeanAndDeviation(): Pair<Double, Double> = when {
+    isEmpty() -> Double.NaN to Double.NaN
+    size == 1 || size == 2 -> this.meanAndDeviation()
+    else -> sorted().subList(1, size - 1).meanAndDeviation()
+}
+
+private fun List<Double>.meanAndDeviation(): Pair<Double, Double> {
+    val mean = sum() / size
+    return mean to sqrt(fold(0.0) { acc, value -> acc + (value - mean).squared() } / size)
+}
+
+private fun Double.toOneDP() = "%.1f".format(this)
+
+private fun Double.squared() = this * this
 
 fun <T, R> List<T>.parallelMapStream(f: (T) -> R) =
     stream().parallel().map(f).toList()
@@ -153,14 +177,14 @@ fun <T, R> Iterable<T>.parallelMapThreads(f: (T) -> R): List<R> =
         result.get()
     }
 
-fun <T, R> List<T>.parallelMapThreadPool(threadPool: ExecutorService, f: (T) -> R) =
+fun <T, R> Iterable<T>.parallelMapThreadPool(threadPool: ExecutorService, f: (T) -> R) =
     this.map {
         threadPool.submit(Callable { f(it) })
     }.map { future ->
         future.get()
     }
 
-suspend fun <T, R> List<T>.parallelMapCoroutines(f: suspend (T) -> R) =
+suspend fun <T, R> Iterable<T>.parallelMapCoroutines(f: suspend (T) -> R) =
     coroutineScope {
         map {
             async { f(it) }
