@@ -1,5 +1,9 @@
 package com.gildedrose.foundation
 
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result4k
+import dev.forkhandles.result4k.Success
+import dev.forkhandles.result4k.orThrow
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -22,13 +26,17 @@ fun <T, R> List<T>.parallelMapStream(
 
 fun <T, R> Iterable<T>.parallelMapThreads(f: (T) -> R): List<R> =
     this.map {
-        val result = AtomicReference<R>()
+        val result = AtomicReference<Result4k<R, Throwable>>()
         thread {
-            result.set(f(it))
+            try {
+                result.set(Success(f(it)))
+            } catch (t: Throwable) {
+                result.set(Failure(t))
+            }
         } to result
     }.map { (thread, result) ->
         thread.join()
-        result.get()
+        result.get().orThrow()
     }
 
 fun <T, R> Iterable<T>.parallelMapThreadPool(threadPool: ExecutorService, f: (T) -> R) =
