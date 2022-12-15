@@ -17,7 +17,6 @@ import kotlin.streams.toList
 fun <T, R> List<T>.parallelMapStream(f: (T) -> R) =
     stream().parallel().map(f).toList()
 
-
 fun <T, R> List<T>.parallelMapStream(
     pool: ForkJoinPool,
     f: (T) -> R

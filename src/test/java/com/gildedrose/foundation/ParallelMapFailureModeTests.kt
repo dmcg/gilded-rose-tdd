@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
 
 
@@ -12,7 +13,7 @@ import kotlin.random.Random
 class ParallelMapFailureModeTests {
 
     private val listSize = 100
-    private val threadPool = ForkJoinPool(50)
+    private val threadPool = ForkJoinPool(10)
     private lateinit var testInfo: TestInfo
 
     @BeforeEach
@@ -86,14 +87,17 @@ class ParallelMapFailureModeTests {
         mapFunction: List<String>.((String) -> Int) -> List<Int>
     ) {
         val input = (1..listSize).map { it.toString() }
+        val invocationCount = AtomicInteger()
         try {
             input.mapFunction {
+                invocationCount.addAndGet(1)
                 Thread.sleep(Random.nextLong(50))
                 error("error for $it")
             }
             fail("shouldn't be here")
         } catch (x: Exception) {
-            println("${testInfo.displayName} : $x")
+            Thread.sleep(1000)
+            println("${testInfo.displayName} : $x, invocation count ${invocationCount.get()}")
         }
     }
 
