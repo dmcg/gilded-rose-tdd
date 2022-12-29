@@ -8,9 +8,18 @@ import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.filter.ResponseFilters
 import org.http4k.filter.ServerFilters
+import java.time.Duration
 
-fun reportHttpTransactions(analytics: Analytics) = ResponseFilters.ReportHttpTransaction(
-    recordFn = { analytics(HttpEvent(it)) }
+fun reportHttpTransactions(
+    slowTransactionDuration: Duration,
+    analytics: Analytics
+) = ResponseFilters.ReportHttpTransaction(
+    recordFn = { transaction ->
+        analytics(HttpEvent(transaction))
+        if (transaction.duration > slowTransactionDuration) {
+            analytics(SlowHttpEvent(transaction))
+        }
+    }
 )
 
 fun catchAll(analytics: Analytics) = ServerFilters.CatchAll {
@@ -19,6 +28,20 @@ fun catchAll(analytics: Analytics) = ServerFilters.CatchAll {
 }
 
 data class HttpEvent(
+    val uri: String,
+    val method: String,
+    val status: Int,
+    val latency: Long,
+) : AnalyticsEvent {
+    constructor(tx: HttpTransaction) : this(
+        tx.request.uri.toString(),
+        tx.request.method.toString(),
+        tx.response.status.code,
+        tx.duration.toMillis(),
+    )
+}
+
+data class SlowHttpEvent(
     val uri: String,
     val method: String,
     val status: Int,
