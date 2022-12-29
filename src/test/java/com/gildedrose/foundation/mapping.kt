@@ -4,9 +4,6 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.orThrow
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ForkJoinPool
@@ -44,11 +41,3 @@ fun <T, R> Iterable<T>.parallelMapThreadPool(threadPool: ExecutorService, f: (T)
     }.map { future ->
         future.get()
     }
-
-suspend fun <T, R> Iterable<T>.parallelMapCoroutines(f: suspend (T) -> R) =
-    coroutineScope {
-        map {
-            async { f(it) }
-        }.awaitAll()
-    }
-

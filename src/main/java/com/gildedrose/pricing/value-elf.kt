@@ -4,6 +4,8 @@ import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.Quality
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager
 import org.http4k.client.ApacheClient
 import org.http4k.core.*
 import org.http4k.lens.*
@@ -11,7 +13,17 @@ import org.http4k.routing.bind
 import org.http4k.routing.routes
 import java.net.URI
 
-fun valueElfClient(uri: URI): (Item) -> Price? = valueElfClient(uri, ApacheClient())
+fun valueElfClient(uri: URI): (Item) -> Price? = valueElfClient(uri, valueElfHttpClient(30))
+
+private fun valueElfHttpClient(simultaneousConnections: Int) = ApacheClient(
+    HttpClientBuilder.create().setConnectionManager(
+        PoolingHttpClientConnectionManager().apply {
+            maxTotal = simultaneousConnections
+            defaultMaxPerRoute = simultaneousConnections
+        }
+    ).build()
+)
+
 
 fun valueElfClient(
     uri: URI,

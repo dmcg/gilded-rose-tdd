@@ -5,13 +5,17 @@ import com.gildedrose.domain.Price
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.UncaughtExceptionEvent
+import com.gildedrose.foundation.parallelMapCoroutines
 import com.gildedrose.foundation.retry
 import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
 import dev.forkhandles.result4k.peekFailure
 import dev.forkhandles.result4k.resultFrom
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import java.time.Instant
+import java.util.concurrent.Executors
 
 typealias StockLoadingResult = Result<StockList, StockListLoadingError>
 
@@ -21,6 +25,7 @@ class PricedStockListLoader(
     private val analytics: Analytics
 ) {
     private val retryingPricing = retry(1, reporter = ::reportException, pricing)
+    private val threadPool = Executors.newFixedThreadPool(30)
 
     fun load(now: Instant): StockLoadingResult =
         loading(now).map {
@@ -30,7 +35,9 @@ class PricedStockListLoader(
     private fun StockList.pricedBy(
         pricing: (Item) -> Price?
     ): StockList =
-        this.copy(items = items.map { it.pricedBy(pricing) })
+        runBlocking(threadPool.asCoroutineDispatcher()) {
+            copy(items = items.parallelMapCoroutines { it.pricedBy(pricing) })
+        }
 
     private fun Item.pricedBy(
         pricing: (Item) -> Price?
