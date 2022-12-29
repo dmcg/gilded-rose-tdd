@@ -23,7 +23,9 @@ class PricedStockListLoader(
     private val retryingPricing = retry(1, reporter = ::reportException, pricing)
 
     fun load(now: Instant): StockLoadingResult =
-        loading(now).map { it.pricedBy(retryingPricing) }
+        loading(now).map {
+            it.pricedBy(retryingPricing)
+        }
 
     private fun StockList.pricedBy(
         pricing: (Item) -> Price?
