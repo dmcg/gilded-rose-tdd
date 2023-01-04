@@ -1,19 +1,21 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.0'
 }
 
 repositories {
     mavenCentral()
 }
 
+ext.junitVersion = '5.9.1'
+ext.jacksonVersion = '2.14.1'
+
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
     implementation 'dev.forkhandles:result4k:2.3.0.0'
 
-    implementation platform('org.http4k:http4k-bom:4.33.3.0')
+    implementation platform('org.http4k:http4k-bom:4.35.3.0')
     implementation "org.http4k:http4k-core"
     implementation "org.http4k:http4k-server-undertow"
     implementation "org.http4k:http4k-client-apache"
@@ -22,15 +24,15 @@ dependencies {
 
     implementation 'org.slf4j:slf4j-jdk14:1.7.36'
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0'
-    implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.14.0'
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.3"
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0'
+    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion"
+    implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     testImplementation "org.http4k:http4k-testing-approval"
     testImplementation "org.http4k:http4k-testing-hamkrest"
     testImplementation("io.strikt:strikt-core:0.34.1")
