@@ -32,7 +32,7 @@ class ReportHttpTransactionsTests {
     }
 
     @Test
-    fun `reports slow transactions to analytics`() {
+    fun `reports slow transactions to analytics with an additional event`() {
         filter.then {
             Thread.sleep(25)
             Response(OK)
