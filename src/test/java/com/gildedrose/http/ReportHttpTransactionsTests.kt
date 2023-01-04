@@ -1,14 +1,14 @@
 package com.gildedrose.http
 
-import com.gildedrose.testing.assertAll
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.then
 import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.*
 import java.time.Duration
-import kotlin.test.assertEquals
 
 class ReportHttpTransactionsTests {
 
@@ -22,12 +22,15 @@ class ReportHttpTransactionsTests {
         filter.then {
             Response(OK)
         }.invoke(Request(GET, "/"))
-        assertAll(
-            events.single() as HttpEvent,
-            { assertEquals("/", uri) },
-            { assertEquals(GET.toString(), method) },
-            { assertEquals(OK.code, status) },
-        )
+        expectThat(events)
+            .hasSize(1)
+            .withFirst {
+                isA<HttpEvent>().and {
+                    get(HttpEvent::uri).isEqualTo("/")
+                    get(HttpEvent::method).isEqualTo(GET.toString())
+                    get(HttpEvent::status).isEqualTo(OK.code)
+                }
+            }
     }
 
     @Test
@@ -36,17 +39,21 @@ class ReportHttpTransactionsTests {
             Thread.sleep(25)
             Response(OK)
         }.invoke(Request(GET, "/"))
-        assertAll(
-            events.first() as HttpEvent,
-            { assertEquals("/", uri) },
-            { assertEquals(GET.toString(), method) },
-            { assertEquals(OK.code, status) },
-        )
-        assertAll(
-            events[1] as SlowHttpEvent,
-            { assertEquals("/", uri) },
-            { assertEquals(GET.toString(), method) },
-            { assertEquals(OK.code, status) },
-        )
+        expectThat(events)
+            .hasSize(2)
+            .withFirst {
+                isA<HttpEvent>().and {
+                    get(HttpEvent::uri).isEqualTo("/")
+                    get(HttpEvent::method).isEqualTo(GET.toString())
+                    get(HttpEvent::status).isEqualTo(OK.code)
+                }
+            }
+            .withElementAt(1) {
+                isA<SlowHttpEvent>().and {
+                    get(SlowHttpEvent::uri).isEqualTo("/")
+                    get(SlowHttpEvent::method).isEqualTo(GET.toString())
+                    get(SlowHttpEvent::status).isEqualTo(OK.code)
+                }
+            }
     }
 }
