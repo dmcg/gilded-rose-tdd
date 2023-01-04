@@ -3,6 +3,9 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.0'
 }
 
+group = 'com.gildedrose'
+version = '0.0.1-SNAPSHOT'
+
 repositories {
     mavenCentral()
 }
@@ -11,18 +14,17 @@ ext.junitVersion = '5.9.1'
 ext.jacksonVersion = '2.14.1'
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    implementation "dev.forkhandles:result4k:2.3.0.0"
+    implementation "org.slf4j:slf4j-jdk14:1.7.36"
 
-    implementation 'dev.forkhandles:result4k:2.3.0.0'
-
-    implementation platform('org.http4k:http4k-bom:4.35.3.0')
+    implementation platform("org.http4k:http4k-bom:4.35.3.0")
     implementation "org.http4k:http4k-core"
     implementation "org.http4k:http4k-server-undertow"
     implementation "org.http4k:http4k-client-apache"
     implementation "org.http4k:http4k-template-handlebars"
     implementation "org.http4k:http4k-client-apache"
 
-    implementation 'org.slf4j:slf4j-jdk14:1.7.36'
 
     implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion"
@@ -33,24 +35,22 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+
     testImplementation "org.http4k:http4k-testing-approval"
     testImplementation "org.http4k:http4k-testing-hamkrest"
-    testImplementation("io.strikt:strikt-core:0.34.1")
 }
-
-group = 'com.gildedrose'
-version = '0.0.1-SNAPSHOT'
 
 test {
     useJUnitPlatform()
 }
+
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "15"
     }
 }
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "15"
     }
 }
