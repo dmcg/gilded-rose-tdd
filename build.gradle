@@ -47,13 +47,9 @@ test {
     useJUnitPlatform()
 }
 
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "15"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "15"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(19)
     }
 }
