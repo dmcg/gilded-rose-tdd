@@ -24,9 +24,9 @@ class PricedStockListLoaderTests {
         private val loadedStockList = StockList(
             lastModified = lastModified,
             items = listOf(
-                testItem("banana", localdate("2022-02-08"), 42),
-                testItem("kumquat", localdate("2022-02-10"), 101),
-                testItem("undated", null, 50)
+                item("banana", localdate("2022-02-08"), 42),
+                item("kumquat", localdate("2022-02-10"), 101),
+                item("undated", null, 50)
             )
         )
         private val expectedPricedStockList = loadedStockList.withItems(

@@ -34,9 +34,9 @@ class ListStockTests {
         private val stockList = StockList(
             lastModified = lastModified,
             items = listOf(
-                testItem("banana", localDate("2022-02-08"), 42),
-                testItem("kumquat", localDate("2022-02-10"), 101),
-                testItem("undated", null, 50)
+                item("banana", localDate("2022-02-08"), 42),
+                item("kumquat", localDate("2022-02-10"), 101),
+                item("undated", null, 50)
             )
         )
         private val valueElfPricing = { id: ID<Item>, quality: Quality ->

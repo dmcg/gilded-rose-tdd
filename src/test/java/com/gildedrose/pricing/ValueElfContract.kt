@@ -2,7 +2,7 @@ package com.gildedrose.pricing
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
-import com.gildedrose.testItem
+import com.gildedrose.item
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import org.http4k.core.*
@@ -26,8 +26,8 @@ abstract class ValueElfContract(
         val uri: URI,
         val handler: HttpHandler,
         val expectedPrice: Price,
-        val aFoundItem: Item = testItem("banana", "doesn't matter", now(), 9),
-        val aNotFoundItem: Item = testItem("no-such", "doesn't matter", now(), 9)
+        val aFoundItem: Item = item("banana", "doesn't matter", now(), 9),
+        val aNotFoundItem: Item = item("no-such", "doesn't matter", now(), 9)
     ) {
         val client = valueElfClient(uri, handler)
     }
