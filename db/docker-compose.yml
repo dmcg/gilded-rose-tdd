@@ -1,0 +1,19 @@
+version: '3'
+services:
+    local-database:
+        image: "postgres:15.2"
+        env_file:
+            - postgres.env # configure postgres
+        ports:
+            - "5432:5432"
+        volumes:
+            - pg-volume:/var/lib/postgresql/data/
+    test-database:
+        image: "postgres:15.2"
+        env_file:
+            - postgres.env
+        ports:
+            - "5433:5432"
+        # no volumes for test
+volumes:
+    pg-volume: {}
