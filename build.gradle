@@ -12,6 +12,7 @@ repositories {
 
 ext.junitVersion = '5.9.1'
 ext.jacksonVersion = '2.14.1'
+ext.exposedVersion = '0.41.1'
 
 dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
@@ -25,12 +26,17 @@ dependencies {
     implementation "org.http4k:http4k-template-handlebars"
     implementation "org.http4k:http4k-client-apache"
 
-
     implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
+
+    implementation "org.jetbrains.exposed:exposed-core:$exposedVersion"
+    implementation "org.jetbrains.exposed:exposed-jdbc:$exposedVersion"
+    implementation "org.jetbrains.exposed:exposed-java-time:$exposedVersion"
+    implementation "org.postgresql:postgresql:42.5.3"
+    implementation "com.zaxxer:HikariCP:5.0.1"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
