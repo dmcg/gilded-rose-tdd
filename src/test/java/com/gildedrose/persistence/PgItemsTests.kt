@@ -23,12 +23,12 @@ val dataSource = PGSimpleDataSource().apply {
 }
 val database = Database.connect(dataSource)
 
-class ItemsTests {
+class PgItemsTests {
 
     val item1 = item("id-1", "name", LocalDate.of(2023, 2, 14), 42)
     val item2 = item("id-2", "another name", null, 99)
 
-    val items = Items()
+    val items = PgItems()
 
     @BeforeEach
     fun resetDB() {
@@ -40,7 +40,7 @@ class ItemsTests {
 
     @Test
     fun `add item`() {
-        val items = Items()
+        val items = PgItems()
         transaction(database) {
             expectThat(items.all()).isEmpty()
         }
@@ -93,7 +93,7 @@ class ItemsTests {
     }
 }
 
-class Items {
+class PgItems {
 
     fun all(): List<Item> {
         return ItemsTable.all()

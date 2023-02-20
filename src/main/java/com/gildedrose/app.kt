@@ -6,6 +6,7 @@ import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.http.serverFor
 import com.gildedrose.persistence.Stock
+import com.gildedrose.persistence.StockFileItems
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.pricing.valueElfClient
 import dev.forkhandles.result4k.Result
@@ -25,7 +26,11 @@ data class App(
     val clock: () -> Instant = Instant::now,
     val analytics: Analytics = stdOutAnalytics
 ) {
-    private val stock = Stock(stockFile, londonZoneId, Item::updatedBy)
+    private val stock = Stock(
+        StockFileItems(stockFile),
+        londonZoneId,
+        itemUpdate = Item::updatedBy
+    )
     private val pricedLoader = PricedStockListLoader(
         loading = stock::stockList,
         pricing = valueElfClient(valueElfUri),

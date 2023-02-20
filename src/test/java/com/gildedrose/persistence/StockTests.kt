@@ -30,9 +30,10 @@ class StockTests {
     )
 
     private val stock = Stock(
-        stockFile = fixture.stockFile,
-        zoneId = ZoneId.of("Europe/London")
-    ) { days, _ -> this.copy(quality = this.quality - days) }
+        StockFileItems(stockFile = fixture.stockFile),
+        zoneId = ZoneId.of("Europe/London"),
+        itemUpdate = { days, _ -> this.copy(quality = this.quality - days) }
+    )
 
     @Test
     fun `loads stock from file`() {
