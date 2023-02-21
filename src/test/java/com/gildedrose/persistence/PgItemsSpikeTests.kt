@@ -33,8 +33,8 @@ class PgItemsTests {
     @BeforeEach
     fun resetDB() {
         transaction(database) {
-            SchemaUtils.drop(ItemsTable)
-            SchemaUtils.createMissingTablesAndColumns(ItemsTable)
+            SchemaUtils.drop(PgItems.ItemsTable)
+            SchemaUtils.createMissingTablesAndColumns(PgItems.ItemsTable)
         }
     }
 
@@ -122,34 +122,38 @@ class PgItems {
         }
         check(rowsChanged == 1)
     }
-}
 
-object ItemsTable : Table() {
-    val id: Column<String> = varchar("id", 100)
-    val name: Column<String> = varchar("name", 100)
-    val sellByDate: Column<LocalDate?> = date("sellByDate").nullable()
-    val quality: Column<Int> = integer("quality")
-}
-
-fun ItemsTable.insert(item: Item) {
-    insert {
-        it[id] = item.id.toString()
-        it[name] = item.name.toString()
-        it[sellByDate] = item.sellByDate
-        it[quality] = item.quality.valueInt
+    object ItemsTable : Table() {
+        val id: Column<String> = varchar("id", 100)
+        val name: Column<String> = varchar("name", 100)
+        val sellByDate: Column<LocalDate?> = date("sellByDate").nullable()
+        val quality: Column<Int> = integer("quality")
     }
+    fun ItemsTable.insert(item: Item) {
+        insert {
+            it[id] = item.id.toString()
+            it[name] = item.name.toString()
+            it[sellByDate] = item.sellByDate
+            it[quality] = item.quality.valueInt
+        }
+    }
+
+    fun ItemsTable.all() = selectAll().map {
+        it.toItem()
+    }
+
+    private fun ResultRow.toItem() =
+        Item(
+            ID(this[ItemsTable.id]) ?: error("Could not parse id ${this[ItemsTable.id]}"),
+            NonBlankString(this[ItemsTable.name]) ?: error("Invalid name ${this[ItemsTable.name]}"),
+            this[ItemsTable.sellByDate],
+            Quality(this[ItemsTable.quality]) ?: error("Invalid quality ${this[ItemsTable.quality]}")
+        )
+
 }
 
-fun ItemsTable.all() = selectAll().map {
-    it.toItem()
-}
 
-private fun ResultRow.toItem() =
-    Item(
-        ID(this[ItemsTable.id]) ?: error("Could not parse id ${this[ItemsTable.id]}"),
-        NonBlankString(this[ItemsTable.name]) ?: error("Invalid name ${this[ItemsTable.name]}"),
-        this[ItemsTable.sellByDate],
-        Quality(this[ItemsTable.quality]) ?: error("Invalid quality ${this[ItemsTable.quality]}")
-    )
+
+
 
 
