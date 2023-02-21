@@ -1,8 +1,6 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.App
 import com.gildedrose.domain.StockList
-import com.gildedrose.fixture
 import com.gildedrose.item
 import com.gildedrose.oct29
 import dev.forkhandles.result4k.valueOrNull
@@ -24,13 +22,10 @@ class StockTests {
             item("kumquat", oct29.plusDays(1), 101)
         )
     )
-    private val fixture = App().fixture(
-        now = initialStockList.lastModified,
-        initialStockList = initialStockList
-    )
+    private val items = InMemoryItems(initialStockList)
 
     private val stock = Stock(
-        StockFileItems(stockFile = fixture.stockFile),
+        items,
         zoneId = ZoneId.of("Europe/London"),
         itemUpdate = { days, _ -> this.copy(quality = this.quality - days) }
     )
@@ -52,7 +47,7 @@ class StockTests {
             )
         )
         assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
-        assertEquals(expectedUpdatedResult, fixture.load())
+        assertEquals(expectedUpdatedResult, items.load().valueOrNull())
     }
 
     @Test
@@ -66,14 +61,14 @@ class StockTests {
             )
         )
         assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
-        assertEquals(expectedUpdatedResult, fixture.load())
+        assertEquals(expectedUpdatedResult, items.load().valueOrNull())
     }
 
     @Test
     fun `does not update stock if modified tomorrow`() {
         val now = Instant.parse("2022-02-08T00:00:01Z")
         assertEquals(initialStockList, stock.stockList(now).valueOrNull())
-        assertEquals(initialStockList, fixture.load())
+        assertEquals(initialStockList, items.load().valueOrNull())
     }
 
     @Test
