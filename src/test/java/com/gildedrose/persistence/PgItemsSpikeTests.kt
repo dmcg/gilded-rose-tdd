@@ -33,8 +33,8 @@ class PgItemsTests {
     @BeforeEach
     fun resetDB() {
         transaction(database) {
-            SchemaUtils.drop(PgItems.ItemsTable)
-            SchemaUtils.createMissingTablesAndColumns(PgItems.ItemsTable)
+            SchemaUtils.drop(PgItems.SpikeItems)
+            SchemaUtils.createMissingTablesAndColumns(PgItems.SpikeItems)
         }
     }
 
@@ -96,15 +96,15 @@ class PgItemsTests {
 class PgItems {
 
     fun all(): List<Item> {
-        return ItemsTable.all()
+        return SpikeItems.all()
     }
 
     fun add(item: Item) {
-        ItemsTable.insert(item)
+        SpikeItems.insert(item)
     }
 
     fun findById(id: ID<Item>): Item? {
-        val items =  ItemsTable.select { ItemsTable.id eq id.toString() }.map {
+        val items =  SpikeItems.select { SpikeItems.id eq id.toString() }.map {
             it.toItem()
         }
         if (items.size > 1)
@@ -114,7 +114,7 @@ class PgItems {
     }
 
     fun update(item: Item) {
-        val rowsChanged = ItemsTable.update({ItemsTable.id eq item.id.toString()}) {
+        val rowsChanged = SpikeItems.update({SpikeItems.id eq item.id.toString()}) {
             it[id] = item.id.toString()
             it[name] = item.name.toString()
             it[sellByDate] = item.sellByDate
@@ -123,13 +123,13 @@ class PgItems {
         check(rowsChanged == 1)
     }
 
-    object ItemsTable : Table() {
+    object SpikeItems : Table() {
         val id: Column<String> = varchar("id", 100)
         val name: Column<String> = varchar("name", 100)
         val sellByDate: Column<LocalDate?> = date("sellByDate").nullable()
         val quality: Column<Int> = integer("quality")
     }
-    fun ItemsTable.insert(item: Item) {
+    fun SpikeItems.insert(item: Item) {
         insert {
             it[id] = item.id.toString()
             it[name] = item.name.toString()
@@ -138,16 +138,16 @@ class PgItems {
         }
     }
 
-    fun ItemsTable.all() = selectAll().map {
+    fun SpikeItems.all() = selectAll().map {
         it.toItem()
     }
 
     private fun ResultRow.toItem() =
         Item(
-            ID(this[ItemsTable.id]) ?: error("Could not parse id ${this[ItemsTable.id]}"),
-            NonBlankString(this[ItemsTable.name]) ?: error("Invalid name ${this[ItemsTable.name]}"),
-            this[ItemsTable.sellByDate],
-            Quality(this[ItemsTable.quality]) ?: error("Invalid quality ${this[ItemsTable.quality]}")
+            ID(this[SpikeItems.id]) ?: error("Could not parse id ${this[SpikeItems.id]}"),
+            NonBlankString(this[SpikeItems.name]) ?: error("Invalid name ${this[SpikeItems.name]}"),
+            this[SpikeItems.sellByDate],
+            Quality(this[SpikeItems.quality]) ?: error("Invalid quality ${this[SpikeItems.quality]}")
         )
 
 }
