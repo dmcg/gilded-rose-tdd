@@ -6,12 +6,12 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.BeforeEach
 
 class DatabaseItemsTests :
-    ItemsContract(DatabaseItems(database))
+    ItemsContract(DatabaseItems(testDatabase))
 {
 
     @BeforeEach
     fun resetDB() {
-        transaction(database) {
+        transaction(testDatabase) {
             drop(DatabaseItems.ItemsTable)
             createMissingTablesAndColumns(DatabaseItems.ItemsTable)
         }

@@ -10,18 +10,10 @@ import org.jetbrains.exposed.sql.javatime.date
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.postgresql.ds.PGSimpleDataSource
 import strikt.api.expectCatching
 import strikt.api.expectThat
 import strikt.assertions.*
 import java.time.LocalDate
-
-val dataSource = PGSimpleDataSource().apply {
-    user = "gilded"
-    password = "rose"
-    databaseName = "gilded-rose"
-}
-val database = Database.connect(dataSource)
 
 class PgItemsTests {
 
@@ -32,7 +24,7 @@ class PgItemsTests {
 
     @BeforeEach
     fun resetDB() {
-        transaction(database) {
+        transaction(testDatabase) {
             SchemaUtils.drop(PgItems.SpikeItems)
             SchemaUtils.createMissingTablesAndColumns(PgItems.SpikeItems)
         }
@@ -41,11 +33,11 @@ class PgItemsTests {
     @Test
     fun `add item`() {
         val items = PgItems()
-        transaction(database) {
+        transaction(testDatabase) {
             expectThat(items.all()).isEmpty()
         }
 
-        transaction(database) {
+        transaction(testDatabase) {
             items.add(item1)
             items.add(item2)
             expectThat(items.all())
@@ -55,12 +47,12 @@ class PgItemsTests {
 
     @Test
     fun findById() {
-        transaction(database) {
+        transaction(testDatabase) {
             items.add(item1)
             items.add(item2)
         }
 
-        transaction(database) {
+        transaction(testDatabase) {
             expectThat(items.findById(ID("no-such-id")!!))
                 .isNull()
             expectThat(items.findById(ID("id-1")!!))
@@ -70,22 +62,22 @@ class PgItemsTests {
 
     @Test
     fun update() {
-        transaction(database) {
+        transaction(testDatabase) {
             items.add(item1)
             items.add(item2)
         }
 
         val revisedItem = item1.copy(name = NonBlankString("new name")!!)
-        transaction(database) {
+        transaction(testDatabase) {
             items.update(revisedItem)
         }
 
-        transaction(database) {
+        transaction(testDatabase) {
             expectThat(items.findById(item1.id))
                 .isEqualTo(revisedItem)
         }
 
-        transaction(database) {
+        transaction(testDatabase) {
             expectCatching {
                 items.update(item1.copy(id = ID("no-such")!!))
             }.isFailure().isA<IllegalStateException>()
