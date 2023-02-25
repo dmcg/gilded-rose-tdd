@@ -5,9 +5,12 @@ import org.jetbrains.exposed.sql.SchemaUtils.drop
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.BeforeEach
 
-class DatabaseItemsTests :
-    ItemsContract(DatabaseItems(testDatabase))
-{
+class DatabaseItemsTests : ItemsContract<ExposedTx>(
+    items = DatabaseItems(),
+    inTransaction = object : InTransaction<ExposedTx> {
+        override fun <R> invoke(block: context(ExposedTx) () -> R): R = inExposedTransaction(testDatabase, block)
+    }
+) {
 
     @BeforeEach
     fun resetDB() {

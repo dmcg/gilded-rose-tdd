@@ -10,35 +10,39 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.LocalDate
 
-class DatabaseItems(
-    private val database: Database
-) : Items {
+sealed interface ExposedTx
 
-    override fun save(
+private object ExposedEvidence : ExposedTx
+
+fun <R> inExposedTransaction(database: Database, block: context(ExposedTx) () -> R): R =
+    transaction(database) {
+        block(ExposedEvidence)
+    }
+
+class DatabaseItems : Items<ExposedTx> {
+
+    context(ExposedTx) override fun save(
         stockList: StockList
-    ): Result<StockList, StockListLoadingError.IO> =
-        transaction(database) {
-            stockList.items.forEach { item ->
-                ItemsTable.insert {
-                    it[id] = item.id.toString()
-                    it[modified] = stockList.lastModified
-                    it[name] = item.name.toString()
-                    it[sellByDate] = item.sellByDate
-                    it[quality] = item.quality.valueInt
-                }
+    ): Result<StockList, StockListLoadingError.IO> {
+        stockList.items.forEach { item ->
+            ItemsTable.insert {
+                it[id] = item.id.toString()
+                it[modified] = stockList.lastModified
+                it[name] = item.name.toString()
+                it[sellByDate] = item.sellByDate
+                it[quality] = item.quality.valueInt
             }
-            Success(stockList)
         }
+        return Success(stockList)
+    }
 
-    override fun load()
+    context(ExposedTx) override fun load()
         : Result<StockList, StockListLoadingError> =
         // select * from items where modified = (select max(modified) from items)
-        transaction(database) {
-            getLastUpdate()?.let { lastUpdate ->
-                val items = allItemsUpdatedAt(lastUpdate)
-                Success(StockList(lastUpdate, items))
-            } ?: Success(StockList(Instant.EPOCH, emptyList()))
-        }
+        getLastUpdate()?.let { lastUpdate ->
+            val items = allItemsUpdatedAt(lastUpdate)
+            Success(StockList(lastUpdate, items))
+        } ?: Success(StockList(Instant.EPOCH, emptyList()))
 
     private fun getLastUpdate() = ItemsTable
         .slice(ItemsTable.modified.max())
