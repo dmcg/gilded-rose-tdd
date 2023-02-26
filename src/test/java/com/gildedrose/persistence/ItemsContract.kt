@@ -8,8 +8,9 @@ import org.junit.jupiter.api.Test
 import java.time.Instant
 import kotlin.test.assertEquals
 
-abstract class ItemsContract(
-    val items: Items
+abstract class ItemsContract<TX>(
+    val items: Items<TX>,
+    val inTransaction: (block: context(TX) () -> Unit) -> Unit
 ) {
     private val initialStockList = StockList(
         lastModified = Instant.parse("2022-02-09T23:59:59Z"),
@@ -21,33 +22,37 @@ abstract class ItemsContract(
 
     @Test
     fun `returns empty stocklist before any save`() {
-        assertEquals(
-            Success(
-                StockList(
-                    lastModified = Instant.EPOCH,
-                    items = emptyList()
-                )
-            ),
-            items.load()
-        )
+        items.inTransaction {
+            assertEquals(
+                Success(
+                    StockList(
+                        lastModified = Instant.EPOCH,
+                        items = emptyList()
+                    )
+                ),
+                items.load()
+            )
+        }
     }
 
     @Test
     fun `returns last saved stocklist`() {
-        items.save(initialStockList)
-        assertEquals(
-            Success(initialStockList),
-            items.load()
-        )
+        items.inTransaction {
+            items.save(initialStockList)
+            assertEquals(
+                Success(initialStockList),
+                items.load()
+            )
 
-        val modifiedStockList = initialStockList.copy(
-            lastModified = initialStockList.lastModified.plusSeconds(3600),
-            items = initialStockList.items.drop(1)
-        )
-        items.save(modifiedStockList)
-        assertEquals(
-            Success(modifiedStockList),
-            items.load()
-        )
+            val modifiedStockList = initialStockList.copy(
+                lastModified = initialStockList.lastModified.plusSeconds(3600),
+                items = initialStockList.items.drop(1)
+            )
+            items.save(modifiedStockList)
+            assertEquals(
+                Success(modifiedStockList),
+                items.load()
+            )
+        }
     }
 }
