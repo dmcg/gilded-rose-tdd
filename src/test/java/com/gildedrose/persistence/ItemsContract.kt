@@ -46,7 +46,7 @@ abstract class ItemsContract<TX>(
                         items = emptyList()
                     )
                 ),
-                loading.runWith(thunk())
+                loading.run()
             )
         }
     }
@@ -71,8 +71,4 @@ abstract class ItemsContract<TX>(
             )
         }
     }
-}
-
-context(C) fun <C> thunk(): C {
-    return this@C
 }

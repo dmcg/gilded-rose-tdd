@@ -1,7 +1,9 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
+import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
 
 interface Items<TX> {
 
@@ -13,22 +15,30 @@ interface Items<TX> {
 
     context(TX) fun load(): Result<StockList, StockListLoadingError>
 
-    fun saveToo(stockList: StockList): RequiresTransaction<TX, StockList, StockListLoadingError.IO> = RequiresTransaction { tx ->
-        with(tx) { save(stockList) }
+    fun saveToo(stockList: StockList): Reader<TX, StockList, StockListLoadingError.IO> = Reader {
+        save(stockList)
     }
 
-    fun loadToo(): RequiresTransaction<TX, StockList, StockListLoadingError> = RequiresTransaction { tx ->
-        with(tx) { load() }
+    fun loadToo(): Reader<TX, StockList, StockListLoadingError> = Reader {
+        load()
     }
 }
 
-class RequiresTransaction<TX, out R, out E>(
-    private val f: (TX) -> Result<R, E>
+class Reader<TX, out R, out E>(
+    private val  f: context(TX) () -> Result<R, E>
 ) {
-    fun runWith(tx: TX): Result<R, E> {
-        return f(tx)
-    }
     context(TX) fun run(): Result<R, E> {
         return f(this@TX)
     }
 }
+
+fun <TX, R1, R2, E> Reader<TX, R1, E>.flatMap(f: (R1) -> Reader<TX, R2, E>) =
+    Reader<TX, R2, E> {
+        val initialResult = this@flatMap.run()
+        when (initialResult) {
+            is Failure<E> -> initialResult
+            is Success<R1> -> {
+                f(initialResult.value).run()
+            }
+        }
+    }
