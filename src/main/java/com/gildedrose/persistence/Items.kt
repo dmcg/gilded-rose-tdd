@@ -12,4 +12,20 @@ interface Items<TX> {
     ): Result<StockList, StockListLoadingError.IO>
 
     context(TX) fun load(): Result<StockList, StockListLoadingError>
+
+    fun saveToo(stockList: StockList): RequiresTransaction<TX, StockList, StockListLoadingError.IO> = RequiresTransaction { tx ->
+        with(tx) { save(stockList) }
+    }
+
+    fun loadToo(): RequiresTransaction<TX, StockList, StockListLoadingError> = RequiresTransaction { tx ->
+        with(tx) { load() }
+    }
+}
+
+class RequiresTransaction<TX, R, E>(
+    private val f: (TX) -> Result<R, E>
+) {
+    fun runWith(tx: TX): Result<R, E> {
+        return f(tx)
+    }
 }

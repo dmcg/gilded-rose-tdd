@@ -36,6 +36,23 @@ abstract class ItemsContract<TX>(
     }
 
     @Test
+    fun `returns empty stocklist before any save too`() {
+        val loading = items.loadToo()
+        items.inTransaction {
+            val tx: TX = thunk()
+            assertEquals(
+                Success(
+                    StockList(
+                        lastModified = Instant.EPOCH,
+                        items = emptyList()
+                    )
+                ),
+                loading.runWith(tx)
+            )
+        }
+    }
+
+    @Test
     fun `returns last saved stocklist`() {
         items.inTransaction {
             items.save(initialStockList)
@@ -55,4 +72,8 @@ abstract class ItemsContract<TX>(
             )
         }
     }
+}
+
+context(C) fun <C> thunk(): C {
+    return this@C
 }
