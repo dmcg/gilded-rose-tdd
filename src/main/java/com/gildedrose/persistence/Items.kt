@@ -22,10 +22,13 @@ interface Items<TX> {
     }
 }
 
-class RequiresTransaction<TX, R, E>(
+class RequiresTransaction<TX, out R, out E>(
     private val f: (TX) -> Result<R, E>
 ) {
     fun runWith(tx: TX): Result<R, E> {
         return f(tx)
+    }
+    context(TX) fun run(): Result<R, E> {
+        return f(this@TX)
     }
 }

@@ -39,7 +39,6 @@ abstract class ItemsContract<TX>(
     fun `returns empty stocklist before any save too`() {
         val loading = items.loadToo()
         items.inTransaction {
-            val tx: TX = thunk()
             assertEquals(
                 Success(
                     StockList(
@@ -47,7 +46,7 @@ abstract class ItemsContract<TX>(
                         items = emptyList()
                     )
                 ),
-                loading.runWith(tx)
+                loading.runWith(thunk())
             )
         }
     }
