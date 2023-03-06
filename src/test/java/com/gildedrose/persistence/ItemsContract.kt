@@ -55,4 +55,41 @@ abstract class ItemsContract<TX>(
             )
         }
     }
+
+    @Test
+    fun readerMonad() {
+        val saver = items.saveToo(initialStockList)
+        items.inTransaction {
+            saver.runInContext()
+        }
+
+        items.inTransaction {
+            assertEquals(
+                Success(initialStockList),
+                items.load()
+            )
+        }
+
+        val updated = items.inTransaction {
+            items.loadToo().flatMapResult { stockList: StockList ->
+                items.saveToo(
+                    stockList.withLastModified(
+                        stockList.lastModified.plusSeconds(3600)
+                    )
+                )
+            }.runInContext()
+        }
+        val expected = Success(
+            initialStockList.withLastModified(
+                initialStockList.lastModified.plusSeconds(3600)
+            )
+        )
+        assertEquals(expected, updated)
+        items.inTransaction {
+            assertEquals(expected, items.load())
+        }
+    }
 }
+
+private fun StockList.withLastModified(instant: Instant) =
+    copy(lastModified = instant)
