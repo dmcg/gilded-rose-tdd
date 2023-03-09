@@ -58,4 +58,37 @@ abstract class ItemsContract<TX>(
             )
         }
     }
+
+    @Test
+    fun requiresTransaction() {
+        val saver = items.save(initialStockList)
+        items.withTransaction { tx ->
+            saver.runInContext(tx)
+        }
+
+        assertEquals(
+            Success(initialStockList),
+            items.withTransaction { tx ->
+                items.load().runInContext(tx)
+            }
+        )
+
+        val updater = items.load().flatMapResult { stockList: StockList ->
+            val updated = stockList.copy(
+                lastModified = stockList.lastModified.plusSeconds(3600)
+            )
+            items.save(updated)
+        }
+        val result = items.withTransaction { tx ->
+            updater.runInContext(tx)
+        }
+        val expected = initialStockList.copy(lastModified = initialStockList.lastModified.plusSeconds(3600))
+        assertEquals(Success(expected), result)
+        assertEquals(
+            Success(expected),
+            items.withTransaction { tx ->
+                items.load().runInContext(tx)
+            }
+        )
+    }
 }
