@@ -1,5 +1,5 @@
 package com.gildedrose.persistence
 
-class InMemoryItemsTests : ItemsContract(
+class InMemoryItemsTests : ItemsContract<Unit>(
     InMemoryItems()
 )

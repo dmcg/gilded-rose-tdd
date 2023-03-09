@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test
 import java.time.Instant
 import kotlin.test.assertEquals
 
-abstract class ItemsContract(
-    val items: Items
+abstract class ItemsContract<TX>(
+    val items: Items<TX>
 ) {
     private val initialStockList = StockList(
         lastModified = Instant.parse("2022-02-09T23:59:59Z"),
@@ -28,26 +28,34 @@ abstract class ItemsContract(
                     items = emptyList()
                 )
             ),
-            items.load()
+            items.withTransaction { tx ->
+                items.load(tx)
+            }
         )
     }
 
     @Test
     fun `returns last saved stocklist`() {
-        items.save(initialStockList)
+        items.withTransaction { tx ->
+            items.save(initialStockList, tx)
+        }
         assertEquals(
             Success(initialStockList),
-            items.load()
+            items.withTransaction { tx ->
+                items.load(tx)
+            }
         )
 
         val modifiedStockList = initialStockList.copy(
             lastModified = initialStockList.lastModified.plusSeconds(3600),
             items = initialStockList.items.drop(1)
         )
-        items.save(modifiedStockList)
-        assertEquals(
-            Success(modifiedStockList),
-            items.load()
-        )
+        items.withTransaction { tx ->
+            items.save(modifiedStockList, tx)
+            assertEquals(
+                Success(modifiedStockList),
+                items.load(tx)
+            )
+        }
     }
 }

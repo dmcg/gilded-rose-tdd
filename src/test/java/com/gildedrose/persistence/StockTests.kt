@@ -47,7 +47,9 @@ class StockTests {
             )
         )
         assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
-        assertEquals(expectedUpdatedResult, items.load().valueOrNull())
+        items.withTransaction { tx ->
+            assertEquals(expectedUpdatedResult, items.load(tx).valueOrNull())
+        }
     }
 
     @Test
@@ -61,14 +63,18 @@ class StockTests {
             )
         )
         assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
-        assertEquals(expectedUpdatedResult, items.load().valueOrNull())
+        items.withTransaction { tx ->
+            assertEquals(expectedUpdatedResult, items.load(tx).valueOrNull())
+        }
     }
 
     @Test
     fun `does not update stock if modified tomorrow`() {
         val now = Instant.parse("2022-02-08T00:00:01Z")
         assertEquals(initialStockList, stock.stockList(now).valueOrNull())
-        assertEquals(initialStockList, items.load().valueOrNull())
+        items.withTransaction { tx ->
+            assertEquals(initialStockList, items.load(tx).valueOrNull())
+        }
     }
 
     @Test

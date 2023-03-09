@@ -12,26 +12,33 @@ import java.time.LocalDate
 
 class DatabaseItems(
     private val database: Database
-) : Items {
+) : Items<Transaction> {
+
+    override fun <R> withTransaction(
+        block: (tx: Transaction) -> R
+    ): R = transaction(database) {
+        block(this)
+    }
 
     override fun save(
-        stockList: StockList
-    ): Result<StockList, StockListLoadingError.IO> =
-        transaction(database) {
-            stockList.items.forEach { item ->
-                ItemsTable.insert {
-                    it[id] = item.id.toString()
-                    it[modified] = stockList.lastModified
-                    it[name] = item.name.toString()
-                    it[sellByDate] = item.sellByDate
-                    it[quality] = item.quality.valueInt
-                }
+        stockList: StockList,
+        transaction: Transaction
+    ): Result<StockList, StockListLoadingError.IO> {
+        stockList.items.forEach { item ->
+            ItemsTable.insert {
+                it[id] = item.id.toString()
+                it[modified] = stockList.lastModified
+                it[name] = item.name.toString()
+                it[sellByDate] = item.sellByDate
+                it[quality] = item.quality.valueInt
             }
-            Success(stockList)
         }
+        return Success(stockList)
+    }
 
-    override fun load()
-        : Result<StockList, StockListLoadingError> =
+    override fun load(
+        transaction: Transaction
+    ): Result<StockList, StockListLoadingError> =
         // select * from items where modified = (select max(modified) from items)
         transaction(database) {
             getLastUpdate()?.let { lastUpdate ->
