@@ -1,6 +1,7 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
+import com.gildedrose.theory.Action
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
@@ -11,7 +12,8 @@ class StockFileItems(private val stockFile: File) : Items<Nothing?> {
 
     override fun <R> inTransaction(block: context(Nothing?) () -> R) = block(null)
 
-    context(Nothing?) override fun save(
+    context(Nothing?) @Action
+    override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IO> = try {
         val versionFile = File.createTempFile(
@@ -29,6 +31,8 @@ class StockFileItems(private val stockFile: File) : Items<Nothing?> {
         Failure(StockListLoadingError.IO(x.message ?: "no message"))
     }
 
-    context(Nothing?) override fun load(): Result<StockList, StockListLoadingError> = stockFile.loadItems()
+    context(Nothing?)
+    @Action
+    override fun load(): Result<StockList, StockListLoadingError> = stockFile.loadItems()
 }
 

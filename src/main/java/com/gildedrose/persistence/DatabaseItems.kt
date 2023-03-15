@@ -1,6 +1,7 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.*
+import com.gildedrose.theory.Action
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jetbrains.exposed.sql.*
@@ -19,7 +20,8 @@ class DatabaseItems(
             block(this)
         }
 
-    context(Transaction) override fun save(
+    context(Transaction) @Action
+    override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IO> {
         stockList.items.forEach { item ->
@@ -34,7 +36,8 @@ class DatabaseItems(
         return Success(stockList)
     }
 
-    context(Transaction) override fun load(): Result<StockList, StockListLoadingError> =
+    context(Transaction) @Action
+    override fun load(): Result<StockList, StockListLoadingError> =
         // select * from items where modified = (select max(modified) from items)
         getLastUpdate()?.let { lastUpdate ->
             val items = allItemsUpdatedAt(lastUpdate)
