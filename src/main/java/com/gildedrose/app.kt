@@ -9,6 +9,7 @@ import com.gildedrose.persistence.Stock
 import com.gildedrose.persistence.StockFileItems
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.pricing.valueElfClient
+import com.gildedrose.theory.Action
 import dev.forkhandles.result4k.Result
 import java.io.File
 import java.net.URI
@@ -44,6 +45,7 @@ data class App(
     )
     private val server = serverFor(port = port, routes)
 
+    @Action
     fun loadStockList(now: Instant = clock()): Result<StockList, StockListLoadingError> =
         pricedLoader.load(now)
 

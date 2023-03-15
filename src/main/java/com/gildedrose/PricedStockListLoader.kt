@@ -8,6 +8,7 @@ import com.gildedrose.foundation.UncaughtExceptionEvent
 import com.gildedrose.foundation.parallelMapCoroutines
 import com.gildedrose.foundation.retry
 import com.gildedrose.persistence.StockListLoadingError
+import com.gildedrose.theory.Action
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
 import dev.forkhandles.result4k.peekFailure
@@ -27,6 +28,7 @@ class PricedStockListLoader(
     private val retryingPricing = retry(1, reporter = ::reportException, pricing)
     private val threadPool = Executors.newFixedThreadPool(30)
 
+    @Action
     fun load(now: Instant): StockLoadingResult =
         loading(now).map {
             it.pricedBy(retryingPricing)
