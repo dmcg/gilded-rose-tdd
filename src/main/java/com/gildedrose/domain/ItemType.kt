@@ -1,11 +1,14 @@
 package com.gildedrose.domain
 
+import com.gildedrose.theory.Calculation
 import java.time.LocalDate
 
 fun interface ItemType {
+    @Calculation
     fun update(item: Item, on: LocalDate): Item
 }
 
+@Calculation
 fun typeFor(sellByDate: LocalDate?, name: NonBlankString): ItemType {
     val baseType = when {
         sellByDate == null -> UndatedType
@@ -19,6 +22,7 @@ fun typeFor(sellByDate: LocalDate?, name: NonBlankString): ItemType {
     }
 }
 
+@Calculation
 fun conjured(baseType: ItemType) = typeFor("CONJURED $baseType") { item, on ->
     val updated = baseType.update(item, on)
     val change = item.quality - updated.quality
@@ -60,6 +64,7 @@ val PassType = typeFor("PASS") { item, on ->
     }
 }
 
+@Calculation
 private fun typeFor(name: String, updater: ItemType) =
     object : ItemType by updater {
         override fun toString() = name

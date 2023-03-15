@@ -7,10 +7,12 @@ package com.gildedrose.theory
 annotation class Data
 
 /**
- * Code that will always return the same output for the same input.
- * Does not depend on when or whether or how many times we run it.
+ * Code that will always return the same output
+ * for the same input.
+ * Does not depend on when or whether or how many
+ * times we run it.
  */
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR, AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
 annotation class Calculation
 
 /**
