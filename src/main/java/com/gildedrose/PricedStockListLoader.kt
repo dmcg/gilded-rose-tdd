@@ -18,10 +18,12 @@ typealias StockLoadingResult = Result<StockList, StockListLoadingError>
 
 class PricedStockListLoader(
     private val loading: context(IO) (Instant) -> StockLoadingResult,
-    pricing: (Item) -> Price?,
+    pricing: context(IO) (Item) -> Price?,
     private val analytics: Analytics
 ) {
-    private val retryingPricing = retry(1, reporter = ::reportException, pricing)
+    private val retryingPricing = retry(1, reporter = ::reportException) { it: Item ->
+        runIO { pricing(magic(), it) }
+    }
     private val threadPool = Executors.newFixedThreadPool(30)
 
     context(IO) fun load(now: Instant): StockLoadingResult =

@@ -2,6 +2,8 @@ package com.gildedrose.pricing
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
+import com.gildedrose.foundation.magic
+import com.gildedrose.foundation.runIO
 import com.gildedrose.item
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
@@ -34,12 +36,16 @@ abstract class ValueElfContract(
 
     @Test
     fun Fixture.`returns price when there is one`() {
-        assertEquals(expectedPrice, client(aFoundItem))
+        runIO {
+            assertEquals(expectedPrice, client(magic(), aFoundItem))
+        }
     }
 
     @Test
     fun Fixture.`returns null when no price`() {
-        assertEquals(null, client(aNotFoundItem))
+        runIO {
+            assertEquals(null, client(magic(), aNotFoundItem))
+        }
     }
 
     @Test
