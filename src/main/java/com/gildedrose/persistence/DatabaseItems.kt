@@ -21,7 +21,7 @@ class DatabaseItems(
 
     context(Transaction) override fun save(
         stockList: StockList
-    ): Result<StockList, StockListLoadingError.IO> {
+    ): Result<StockList, StockListLoadingError.IOError> {
         stockList.items.forEach { item ->
             ItemsTable.insert {
                 it[id] = item.id.toString()

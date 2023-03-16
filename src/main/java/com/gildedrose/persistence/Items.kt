@@ -9,7 +9,7 @@ interface Items<TX> {
 
     context(TX) fun save(
         stockList: StockList
-    ): Result<StockList, StockListLoadingError.IO>
+    ): Result<StockList, StockListLoadingError.IOError>
 
     context(TX) fun load(): Result<StockList, StockListLoadingError>
 }

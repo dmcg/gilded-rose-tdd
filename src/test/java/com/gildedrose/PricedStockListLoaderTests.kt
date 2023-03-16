@@ -62,7 +62,7 @@ class PricedStockListLoaderTests {
 
     @Test
     fun `passes on failures to load stock`() {
-        val loadingError = StockListLoadingError.IO("deliberate")
+        val loadingError = StockListLoadingError.IOError("deliberate")
         stockValues[sameDayAsLastModified] = Failure(loadingError)
         assertEquals(
             Failure(loadingError),

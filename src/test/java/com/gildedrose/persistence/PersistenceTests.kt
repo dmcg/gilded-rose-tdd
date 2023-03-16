@@ -1,6 +1,7 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
+import com.gildedrose.foundation.runIO
 import com.gildedrose.item
 import com.gildedrose.oct29
 import com.gildedrose.persistence.StockListLoadingError.*
@@ -23,13 +24,15 @@ class PersistenceTests {
 
     @Test
     fun `save and load`(@TempDir dir: File) {
-        val file = File(dir, "stock.tsv")
-        val stockList = StockList(now, items)
-        stockList.saveTo(file)
-        assertEquals(
-            Success(stockList),
-            file.loadItems()
-        )
+        runIO {
+            val file = File(dir, "stock.tsv")
+            val stockList = StockList(now, items)
+            stockList.saveTo(file)
+            assertEquals(
+                Success(stockList),
+                file.loadItems()
+            )
+        }
     }
 
     @Test

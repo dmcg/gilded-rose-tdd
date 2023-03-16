@@ -15,7 +15,7 @@ class InMemoryItems(
 
     context(Nothing?) override fun save(
         stockList: StockList
-    ): Result<StockList, StockListLoadingError.IO> {
+    ): Result<StockList, StockListLoadingError.IOError> {
         this@InMemoryItems.stockList.set(stockList)
         return Success(stockList)
     }

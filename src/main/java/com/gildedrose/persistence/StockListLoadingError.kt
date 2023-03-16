@@ -9,5 +9,5 @@ sealed interface StockListLoadingError : AnalyticsEvent {
     data class BlankName(val line: String) : StockListLoadingError
     data class CouldntParseSellBy(val line: String) : StockListLoadingError
     data class CouldntParseQuality(val line: String) : StockListLoadingError
-    data class IO(val message: String) : StockListLoadingError
+    data class IOError(val message: String) : StockListLoadingError
 }

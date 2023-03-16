@@ -1,10 +1,9 @@
 package com.gildedrose
 
 import com.gildedrose.domain.StockList
+import com.gildedrose.foundation.runIO
 import com.gildedrose.foundation.then
-import com.gildedrose.persistence.loadItems
 import com.gildedrose.persistence.saveTo
-import dev.forkhandles.result4k.onFailure
 import org.http4k.core.Request
 import org.http4k.core.Response
 import java.io.File
@@ -19,11 +18,9 @@ class Fixture(
     val routes: (Request) -> Response = app.routes
 
     fun save(stockList: StockList) {
-        stockList.saveTo(stockFile)
-    }
-
-    fun load(): StockList {
-        return stockFile.loadItems().onFailure { error("Could not load stock") }
+        runIO {
+            stockList.saveTo(stockFile)
+        }
     }
 }
 
