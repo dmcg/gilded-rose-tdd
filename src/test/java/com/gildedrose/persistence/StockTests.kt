@@ -1,6 +1,7 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
+import com.gildedrose.foundation.runIO
 import com.gildedrose.item
 import com.gildedrose.oct29
 import dev.forkhandles.result4k.valueOrNull
@@ -38,42 +39,48 @@ class StockTests {
 
     @Test
     fun `updates stock if last modified yesterday`() {
-        val now = Instant.parse("2022-02-10T00:00:01Z")
-        val expectedUpdatedResult = StockList(
-            lastModified = now,
-            items = listOf(
-                item("banana", oct29.minusDays(1), 41),
-                item("kumquat", oct29.plusDays(1), 100)
+        runIO {
+            val now = Instant.parse("2022-02-10T00:00:01Z")
+            val expectedUpdatedResult = StockList(
+                lastModified = now,
+                items = listOf(
+                    item("banana", oct29.minusDays(1), 41),
+                    item("kumquat", oct29.plusDays(1), 100)
+                )
             )
-        )
-        assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
-        items.inTransaction {
-            assertEquals(expectedUpdatedResult, items.load().valueOrNull())
+            assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
+            items.inTransaction {
+                assertEquals(expectedUpdatedResult, items.load().valueOrNull())
+            }
         }
     }
 
     @Test
     fun `updates stock by two days if last modified the day before yesterday`() {
-        val now = Instant.parse("2022-02-11T00:00:01Z")
-        val expectedUpdatedResult = StockList(
-            lastModified = now,
-            items = listOf(
-                item("banana", oct29.minusDays(1), 40),
-                item("kumquat", oct29.plusDays(1), 99)
+        runIO {
+            val now = Instant.parse("2022-02-11T00:00:01Z")
+            val expectedUpdatedResult = StockList(
+                lastModified = now,
+                items = listOf(
+                    item("banana", oct29.minusDays(1), 40),
+                    item("kumquat", oct29.plusDays(1), 99)
+                )
             )
-        )
-        assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
-        items.inTransaction {
-            assertEquals(expectedUpdatedResult, with(null) { items.load().valueOrNull() })
+            assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
+            items.inTransaction {
+                assertEquals(expectedUpdatedResult, with(null) { items.load().valueOrNull() })
+            }
         }
     }
 
     @Test
     fun `does not update stock if modified tomorrow`() {
-        val now = Instant.parse("2022-02-08T00:00:01Z")
-        assertEquals(initialStockList, stock.stockList(now).valueOrNull())
-        items.inTransaction {
-            assertEquals(initialStockList, items.load().valueOrNull())
+        runIO {
+            val now = Instant.parse("2022-02-08T00:00:01Z")
+            assertEquals(initialStockList, stock.stockList(now).valueOrNull())
+            items.inTransaction {
+                assertEquals(initialStockList, items.load().valueOrNull())
+            }
         }
     }
 

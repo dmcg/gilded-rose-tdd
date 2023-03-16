@@ -1,6 +1,7 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.*
+import com.gildedrose.foundation.IO
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jetbrains.exposed.sql.*
@@ -10,16 +11,19 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.LocalDate
 
+@Suppress("UNUSED_PARAMETER")
+class ExposedTXContext(tx: Transaction): TXContext()
+
 class DatabaseItems(
     private val database: Database
-) : Items<Transaction> {
+) : Items<ExposedTXContext> {
 
-    override fun <R> inTransaction(block: context(Transaction) () -> R) =
+    override fun <R> inTransaction(block: context(ExposedTXContext) () -> R) =
         transaction(database) {
-            block(this)
+            block(ExposedTXContext(this))
         }
 
-    context(Transaction) override fun save(
+    context(IO, ExposedTXContext) override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError> {
         stockList.items.forEach { item ->
@@ -34,7 +38,7 @@ class DatabaseItems(
         return Success(stockList)
     }
 
-    context(Transaction) override fun load(): Result<StockList, StockListLoadingError> =
+    context(IO, ExposedTXContext) override fun load(): Result<StockList, StockListLoadingError> =
         // select * from items where modified = (select max(modified) from items)
         getLastUpdate()?.let { lastUpdate ->
             val items = allItemsUpdatedAt(lastUpdate)
