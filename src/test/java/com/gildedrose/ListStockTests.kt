@@ -1,6 +1,7 @@
 package com.gildedrose
 
 import com.gildedrose.domain.*
+import com.gildedrose.foundation.runIO
 import com.gildedrose.http.serverFor
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.pricing.fakeValueElfRoutes
@@ -71,39 +72,43 @@ class ListStockTests {
 
     @Test
     fun `list stock`(approver: Approver) {
-        with(
-            baseApp.fixture(
-                now = sameDayAsLastModified,
-                initialStockList = stockList
-            )
-        ) {
-            assertEquals(
-                Success(expectedPricedStockList),
-                app.loadStockList()
-            )
-            approver.assertApproved(routes(Request(GET, "/")), OK)
+        runIO {
+            with(
+                baseApp.fixture(
+                    now = sameDayAsLastModified,
+                    initialStockList = stockList
+                )
+            ) {
+                assertEquals(
+                    Success(expectedPricedStockList),
+                    app.loadStockList()
+                )
+                approver.assertApproved(routes(Request(GET, "/")), OK)
+            }
         }
     }
 
     @Test
     fun `reports errors`() {
-        with(
-            baseApp.fixture(
-                now = sameDayAsLastModified,
-                initialStockList = stockList
-            )
-        ) {
-            stockFile.writeText(stockFile.readText().replace("banana", ""))
-            val expectedFailure = StockListLoadingError.BlankName("B1\t\t2022-02-08\t42")
-            assertEquals(
-                Failure(expectedFailure),
-                app.loadStockList()
-            )
-            assertThat(routes(Request(GET, "/")), hasStatus(INTERNAL_SERVER_ERROR))
-            assertEquals(
-                expectedFailure,
-                events.first()
-            )
+        runIO {
+            with(
+                baseApp.fixture(
+                    now = sameDayAsLastModified,
+                    initialStockList = stockList
+                )
+            ) {
+                stockFile.writeText(stockFile.readText().replace("banana", ""))
+                val expectedFailure = StockListLoadingError.BlankName("B1\t\t2022-02-08\t42")
+                assertEquals(
+                    Failure(expectedFailure),
+                    app.loadStockList()
+                )
+                assertThat(routes(Request(GET, "/")), hasStatus(INTERNAL_SERVER_ERROR))
+                assertEquals(
+                    expectedFailure,
+                    events.first()
+                )
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package com.gildedrose
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.Analytics
+import com.gildedrose.foundation.IO
 import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.http.serverFor
 import com.gildedrose.persistence.Stock
@@ -32,19 +33,18 @@ data class App(
         itemUpdate = Item::updatedBy
     )
     private val pricedLoader = PricedStockListLoader(
-        loading = stock::stockList,
+        loading = { stock.stockList(it) },
         pricing = valueElfClient(valueElfUri),
         analytics = analytics
     )
     val routes = routesFor(
         clock = clock,
         analytics = analytics,
-        features,
-        ::loadStockList
-    )
+        features
+    ) { loadStockList(it) }
     private val server = serverFor(port = port, routes)
 
-    fun loadStockList(now: Instant = clock()): Result<StockList, StockListLoadingError> =
+    context(IO) fun loadStockList(now: Instant = clock()): Result<StockList, StockListLoadingError> =
         pricedLoader.load(now)
 
     fun start() {

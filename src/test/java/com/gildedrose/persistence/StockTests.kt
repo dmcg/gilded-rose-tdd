@@ -33,8 +33,10 @@ class StockTests {
 
     @Test
     fun `loads stock from file`() {
-        val now = Instant.parse("2022-02-09T23:59:59Z")
-        assertEquals(initialStockList, stock.stockList(now).valueOrNull())
+        runIO {
+            val now = Instant.parse("2022-02-09T23:59:59Z")
+            assertEquals(initialStockList, stock.stockList(now).valueOrNull())
+        }
     }
 
     @Test
@@ -68,7 +70,7 @@ class StockTests {
             )
             assertEquals(expectedUpdatedResult, stock.stockList(now).valueOrNull())
             items.inTransaction {
-                assertEquals(expectedUpdatedResult, with(null) { items.load().valueOrNull() })
+                assertEquals(expectedUpdatedResult, items.load().valueOrNull())
             }
         }
     }

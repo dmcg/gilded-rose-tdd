@@ -2,6 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.Analytics
+import com.gildedrose.foundation.IO
 import com.gildedrose.http.ResponseErrors
 import com.gildedrose.http.catchAll
 import com.gildedrose.http.reportHttpTransactions
@@ -21,7 +22,7 @@ fun routesFor(
     clock: () -> Instant,
     analytics: Analytics,
     @Suppress("UNUSED_PARAMETER") features: Features,
-    listing: (Instant) -> Result<StockList, StockListLoadingError>,
+    listing: context(IO) (Instant) -> Result<StockList, StockListLoadingError>,
 ): HttpHandler =
     ServerFilters.RequestTracing()
         .then(reportHttpTransactions(Duration.ofSeconds(1), analytics))

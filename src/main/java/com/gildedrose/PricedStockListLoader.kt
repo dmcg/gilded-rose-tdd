@@ -3,10 +3,7 @@ package com.gildedrose
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.Analytics
-import com.gildedrose.foundation.UncaughtExceptionEvent
-import com.gildedrose.foundation.parallelMapCoroutines
-import com.gildedrose.foundation.retry
+import com.gildedrose.foundation.*
 import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
@@ -20,15 +17,15 @@ import java.util.concurrent.Executors
 typealias StockLoadingResult = Result<StockList, StockListLoadingError>
 
 class PricedStockListLoader(
-    private val loading: (Instant) -> StockLoadingResult,
+    private val loading: context(IO) (Instant) -> StockLoadingResult,
     pricing: (Item) -> Price?,
     private val analytics: Analytics
 ) {
     private val retryingPricing = retry(1, reporter = ::reportException, pricing)
     private val threadPool = Executors.newFixedThreadPool(30)
 
-    fun load(now: Instant): StockLoadingResult =
-        loading(now).map {
+    context(IO) fun load(now: Instant): StockLoadingResult =
+        loading(magic(), now).map {
             it.pricedBy(retryingPricing)
         }
 
