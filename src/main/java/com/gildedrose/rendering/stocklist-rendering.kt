@@ -4,7 +4,6 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
 import com.gildedrose.http.ResponseErrors.withError
 import com.gildedrose.persistence.StockListLoadingError
-import com.gildedrose.theory.Calculation
 import dev.forkhandles.result4k.*
 import org.http4k.core.*
 import org.http4k.template.HandlebarsTemplates
@@ -22,7 +21,6 @@ private val dateFormat: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(Fo
 private val handlebars = HandlebarsTemplates().HotReload("src/main/java")
 private val view = Body.viewModel(handlebars, ContentType.TEXT_HTML).toLens()
 
-@Calculation
 fun render(
     stockListResult: Result4k<StockList, StockListLoadingError>,
     now: Instant,

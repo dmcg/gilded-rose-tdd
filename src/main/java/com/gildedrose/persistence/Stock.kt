@@ -3,7 +3,6 @@ package com.gildedrose.persistence
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
 import com.gildedrose.theory.Action
-import com.gildedrose.theory.Calculation
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.flatMap
@@ -28,7 +27,6 @@ class Stock(
             }
         }
 
-    @Calculation
     private fun StockList.updatedIfOutOfDate(
         now: Instant
     ): StockList {
@@ -47,7 +45,6 @@ class Stock(
         }
     }
 
-    @Calculation
     private fun StockList.updated(
         now: Instant,
         daysOutOfDate: Int,
