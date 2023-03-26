@@ -1,15 +1,18 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.runIO
+import com.gildedrose.foundation.IO
 import com.gildedrose.item
 import com.gildedrose.oct29
+import com.gildedrose.testing.IOResolver
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
 import kotlin.test.assertEquals
 
-abstract class ItemsContract<TX: TXContext>(
+@ExtendWith(IOResolver::class)
+abstract class ItemsContract<TX : TXContext>(
     val items: Items<TX>
 ) {
     private val initialStockList = StockList(
@@ -20,43 +23,41 @@ abstract class ItemsContract<TX: TXContext>(
         )
     )
 
+    context(IO)
     @Test
     fun `returns empty stocklist before any save`() {
-        runIO {
-            items.inTransaction {
-                assertEquals(
-                    Success(
-                        StockList(
-                            lastModified = Instant.EPOCH,
-                            items = emptyList()
-                        )
-                    ),
-                    items.load()
-                )
-            }
+        items.inTransaction {
+            assertEquals(
+                Success(
+                    StockList(
+                        lastModified = Instant.EPOCH,
+                        items = emptyList()
+                    )
+                ),
+                items.load()
+            )
         }
     }
 
+    context(IO)
     @Test
     fun `returns last saved stocklist`() {
-        runIO {
-            items.inTransaction {
-                items.save(initialStockList)
-                assertEquals(
-                    Success(initialStockList),
-                    items.load()
-                )
+        items.inTransaction {
+            items.save(initialStockList)
+            assertEquals(
+                Success(initialStockList),
+                items.load()
+            )
 
-                val modifiedStockList = initialStockList.copy(
-                    lastModified = initialStockList.lastModified.plusSeconds(3600),
-                    items = initialStockList.items.drop(1)
-                )
-                items.save(modifiedStockList)
-                assertEquals(
-                    Success(modifiedStockList),
-                    items.load()
-                )
-            }
+            val modifiedStockList = initialStockList.copy(
+                lastModified = initialStockList.lastModified.plusSeconds(3600),
+                items = initialStockList.items.drop(1)
+            )
+            items.save(modifiedStockList)
+            assertEquals(
+                Success(modifiedStockList),
+                items.load()
+            )
         }
     }
 }

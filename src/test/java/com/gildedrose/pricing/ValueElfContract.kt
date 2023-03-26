@@ -2,9 +2,10 @@ package com.gildedrose.pricing
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
+import com.gildedrose.foundation.IO
 import com.gildedrose.foundation.magic
-import com.gildedrose.foundation.runIO
 import com.gildedrose.item
+import com.gildedrose.testing.IOResolver
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import org.http4k.core.*
@@ -20,6 +21,7 @@ import java.net.URI
 import java.time.LocalDate.now
 
 @ExtendWith(FixtureResolver::class)
+@ExtendWith(IOResolver::class)
 abstract class ValueElfContract(
     override val fixture: Fixture,
 ) : FixtureResolver.FixtureSource {
@@ -34,22 +36,21 @@ abstract class ValueElfContract(
         val client = valueElfClient(uri, handler)
     }
 
+    context(Fixture, IO)
     @Test
-    fun Fixture.`returns price when there is one`() {
-        runIO {
-            assertEquals(expectedPrice, client(magic(), aFoundItem))
-        }
+    fun `returns price when there is one`() {
+        assertEquals(expectedPrice, client(magic<IO>(), aFoundItem))
     }
 
+    context(Fixture, IO)
     @Test
-    fun Fixture.`returns null when no price`() {
-        runIO {
-            assertEquals(null, client(magic(), aNotFoundItem))
-        }
+    fun `returns null when no price`() {
+        assertEquals(null, client(magic<IO>(), aNotFoundItem))
     }
 
+    context(Fixture)
     @Test
-    fun Fixture.`returns BAD_REQUEST for invalid query strings`() {
+    fun `returns BAD_REQUEST for invalid query strings`() {
         val request = Request(Method.GET, uri.toString())
         val returnsBadRequest: Matcher<Response> = hasStatus(BAD_REQUEST)
         check(request, returnsBadRequest)
@@ -74,7 +75,7 @@ class FixtureResolver : ParameterResolver {
     override fun supportsParameter(
         parameterContext: ParameterContext,
         extensionContext: ExtensionContext
-    ) = true
+    ) = parameterContext.parameter.type == ValueElfContract.Fixture::class.java
 
     override fun resolveParameter(
         parameterContext: ParameterContext,
