@@ -21,29 +21,33 @@ class PricedStockListLoader(
     pricing: context(IO) (Item) -> Price?,
     private val analytics: Analytics
 ) {
-    private val retryingPricing = retry(1, reporter = ::reportException) { it: Item ->
-        runIO { pricing(magic(), it) }
-    }
     private val threadPool = Executors.newFixedThreadPool(30)
+    private val retryingPricing: context(IO) (Item) -> Price? =
+        pricing.transformedBy { f ->
+            retry(1, reporter = ::reportException, f)
+        }
 
-    context(IO) fun load(now: Instant): StockLoadingResult =
+    context(IO)
+    fun load(now: Instant): StockLoadingResult =
         loading(magic(), now).map {
             it.pricedBy(retryingPricing)
         }
 
+    context(IO)
     private fun StockList.pricedBy(
-        pricing: (Item) -> Price?
+        pricing: context(IO) (Item) -> Price?
     ): StockList =
         runBlocking(threadPool.asCoroutineDispatcher()) {
             copy(items = items.parallelMapCoroutines { it.pricedBy(pricing) })
         }
 
+    context(IO)
     private fun Item.pricedBy(
-        pricing: (Item) -> Price?
+        pricing: context(IO) (Item) -> Price?
     ): Item =
         this.copy(
             price = resultFrom {
-                pricing(this)
+                pricing(magic<IO>(), this)
             }.peekFailure(::reportException)
         )
 
