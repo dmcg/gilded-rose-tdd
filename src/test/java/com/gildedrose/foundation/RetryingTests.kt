@@ -7,6 +7,15 @@ import org.junit.jupiter.api.assertThrows
 class RetryingTests {
 
     @Test
+    fun `returns value if no exception - raw`() {
+        val wrapped: (String) -> String = succeedAfter(0)
+        val retrying: (String) -> String = wrapped.wrappedWith(
+            retry()
+        )
+        assertEquals("banana", retrying("banana"))
+    }
+
+    @Test
     fun `returns value if no exception`() {
         val wrapped: (String) -> String = succeedAfter(0)
         val retrying: (String) -> String = retry(function = wrapped)

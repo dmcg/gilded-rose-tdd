@@ -23,9 +23,7 @@ class PricedStockListLoader(
 ) {
     private val threadPool = Executors.newFixedThreadPool(30)
     private val retryingPricing: context(IO) (Item) -> Price? =
-        pricing.transformedBy { f ->
-            retry(1, reporter = ::reportException, f)
-        }
+        pricing.wrappedWith(retry(1, reporter = ::reportException))
 
     context(IO)
     fun load(now: Instant): StockLoadingResult =
