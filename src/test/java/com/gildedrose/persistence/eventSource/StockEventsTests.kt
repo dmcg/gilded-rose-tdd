@@ -1,4 +1,4 @@
-package com.gildedrose.persistence
+package com.gildedrose.persistence.eventSource
 
 import com.gildedrose.domain.ID
 import com.gildedrose.domain.NonBlankString

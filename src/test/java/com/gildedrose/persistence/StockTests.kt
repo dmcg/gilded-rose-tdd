@@ -4,6 +4,7 @@ import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
 import com.gildedrose.item
 import com.gildedrose.oct29
+import com.gildedrose.persistence.inMemory.InMemoryItems
 import com.gildedrose.testing.IOResolver
 import dev.forkhandles.result4k.valueOrNull
 import org.junit.jupiter.api.Assertions.assertEquals

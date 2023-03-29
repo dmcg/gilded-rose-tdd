@@ -1,9 +1,10 @@
-package com.gildedrose.persistence
+package com.gildedrose.persistence.eventSource
 
 import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.NonBlankString
 import com.gildedrose.domain.Quality
+import com.gildedrose.persistence.daysTo
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZonedDateTime

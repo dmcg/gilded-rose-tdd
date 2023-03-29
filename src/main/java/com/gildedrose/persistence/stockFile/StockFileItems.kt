@@ -1,7 +1,10 @@
-package com.gildedrose.persistence
+package com.gildedrose.persistence.stockFile
 
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
+import com.gildedrose.persistence.Items
+import com.gildedrose.persistence.NoTX
+import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success

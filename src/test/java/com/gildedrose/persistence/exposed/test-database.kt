@@ -1,4 +1,4 @@
-package com.gildedrose.persistence
+package com.gildedrose.persistence.exposed
 
 import org.jetbrains.exposed.sql.Database
 import org.postgresql.ds.PGSimpleDataSource

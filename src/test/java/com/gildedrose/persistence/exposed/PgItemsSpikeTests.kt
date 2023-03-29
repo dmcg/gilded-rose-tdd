@@ -1,4 +1,4 @@
-package com.gildedrose.persistence
+package com.gildedrose.persistence.exposed
 
 import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
@@ -106,7 +106,7 @@ class PgItems {
     }
 
     fun update(item: Item) {
-        val rowsChanged = SpikeItems.update({SpikeItems.id eq item.id.toString()}) {
+        val rowsChanged = SpikeItems.update({ SpikeItems.id eq item.id.toString()}) {
             it[id] = item.id.toString()
             it[name] = item.name.toString()
             it[sellByDate] = item.sellByDate

@@ -1,7 +1,10 @@
-package com.gildedrose.persistence
+package com.gildedrose.persistence.exposed
 
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.IO
+import com.gildedrose.persistence.Items
+import com.gildedrose.persistence.StockListLoadingError
+import com.gildedrose.persistence.TXContext
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jetbrains.exposed.sql.*
