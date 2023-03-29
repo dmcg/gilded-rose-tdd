@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.8.0'
+    id 'nu.studer.jooq' version '8.1'
 }
 
 group = 'com.gildedrose'
@@ -38,6 +39,8 @@ dependencies {
     implementation "org.postgresql:postgresql:42.5.3"
     implementation "com.zaxxer:HikariCP:5.0.1"
 
+    implementation "org.jooq:jooq:3.17.6"
+
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
@@ -47,6 +50,8 @@ dependencies {
 
     testImplementation "org.http4k:http4k-testing-approval"
     testImplementation "org.http4k:http4k-testing-hamkrest"
+
+    jooqGenerator 'org.postgresql:postgresql:42.5.3'
 }
 
 test {
@@ -66,4 +71,61 @@ compileKotlin {
 
 compileTestKotlin {
     compilerOptions.freeCompilerArgs.add("-Xcontext-receivers")
+}
+
+jooq {
+    version = '3.17.6'  // default (can be omitted)
+    edition = nu.studer.gradle.jooq.JooqEdition.OSS  // default (can be omitted)
+
+    configurations {
+        main {  // name of the jOOQ configuration
+            generateSchemaSourceOnCompilation = true  // default (can be omitted)
+
+            generationTool {
+                logging = org.jooq.meta.jaxb.Logging.WARN
+                jdbc {
+                    driver = 'org.postgresql.Driver'
+                    url = 'jdbc:postgresql://localhost:5433/gilded-rose'
+                    user = 'gilded'
+                    password = 'rose'
+                    properties {
+                        property {
+                            key = 'ssl'
+                            value = 'false'
+                        }
+                    }
+                }
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.postgres.PostgresDatabase'
+                        inputSchema = 'public'
+//                        forcedTypes {
+//                            forcedType {
+//                                name = 'varchar'
+//                                includeExpression = '.*'
+//                                includeTypes = 'JSONB?'
+//                            }
+//                            forcedType {
+//                                name = 'varchar'
+//                                includeExpression = '.*'
+//                                includeTypes = 'INET'
+//                            }
+//                        }
+                    }
+                    generate {
+                        deprecated = false
+                        records = true
+                        immutablePojos = true
+                        fluentSetters = true
+                    }
+                    target {
+                        packageName = 'nu.studer.sample'
+                        directory = 'build/generated-src/jooq/main'  // default (can be omitted)
+                    }
+                    strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+                }
+            }
+        }
+    }
 }
