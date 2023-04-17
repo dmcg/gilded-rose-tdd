@@ -17,8 +17,8 @@ import java.time.LocalDate
 
 class JOOQItems(
     val dslContext: DSLContext
-) :
-    Items<NoTX> {
+) : Items<NoTX> {
+
     override fun <R> inTransaction(block: context(NoTX) () -> R): R {
         return block(NoTX)
     }
@@ -61,7 +61,9 @@ fun DSLContext.load(): StockList {
             ITEMS.MODIFIED.eq(
                 DSL.select(max(ITEMS.MODIFIED)).from(
                     ITEMS
-                )))
+                )
+            )
+        )
         .fetch()
         .map { record ->
             record[ITEMS.MODIFIED] to record.toItem()
