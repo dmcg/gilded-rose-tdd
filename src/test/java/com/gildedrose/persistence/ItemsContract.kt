@@ -15,12 +15,16 @@ import kotlin.test.assertEquals
 abstract class ItemsContract<TX : TXContext>(
     val items: Items<TX>
 ) {
-    private val initialStockList = StockList(
+    protected val initialStockList = StockList(
         lastModified = Instant.parse("2022-02-09T23:59:59Z"),
         items = listOf(
             item("banana", oct29.minusDays(1), 42),
             item("kumquat", oct29.plusDays(1), 101)
         )
+    )
+    protected val nullStockist = StockList(
+        lastModified = Instant.EPOCH,
+        items = emptyList()
     )
 
     context(IO)
@@ -28,12 +32,7 @@ abstract class ItemsContract<TX : TXContext>(
     fun `returns empty stocklist before any save`() {
         items.inTransaction {
             assertEquals(
-                Success(
-                    StockList(
-                        lastModified = Instant.EPOCH,
-                        items = emptyList()
-                    )
-                ),
+                Success(nullStockist),
                 items.load()
             )
         }
