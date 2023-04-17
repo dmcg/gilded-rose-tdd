@@ -9,6 +9,8 @@ import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
+import java.util.concurrent.CyclicBarrier
+import kotlin.concurrent.thread
 import kotlin.test.assertEquals
 
 @ExtendWith(IOResolver::class)
@@ -59,4 +61,28 @@ abstract class ItemsContract<TX : TXContext>(
             )
         }
     }
+
+    context(IO)
+    open fun transactions() {
+        val cyclicBarrier = CyclicBarrier(2)
+        val thread = thread {
+            items.inTransaction {
+                items.save(initialStockList)
+                cyclicBarrier.await()
+                cyclicBarrier.await()
+            }
+        }
+
+        cyclicBarrier.await()
+        items.inTransaction {
+            assertEquals(Success(nullStockist), items.load())
+        }
+
+        cyclicBarrier.await()
+        thread.join()
+        items.inTransaction {
+            assertEquals(Success(initialStockList), items.load())
+        }
+    }
+
 }
