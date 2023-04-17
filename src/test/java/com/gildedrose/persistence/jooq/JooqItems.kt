@@ -16,7 +16,7 @@ import org.jooq.impl.DSL.max
 import java.time.Instant
 import java.time.LocalDate
 
-class JooqTXContext(val transactionalDSLContext: DSLContext): TXContext()
+class JooqTXContext(val transactionalDSLContext: DSLContext) : TXContext()
 
 class JooqItems(
     val dslContext: DSLContext
@@ -42,8 +42,16 @@ class JooqItems(
     }
 }
 
+private val sentinelItem = Item(
+    id = ID("NO-ITEMS-SAVED")!!,
+    name = NonBlankString("THIS IS NOT AN ITEM")!!,
+    sellByDate = null,
+    quality = Quality(Int.MAX_VALUE)!!
+)
+
 fun DSLContext.save(stockList: StockList) {
-    stockList.forEach { item ->
+    val toSave = if (stockList.isEmpty()) listOf(sentinelItem) else stockList.items
+    toSave.forEach { item ->
         insertInto(ITEMS)
             .columns(ITEMS.ID, ITEMS.MODIFIED, ITEMS.NAME, ITEMS.QUALITY, ITEMS.SELLBYDATE)
             .values(
@@ -58,7 +66,7 @@ fun DSLContext.save(stockList: StockList) {
 }
 
 fun DSLContext.load(): StockList {
-    val items: List<Pair<Instant, Item>> = select(
+    val lastModifiedsToItems: List<Pair<Instant, Item>> = select(
         ITEMS.ID, ITEMS.MODIFIED, ITEMS.NAME, ITEMS.QUALITY, ITEMS.SELLBYDATE
     )
         .from(ITEMS)
@@ -73,16 +81,19 @@ fun DSLContext.load(): StockList {
         .map { record ->
             record[ITEMS.MODIFIED] to record.toItem()
         }
-    val lastModified = items.firstOrNull()
-    return StockList(lastModified?.first ?: Instant.EPOCH, items.map { it.second })
+    val firstLastModifiedToItem = lastModifiedsToItems.firstOrNull()
+    val isEmpty = firstLastModifiedToItem?.second == sentinelItem
+    return StockList(
+        firstLastModifiedToItem?.first ?: Instant.EPOCH,
+        if (isEmpty) emptyList() else lastModifiedsToItems.map { it.second }
+    )
 }
 
-
-private fun Record5<String, Instant, String, Int, LocalDate>.toItem(): Item {
-    val id: ID<Item> = ID(this[ITEMS.ID])!!
-    val name = NonBlankString(this[ITEMS.NAME])!!
-    val sellByDate = this[ITEMS.SELLBYDATE]
-    val quality = Quality(this[ITEMS.QUALITY])!!
-    return Item(id, name, sellByDate, quality)
-}
+private fun Record5<String, Instant, String, Int, LocalDate>.toItem() =
+    Item(
+        id = ID(this[ITEMS.ID]) ?: error("Invalid ID"),
+        name = NonBlankString(this[ITEMS.NAME]) ?: error("Invalid name"),
+        sellByDate = this[ITEMS.SELLBYDATE],
+        quality = Quality(this[ITEMS.QUALITY]) ?: error("Invalid quality")
+    )
 

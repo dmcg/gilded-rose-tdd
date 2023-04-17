@@ -25,4 +25,9 @@ class DatabaseItemsTests : ItemsContract<ExposedTXContext>(
     override fun transactions() {
         super.transactions()
     }
+
+    context(IO)
+    @Test
+    override fun `can save an empty stocklist`() {
+    }
 }

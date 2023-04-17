@@ -63,6 +63,28 @@ abstract class ItemsContract<TX : TXContext>(
     }
 
     context(IO)
+    @Test
+    open fun `can save an empty stocklist`() {
+        items.inTransaction {
+            items.save(initialStockList)
+            assertEquals(
+                Success(initialStockList),
+                items.load()
+            )
+
+            val modifiedStockList = initialStockList.copy(
+                lastModified = initialStockList.lastModified.plusSeconds(3600),
+                items = emptyList()
+            )
+            items.save(modifiedStockList)
+            assertEquals(
+                Success(modifiedStockList),
+                items.load()
+            )
+        }
+    }
+
+    context(IO)
     open fun transactions() {
         val cyclicBarrier = CyclicBarrier(2)
         val thread = thread {
