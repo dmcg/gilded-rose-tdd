@@ -4,10 +4,11 @@ import com.gildedrose.db.tables.Items.ITEMS
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.IO
 import com.gildedrose.persistence.Items
-import com.gildedrose.persistence.NoTX
 import com.gildedrose.persistence.StockListLoadingError
+import com.gildedrose.persistence.TXContext
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
+import org.jooq.Configuration
 import org.jooq.DSLContext
 import org.jooq.Record5
 import org.jooq.impl.DSL
@@ -15,25 +16,29 @@ import org.jooq.impl.DSL.max
 import java.time.Instant
 import java.time.LocalDate
 
-class JOOQItems(
+class JooqTXContext(val transactionalDSLContext: DSLContext): TXContext()
+
+class JooqItems(
     val dslContext: DSLContext
-) : Items<NoTX> {
+) : Items<JooqTXContext> {
 
-    override fun <R> inTransaction(block: context(NoTX) () -> R): R {
-        return block(NoTX)
-    }
+    override fun <R> inTransaction(block: context(JooqTXContext) () -> R): R =
+        dslContext.transactionResult { trx: Configuration ->
+            val txContext = JooqTXContext(trx.dsl())
+            block(txContext)
+        }
 
-    context(IO, NoTX)
+    context(IO, JooqTXContext)
     override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError> {
-        dslContext.save(stockList)
+        transactionalDSLContext.save(stockList)
         return Success(stockList)
     }
 
-    context(IO, NoTX)
+    context(IO, JooqTXContext)
     override fun load(): Result<StockList, StockListLoadingError> {
-        return Success(dslContext.load())
+        return Success(transactionalDSLContext.load())
     }
 }
 
