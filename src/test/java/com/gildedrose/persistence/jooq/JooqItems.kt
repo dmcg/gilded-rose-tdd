@@ -55,43 +55,43 @@ private val sentinelItem = Item(
 )
 
 fun DSLContext.save(stockList: StockList) {
-    val toSave = if (stockList.isEmpty()) listOf(sentinelItem) else stockList.items
+    val toSave = when {
+        stockList.isEmpty() -> listOf(sentinelItem)
+        else -> stockList.items
+    }
     toSave.forEach { item ->
-        insertInto(ITEMS)
-            .columns(ITEMS.ID, ITEMS.MODIFIED, ITEMS.NAME, ITEMS.QUALITY, ITEMS.SELLBYDATE)
-            .values(
-                item.id.value.value,
-                stockList.lastModified,
-                item.name.value,
-                item.quality.valueInt,
-                item.sellByDate
-            ) // TODO("fix value types")
-            .execute()
+        with(ITEMS) {
+            insertInto(ITEMS)
+                .set(ID, item.id.toString())
+                .set(MODIFIED, stockList.lastModified)
+                .set(NAME, item.name.toString())
+                .set(QUALITY, item.quality.valueInt)
+                .set(SELLBYDATE, item.sellByDate)
+                .execute()
+        }
     }
 }
 
 fun DSLContext.load(): StockList {
-    val lastModifiedsToItems: List<Pair<Instant, Item>> = select(
-        ITEMS.ID, ITEMS.MODIFIED, ITEMS.NAME, ITEMS.QUALITY, ITEMS.SELLBYDATE
-    )
-        .from(ITEMS)
-        .where(
-            ITEMS.MODIFIED.eq(
-                DSL.select(max(ITEMS.MODIFIED)).from(
-                    ITEMS
-                )
+    with(ITEMS) {
+        val records = select(ID, MODIFIED, NAME, QUALITY, SELLBYDATE)
+            .from(ITEMS)
+            .where(
+                MODIFIED.eq(DSL.select(max(MODIFIED)).from(ITEMS))
             )
-        )
-        .fetch()
-        .map { record ->
-            record[ITEMS.MODIFIED] to record.toItem()
+            .fetch()
+        return if (records.isEmpty())
+            StockList(Instant.EPOCH, emptyList())
+        else {
+            val lastModified: Instant = records.first()[MODIFIED]
+            val items: List<Item> = records.map { it.toItem() }
+            val isEmpty = (items.singleOrNull() == sentinelItem)
+            StockList(
+                lastModified,
+                if (isEmpty) emptyList() else items
+            )
         }
-    val firstLastModifiedToItem = lastModifiedsToItems.firstOrNull()
-    val isEmpty = firstLastModifiedToItem?.second == sentinelItem
-    return StockList(
-        firstLastModifiedToItem?.first ?: Instant.EPOCH,
-        if (isEmpty) emptyList() else lastModifiedsToItems.map { it.second }
-    )
+    }
 }
 
 private fun Record5<String, Instant, String, Int, LocalDate>.toItem() =

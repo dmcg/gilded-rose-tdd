@@ -17,14 +17,14 @@ import kotlin.test.assertEquals
 abstract class ItemsContract<TX : TXContext>(
     val items: Items<TX>
 ) {
-    protected val initialStockList = StockList(
+    private val initialStockList = StockList(
         lastModified = Instant.parse("2022-02-09T23:59:59Z"),
         items = listOf(
             item("banana", oct29.minusDays(1), 42),
-            item("kumquat", oct29.plusDays(1), 101)
+            item("kumquat", null, 101)
         )
     )
-    protected val nullStockist = StockList(
+    private val nullStockist = StockList(
         lastModified = Instant.EPOCH,
         items = emptyList()
     )
