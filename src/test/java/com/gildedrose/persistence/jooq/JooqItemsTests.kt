@@ -16,15 +16,15 @@ val testDataSource = PGSimpleDataSource().apply {
     databaseName = "gilded-rose"
     portNumbers = intArrayOf(5433)
 }
-val dslContext: DSLContext = DSL.using(testDataSource, SQLDialect.POSTGRES)
+val testDslContext: DSLContext = DSL.using(testDataSource, SQLDialect.POSTGRES)
 
 class JooqItemsTests : ItemsContract<JooqTXContext>(
-    items = JooqItems(dslContext)
+    items = JooqItems(testDslContext)
 ) {
 
     @BeforeEach
     fun clearDB() {
-        dslContext.truncate(Items.ITEMS).execute()
+        testDslContext.truncate(Items.ITEMS).execute()
     }
 
     context(IO)
