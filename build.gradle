@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.8.0'
     id 'nu.studer.jooq' version '8.1'
+    id "org.flywaydb.flyway" version "9.16.3"
 }
 
 group = 'com.gildedrose'
@@ -71,6 +72,12 @@ compileKotlin {
 
 compileTestKotlin {
     compilerOptions.freeCompilerArgs.add("-Xcontext-receivers")
+}
+
+flyway {
+    url = 'jdbc:postgresql://localhost:5433/gilded-rose'
+    user = 'gilded'
+    password = 'rose'
 }
 
 jooq {
