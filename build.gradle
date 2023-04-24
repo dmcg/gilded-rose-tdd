@@ -14,6 +14,10 @@ repositories {
 
 ext.junitVersion = '5.9.1'
 ext.jacksonVersion = '2.14.1'
+ext.jdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:postgresql://localhost:5433/gilded-rose').get()
+ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('gilded').get()
+ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('rose').get()
+
 
 dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
@@ -72,9 +76,9 @@ compileTestKotlin {
 }
 
 flyway {
-    url = 'jdbc:postgresql://localhost:5433/gilded-rose'
-    user = 'gilded'
-    password = 'rose'
+    url = "$jdbcUrl"
+    user = "$databaseUsername"
+    password = "$databasePassword"
 }
 
 jooq {
@@ -89,9 +93,9 @@ jooq {
                 logging = org.jooq.meta.jaxb.Logging.WARN
                 jdbc {
                     driver = 'org.postgresql.Driver'
-                    url = 'jdbc:postgresql://localhost:5433/gilded-rose'
-                    user = 'gilded'
-                    password = 'rose'
+                    url = "$jdbcUrl"
+                    user = "$databaseUsername"
+                    password = "$databasePassword"
                     properties {
                         property {
                             key = 'ssl'
