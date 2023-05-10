@@ -16,22 +16,24 @@ import java.util.concurrent.CyclicBarrier
 import kotlin.concurrent.thread
 import kotlin.test.assertEquals
 
+val nullStockist = StockList(
+    lastModified = Instant.EPOCH,
+    items = emptyList()
+)
+
+val initialStockList = StockList(
+    lastModified = Instant.parse("2022-02-09T23:59:59Z"),
+    items = listOf(
+        item("banana", oct29.minusDays(1), 42),
+        item("kumquat", null, 101)
+    )
+)
+
 context(IO)
 @ExtendWith(IOResolver::class)
 abstract class ItemsContract<TX : TXContext>(
     val items: Items<TX>
 ) {
-    private val initialStockList = StockList(
-        lastModified = Instant.parse("2022-02-09T23:59:59Z"),
-        items = listOf(
-            item("banana", oct29.minusDays(1), 42),
-            item("kumquat", null, 101)
-        )
-    )
-    private val nullStockist = StockList(
-        lastModified = Instant.EPOCH,
-        items = emptyList()
-    )
 
     @Test
     fun `returns empty stocklist before any save`() {

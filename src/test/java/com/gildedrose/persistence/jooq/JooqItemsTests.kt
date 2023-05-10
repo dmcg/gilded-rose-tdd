@@ -11,6 +11,7 @@ import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.ResourceLock
 
 val testEnvironment: Environment = Environment.JVM_PROPERTIES overrides
     Environment.ENV overrides
@@ -30,6 +31,7 @@ val testDslContext: DSLContext = run {
 }
 
 context(IO)
+@ResourceLock("DATABASE")
 class JooqItemsTests : ItemsContract<JooqTXContext>(
     items = JooqItems(testDslContext)
 ) {

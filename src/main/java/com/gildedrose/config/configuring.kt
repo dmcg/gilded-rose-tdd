@@ -22,4 +22,5 @@ fun DbConfig.toHikariDataSource() = HikariDataSource().apply {
     jdbcUrl = this@toHikariDataSource.jdbcUrl.toString()
     username = this@toHikariDataSource.username
     password = this@toHikariDataSource.password
+//    dataSourceProperties = Properties().apply { setProperty("timezone", "UTC") }
 }
