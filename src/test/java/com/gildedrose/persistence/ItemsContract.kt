@@ -8,11 +8,15 @@ import com.gildedrose.testing.IOResolver
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.CyclicBarrier
 import kotlin.concurrent.thread
 import kotlin.test.assertEquals
 
+context(IO)
 @ExtendWith(IOResolver::class)
 abstract class ItemsContract<TX : TXContext>(
     val items: Items<TX>
@@ -29,7 +33,6 @@ abstract class ItemsContract<TX : TXContext>(
         items = emptyList()
     )
 
-    context(IO)
     @Test
     fun `returns empty stocklist before any save`() {
         items.inTransaction {
@@ -40,7 +43,6 @@ abstract class ItemsContract<TX : TXContext>(
         }
     }
 
-    context(IO)
     @Test
     fun `returns last saved stocklist`() {
         items.inTransaction {
@@ -62,7 +64,6 @@ abstract class ItemsContract<TX : TXContext>(
         }
     }
 
-    context(IO)
     @Test
     open fun `can save an empty stocklist`() {
         items.inTransaction {
@@ -84,7 +85,37 @@ abstract class ItemsContract<TX : TXContext>(
         }
     }
 
-    context(IO)
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "1970-01-01T00:00:00Z",
+            "2022-12-31T23:59:59Z",
+            "2023-01-01T00:00:00Z",
+            "2023-06-30T23:59:59Z",
+            "2023-07-01T00:00:00Z"
+        ]
+    )
+    open fun `can save stockLists with lots of lastModified in lots of timezones`(candidate: String) {
+        val initialTimeZone = TimeZone.getDefault()
+        try {
+            val stockList = initialStockList.copy(lastModified = Instant.parse(candidate))
+
+            TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
+            items.inTransaction {
+                items.save(stockList)
+            }
+            TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
+            items.inTransaction {
+                assertEquals(
+                    Success(stockList),
+                    items.load()
+                )
+            }
+        } finally {
+            TimeZone.setDefault(initialTimeZone)
+        }
+    }
+
     open fun transactions() {
         val cyclicBarrier = CyclicBarrier(2)
         val thread = thread {

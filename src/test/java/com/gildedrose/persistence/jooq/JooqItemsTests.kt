@@ -20,13 +20,16 @@ val testEnvironment: Environment = Environment.JVM_PROPERTIES overrides
         "db.password" to "rose"
     )
 
-val testDslContext: DSLContext = DSL.using(
-    testEnvironment.toDbConfig().toHikariDataSource().apply {
-        validate()
-    },
-    SQLDialect.POSTGRES
-)
+val testDslContext: DSLContext = run {
+    DSL.using(
+        testEnvironment.toDbConfig().toHikariDataSource().apply {
+            validate()
+        },
+        SQLDialect.POSTGRES
+    )
+}
 
+context(IO)
 class JooqItemsTests : ItemsContract<JooqTXContext>(
     items = JooqItems(testDslContext)
 ) {
@@ -36,7 +39,6 @@ class JooqItemsTests : ItemsContract<JooqTXContext>(
         testDslContext.truncate(Items.ITEMS).execute()
     }
 
-    context(IO)
     @Test
     override fun transactions() {
         super.transactions()

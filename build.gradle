@@ -112,7 +112,7 @@ jooq {
                             forcedType {
                                 name = 'instant'
                                 includeExpression = '.*'
-                                includeTypes = 'TIMESTAMP'
+                                includeTypes = 'TIMESTAMPTZ'
                             }
                         }
                     }
