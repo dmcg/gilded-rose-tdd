@@ -18,7 +18,7 @@ import java.time.LocalDate
 
 class JooqTXContext(val dslContext: DSLContext) : TXContext()
 
-class JooqItems(
+open class JooqItems(
     dslContext: DSLContext
 ) : Items<JooqTXContext> {
 
@@ -56,7 +56,7 @@ private val sentinelItem = Item(
 
 fun DSLContext.save(stockList: StockList) {
     val toSave = when {
-        stockList.isEmpty() -> listOf(sentinelItem)
+        stockList.items.isEmpty() -> listOf(sentinelItem)
         else -> stockList.items
     }
     toSave.forEach { item ->
