@@ -17,9 +17,10 @@ import org.junit.jupiter.api.parallel.ResourceLock
 import kotlin.test.assertEquals
 
 
+context(IO)
 @ResourceLock("DATABASE")
 @ExtendWith(IOResolver::class)
-class DualItemsTests() {
+class DualItemsTests : ItemsContract<JooqTXContext> {
     private val inMemoryItems = InMemoryItems()
     private val events = mutableListOf<Any>()
     val analytics: Analytics =  { events.add(it) }
@@ -28,7 +29,7 @@ class DualItemsTests() {
 
     private val otherItems = JooqItems(testDslContext)
 
-    val items = DualItems(
+    override val items = DualItems(
         sourceOfTruth = inMemoryItems,
         otherItems = otherItems,
         analytics = checkingAnalytics

@@ -31,9 +31,9 @@ val initialStockList = StockList(
 
 context(IO)
 @ExtendWith(IOResolver::class)
-abstract class ItemsContract<TX : TXContext>(
+interface ItemsContract<TX : TXContext> {
+
     val items: Items<TX>
-) {
 
     @Test
     fun `returns empty stocklist before any save`() {
@@ -67,7 +67,7 @@ abstract class ItemsContract<TX : TXContext>(
     }
 
     @Test
-    open fun `can save an empty stocklist`() {
+    fun `can save an empty stocklist`() {
         items.inTransaction {
             items.save(initialStockList)
             assertEquals(
@@ -97,7 +97,8 @@ abstract class ItemsContract<TX : TXContext>(
             "2023-07-01T00:00:00Z"
         ]
     )
-    open fun `can save stockLists with lots of lastModified in lots of timezones`(candidate: String) {
+
+    fun `can save stockLists with lots of lastModified in lots of timezones`(candidate: String) {
         val initialTimeZone = TimeZone.getDefault()
         try {
             val stockList = initialStockList.copy(lastModified = Instant.parse(candidate))
@@ -118,7 +119,7 @@ abstract class ItemsContract<TX : TXContext>(
         }
     }
 
-    open fun transactions() {
+    fun transactions() {
         val cyclicBarrier = CyclicBarrier(2)
         val thread = thread {
             items.inTransaction {
