@@ -32,7 +32,7 @@ val testDslContext: DSLContext = run {
 
 context(IO)
 @ResourceLock("DATABASE")
-class JooqItemsTests : ItemsContract<JooqTXContext> {
+class JooqItemsTests : ItemsContract<JooqTXContext>() {
     override val items = JooqItems(testDslContext)
 
     @BeforeEach

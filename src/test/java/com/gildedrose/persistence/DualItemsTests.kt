@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 context(IO)
 @ResourceLock("DATABASE")
 @ExtendWith(IOResolver::class)
-class DualItemsTests : ItemsContract<JooqTXContext> {
+class DualItemsTests : ItemsContract<JooqTXContext>() {
 
     private val sourceOfTruth = InMemoryItems()
     private val otherItems = JooqItems(testDslContext)

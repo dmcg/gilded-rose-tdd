@@ -7,7 +7,8 @@ import com.gildedrose.persistence.NoTX
 import java.nio.file.Files
 
 context(IO)
-class StockFileItemsTests : ItemsContract<NoTX> {
-    override val items: Items<NoTX> = StockFileItems(Files.createTempFile("stock", ".tsv").toFile())
-
+class StockFileItemsTests : ItemsContract<NoTX>() {
+    override val items: Items<NoTX> = StockFileItems(
+        Files.createTempFile("stock", ".tsv").toFile()
+    )
 }

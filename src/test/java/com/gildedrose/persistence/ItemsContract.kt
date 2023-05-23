@@ -31,9 +31,9 @@ val initialStockList = StockList(
 
 context(IO)
 @ExtendWith(IOResolver::class)
-interface ItemsContract<TX : TXContext> {
+abstract class ItemsContract<TX : TXContext> {
 
-    val items: Items<TX>
+    abstract val items: Items<TX>
 
     @Test
     fun `returns empty stocklist before any save`() {
@@ -119,7 +119,7 @@ interface ItemsContract<TX : TXContext> {
         }
     }
 
-    fun transactions() {
+    open fun transactions() {
         val cyclicBarrier = CyclicBarrier(2)
         val thread = thread {
             items.inTransaction {

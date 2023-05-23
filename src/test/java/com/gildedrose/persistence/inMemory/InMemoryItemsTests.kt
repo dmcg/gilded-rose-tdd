@@ -6,6 +6,6 @@ import com.gildedrose.persistence.ItemsContract
 import com.gildedrose.persistence.NoTX
 
 context(IO)
-class InMemoryItemsTests : ItemsContract<NoTX> {
+class InMemoryItemsTests : ItemsContract<NoTX>() {
     override val items: Items<NoTX> = InMemoryItems()
 }
