@@ -53,7 +53,7 @@ class DualItems(
         }
 }
 
-internal fun Result<StockList, StockListLoadingError>.toRenderable():
+private fun Result<StockList, StockListLoadingError>.toRenderable():
     Result<JacksonRenderableStockList, StockListLoadingError> =
     this.map { stockList -> JacksonRenderableStockList(stockList.lastModified, stockList.items) }
 
