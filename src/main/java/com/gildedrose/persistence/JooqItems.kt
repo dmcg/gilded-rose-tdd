@@ -1,11 +1,8 @@
-package com.gildedrose.persistence.jooq
+package com.gildedrose.persistence
 
 import com.gildedrose.db.tables.Items.ITEMS
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.IO
-import com.gildedrose.persistence.Items
-import com.gildedrose.persistence.StockListLoadingError
-import com.gildedrose.persistence.TXContext
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jooq.Configuration

@@ -1,8 +1,7 @@
-package com.gildedrose.persistence.stockFile
+package com.gildedrose.persistence
 
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.IO
-import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.persistence.StockListLoadingError.*
 import dev.forkhandles.result4k.*
 import java.io.File

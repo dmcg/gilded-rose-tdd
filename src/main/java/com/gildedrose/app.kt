@@ -7,8 +7,8 @@ import com.gildedrose.foundation.IO
 import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.http.serverFor
 import com.gildedrose.persistence.Stock
+import com.gildedrose.persistence.StockFileItems
 import com.gildedrose.persistence.StockListLoadingError
-import com.gildedrose.persistence.stockFile.StockFileItems
 import com.gildedrose.pricing.valueElfClient
 import dev.forkhandles.result4k.Result
 import java.io.File

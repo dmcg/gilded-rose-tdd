@@ -1,9 +1,6 @@
-package com.gildedrose.persistence.stockFile
+package com.gildedrose.persistence
 
 import com.gildedrose.foundation.IO
-import com.gildedrose.persistence.Items
-import com.gildedrose.persistence.ItemsContract
-import com.gildedrose.persistence.NoTX
 import java.nio.file.Files
 
 context(IO)

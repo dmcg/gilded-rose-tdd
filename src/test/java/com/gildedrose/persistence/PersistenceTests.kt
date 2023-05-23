@@ -1,4 +1,4 @@
-package com.gildedrose.persistence.stockFile
+package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO

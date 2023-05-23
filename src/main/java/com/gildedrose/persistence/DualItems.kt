@@ -5,8 +5,6 @@ import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.foundation.IO
-import com.gildedrose.persistence.jooq.JooqItems
-import com.gildedrose.persistence.jooq.JooqTXContext
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
 import java.time.Instant

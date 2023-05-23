@@ -1,6 +1,5 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.persistence.jooq.JooqItems
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
 

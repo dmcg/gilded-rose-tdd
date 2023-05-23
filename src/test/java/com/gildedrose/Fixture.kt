@@ -3,7 +3,7 @@ package com.gildedrose
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.runIO
 import com.gildedrose.foundation.then
-import com.gildedrose.persistence.stockFile.saveTo
+import com.gildedrose.persistence.saveTo
 import org.http4k.core.Request
 import org.http4k.core.Response
 import java.io.File

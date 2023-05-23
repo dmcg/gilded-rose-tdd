@@ -1,10 +1,9 @@
-package com.gildedrose.persistence.jooq
+package com.gildedrose.persistence
 
 import com.gildedrose.config.toDbConfig
 import com.gildedrose.config.toHikariDataSource
 import com.gildedrose.db.tables.Items
 import com.gildedrose.foundation.IO
-import com.gildedrose.persistence.ItemsContract
 import org.http4k.cloudnative.env.Environment
 import org.jooq.DSLContext
 import org.jooq.SQLDialect

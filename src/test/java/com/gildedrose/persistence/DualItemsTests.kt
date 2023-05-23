@@ -2,10 +2,6 @@ package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.*
-import com.gildedrose.persistence.inMemory.InMemoryItems
-import com.gildedrose.persistence.jooq.JooqItems
-import com.gildedrose.persistence.jooq.JooqTXContext
-import com.gildedrose.persistence.jooq.testDslContext
 import com.gildedrose.testing.IOResolver
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success

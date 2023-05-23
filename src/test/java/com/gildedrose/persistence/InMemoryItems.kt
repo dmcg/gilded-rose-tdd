@@ -1,10 +1,7 @@
-package com.gildedrose.persistence.inMemory
+package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
-import com.gildedrose.persistence.Items
-import com.gildedrose.persistence.NoTX
-import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import java.time.Instant
