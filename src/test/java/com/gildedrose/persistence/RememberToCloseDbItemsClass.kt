@@ -3,7 +3,7 @@ package com.gildedrose.persistence
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
 
-class RememberToCloseJooqItemsClass {
+class RememberToCloseDbItemsClass {
 
     @Test
     fun `JooqItems is not open when DualItemsTests doesn't exist`() {
@@ -15,7 +15,7 @@ class RememberToCloseJooqItemsClass {
         }
         if (!dualItemsTestsExists)
             assertFalse(
-                JooqItems::class.isOpen,
+                DbItems::class.isOpen,
                 "Remember to remove the open modifier on JooqItems now it isn't needed by the tests"
             )
     }

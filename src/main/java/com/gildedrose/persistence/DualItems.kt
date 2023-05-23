@@ -11,15 +11,15 @@ import java.time.Instant
 
 class DualItems(
     private val sourceOfTruth: Items<NoTX>,
-    private val otherItems: JooqItems,
+    private val otherItems: DbItems,
     private val analytics: Analytics
-) : Items<JooqTXContext> {
+) : Items<DbTxContext> {
 
     override fun <R> inTransaction(
-        block: context(JooqTXContext) () -> R
+        block: context(DbTxContext) () -> R
     ): R = otherItems.inTransaction(block)
 
-    context(IO, JooqTXContext)
+    context(IO, DbTxContext)
     override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError> =
@@ -36,7 +36,7 @@ class DualItems(
         }
 
 
-    context(IO, JooqTXContext)
+    context(IO, DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> =
         sourceOfTruth.inTransaction {
             sourceOfTruth.load()

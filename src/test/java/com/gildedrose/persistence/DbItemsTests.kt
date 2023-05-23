@@ -31,8 +31,8 @@ val testDslContext: DSLContext = run {
 
 context(IO)
 @ResourceLock("DATABASE")
-class JooqItemsTests : ItemsContract<JooqTXContext>() {
-    override val items = JooqItems(testDslContext)
+class DbItemsTests : ItemsContract<DbTxContext>() {
+    override val items = DbItems(testDslContext)
 
     @BeforeEach
     fun clearDB() {

@@ -15,10 +15,10 @@ import kotlin.test.assertEquals
 context(IO)
 @ResourceLock("DATABASE")
 @ExtendWith(IOResolver::class)
-class DualItemsTests : ItemsContract<JooqTXContext>() {
+class DualItemsTests : ItemsContract<DbTxContext>() {
 
     private val sourceOfTruth = InMemoryItems()
-    private val otherItems = JooqItems(testDslContext)
+    private val otherItems = DbItems(testDslContext)
 
     private val events = mutableListOf<Any>()
     private val analytics: Analytics = { events.add(it) }
@@ -66,8 +66,8 @@ class DualItemsTests : ItemsContract<JooqTXContext>() {
     @Test
     fun `raises event if other items throws on load`() {
         val exception = RuntimeException("Deliberate")
-        val brokenOtherItems = object : JooqItems(testDslContext) {
-            context(IO, JooqTXContext)
+        val brokenOtherItems = object : DbItems(testDslContext) {
+            context(IO, DbTxContext)
             override fun load():
                 Result<StockList, StockListLoadingError> {
                 throw exception
@@ -109,8 +109,8 @@ class DualItemsTests : ItemsContract<JooqTXContext>() {
     context(IO)
     @Test
     fun `raises event if other items disagrees on save`() {
-        val brokenOtherItems = object : JooqItems(testDslContext) {
-            context(IO, JooqTXContext)
+        val brokenOtherItems = object : DbItems(testDslContext) {
+            context(IO, DbTxContext)
             override fun save(stockList: StockList)
                 : Result<StockList, StockListLoadingError.IOError> {
                 super.save(stockList)
@@ -139,8 +139,8 @@ class DualItemsTests : ItemsContract<JooqTXContext>() {
     @Test
     fun `raises event if other items throws on save`() {
         val exception = RuntimeException("Deliberate")
-        val brokenOtherItems = object : JooqItems(testDslContext) {
-            context(IO, JooqTXContext)
+        val brokenOtherItems = object : DbItems(testDslContext) {
+            context(IO, DbTxContext)
             override fun save(stockList: StockList)
                 : Result<StockList, StockListLoadingError.IOError> {
                 throw exception

@@ -13,24 +13,24 @@ import org.jooq.impl.DSL.max
 import java.time.Instant
 import java.time.LocalDate
 
-class JooqTXContext(val dslContext: DSLContext) : TXContext()
+class DbTxContext(val dslContext: DSLContext) : TXContext()
 
-open class JooqItems(
+open class DbItems(
     dslContext: DSLContext
-) : Items<JooqTXContext> {
+) : Items<DbTxContext> {
 
     private val forInTransaction = object {
         @Suppress("UnnecessaryVariable")
         val untransactionalDSLContext = dslContext
     }
 
-    override fun <R> inTransaction(block: context(JooqTXContext) () -> R): R =
+    override fun <R> inTransaction(block: context(DbTxContext) () -> R): R =
         forInTransaction.untransactionalDSLContext.transactionResult { trx: Configuration ->
-            val txContext = JooqTXContext(trx.dsl())
+            val txContext = DbTxContext(trx.dsl())
             block(txContext)
         }
 
-    context(IO, JooqTXContext)
+    context(IO, DbTxContext)
     override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError> {
@@ -38,7 +38,7 @@ open class JooqItems(
         return Success(stockList)
     }
 
-    context(IO, JooqTXContext)
+    context(IO, DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> {
         return Success(dslContext.load())
     }
