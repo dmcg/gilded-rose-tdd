@@ -17,7 +17,7 @@ object NoTX: TXContext()
 /**
  * Repository for our StockList.
  */
-interface Items<TX: TXContext> {
+interface Items<out TX: TXContext> {
 
     fun <R> inTransaction(block: context(TX) () -> R): R
 

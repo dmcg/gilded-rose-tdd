@@ -4,6 +4,8 @@ import com.zaxxer.hikari.HikariDataSource
 import org.http4k.cloudnative.env.Environment
 import org.http4k.cloudnative.env.EnvironmentKey
 import org.http4k.lens.nonEmptyString
+import org.jooq.SQLDialect
+import org.jooq.impl.DSL
 import java.net.URI
 
 data class DbConfig(
@@ -11,6 +13,14 @@ data class DbConfig(
     val username: String,
     val password: String
 )
+
+fun DbConfig.toDslContext() = DSL.using(
+    toHikariDataSource().apply {
+        validate()
+    },
+    SQLDialect.POSTGRES
+)
+
 
 fun Environment.toDbConfig() = DbConfig(
     jdbcUrl = EnvironmentKey.map(URI::create).required("jdbc.url")(this),

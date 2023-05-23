@@ -2,12 +2,15 @@ package com.gildedrose
 
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.IO
-import com.gildedrose.http.serverFor
+import com.gildedrose.foundation.runIO
+import com.gildedrose.persistence.InMemoryItems
+import com.gildedrose.persistence.Items
+import com.gildedrose.persistence.NoTX
 import com.gildedrose.persistence.StockListLoadingError
-import com.gildedrose.pricing.fakeValueElfRoutes
 import com.gildedrose.testing.IOResolver
 import com.natpryce.hamkrest.assertion.assertThat
 import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
@@ -17,12 +20,9 @@ import org.http4k.hamkrest.hasStatus
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
 import org.http4k.testing.assertApproved
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.net.URI
 import java.time.Instant.parse as t
 import java.time.LocalDate.parse as localDate
 
@@ -55,61 +55,63 @@ class ListStockTests {
             stockList[1].withPrice(null),
             stockList[2].withPrice(Price(999))
         )
-
-        @BeforeAll
-        @JvmStatic
-        fun startServer() {
-            server.start()
-        }
-
-        private val baseApp = App(valueElfUri = URI.create("http://localhost:8888/prices"))
-        private val server = serverFor(port = 8888, fakeValueElfRoutes(valueElfPricing))
-
-        @AfterAll
-        @JvmStatic
-        fun stopServer() {
-            server.stop()
-        }
     }
 
     context(IO)
     @Test
     fun `list stock`(approver: Approver) {
-        with(
-            baseApp.fixture(
-                now = sameDayAsLastModified,
-                initialStockList = stockList
-            )
-        ) {
-            assertEquals(
-                Success(expectedPricedStockList),
-                app.loadStockList()
-            )
-            approver.assertApproved(routes(Request(GET, "/")), OK)
+        val items = InMemoryItems().apply {
+            runIO {
+                inTransaction { save(stockList) }
+            }
         }
-
+        val app = App(
+            items = items,
+            pricing = { item -> valueElfPricing(item.id, item.quality) },
+            clock = { sameDayAsLastModified }
+        )
+        assertEquals(
+            Success(expectedPricedStockList),
+            app.loadStockList()
+        )
+        approver.assertApproved(app.routes(Request(GET, "/")), OK)
     }
 
     context(IO)
     @Test
     fun `reports errors`() {
-        with(
-            baseApp.fixture(
-                now = sameDayAsLastModified,
-                initialStockList = stockList
-            )
-        ) {
-            stockFile.writeText(stockFile.readText().replace("banana", ""))
-            val expectedFailure = StockListLoadingError.BlankName("B1\t\t2022-02-08\t42")
-            assertEquals(
-                Failure(expectedFailure),
-                app.loadStockList()
-            )
-            assertThat(routes(Request(GET, "/")), hasStatus(INTERNAL_SERVER_ERROR))
-            assertEquals(
-                expectedFailure,
-                events.first()
-            )
+        val expectedError = StockListLoadingError.BlankName("B1\t\t2022-02-08\t42")
+
+        val itemsThatFails = object : Items<NoTX> {
+            override fun <R> inTransaction(block: context(NoTX) () -> R) = block(NoTX)
+
+
+            context(IO, NoTX) override fun load(): Result<StockList, StockListLoadingError> {
+                return Failure(expectedError)
+            }
+
+            context(IO, NoTX) override fun save(stockList: StockList): Result<StockList, StockListLoadingError.IOError> {
+                throw NotImplementedError()
+            }
+
         }
+        val events: MutableList<Any> = mutableListOf()
+
+        val app = App(
+            items = itemsThatFails,
+            pricing = { item -> valueElfPricing(item.id, item.quality) },
+            clock = { sameDayAsLastModified },
+            analytics = events::add
+        )
+
+        assertEquals(
+            Failure(expectedError),
+            app.loadStockList()
+        )
+        assertThat(app.routes(Request(GET, "/")), hasStatus(INTERNAL_SERVER_ERROR))
+        assertEquals(
+            expectedError,
+            events.first()
+        )
     }
 }

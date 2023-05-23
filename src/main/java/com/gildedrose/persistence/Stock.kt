@@ -11,7 +11,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 class Stock(
-    val items: Items<NoTX>,
+    val items: Items<TXContext>,
     private val zoneId: ZoneId,
     private val itemUpdate: (Item).(days: Int, on: LocalDate) -> Item
 ) {

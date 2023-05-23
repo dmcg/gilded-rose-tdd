@@ -1,13 +1,11 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.config.toDbConfig
-import com.gildedrose.config.toHikariDataSource
+import com.gildedrose.config.toDslContext
 import com.gildedrose.db.tables.Items
 import com.gildedrose.foundation.IO
 import org.http4k.cloudnative.env.Environment
 import org.jooq.DSLContext
-import org.jooq.SQLDialect
-import org.jooq.impl.DSL
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -20,14 +18,9 @@ val testEnvironment: Environment = Environment.JVM_PROPERTIES overrides
         "db.password" to "rose"
     )
 
-val testDslContext: DSLContext = run {
-    DSL.using(
-        testEnvironment.toDbConfig().toHikariDataSource().apply {
-            validate()
-        },
-        SQLDialect.POSTGRES
-    )
-}
+val testDbConfig = testEnvironment.toDbConfig()
+
+val testDslContext: DSLContext = testDbConfig.toDslContext()
 
 context(IO)
 @ResourceLock("DATABASE")
