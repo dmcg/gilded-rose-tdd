@@ -1,6 +1,5 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.db.tables.Items
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.*
 import com.gildedrose.persistence.inMemory.InMemoryItems
@@ -21,37 +20,30 @@ context(IO)
 @ResourceLock("DATABASE")
 @ExtendWith(IOResolver::class)
 class DualItemsTests : ItemsContract<JooqTXContext> {
-    private val inMemoryItems = InMemoryItems()
-    private val events = mutableListOf<Any>()
-    val analytics: Analytics =  { events.add(it) }
-    val checkingAnalytics = analytics then
-        loggingAnalytics(::println)
 
+    private val sourceOfTruth = InMemoryItems()
     private val otherItems = JooqItems(testDslContext)
 
-    override val items = DualItems(
-        sourceOfTruth = inMemoryItems,
-        otherItems = otherItems,
-        analytics = checkingAnalytics
-    )
+    private val events = mutableListOf<Any>()
+    private val analytics: Analytics = { events.add(it) }
+    private val printingAnalytics = analytics then
+        loggingAnalytics(::println)
+
+    override val items = DualItems(sourceOfTruth, otherItems, printingAnalytics)
 
     @BeforeEach
     fun clearDB() {
-        testDslContext.truncate(Items.ITEMS).execute()
+        testDslContext.truncate(com.gildedrose.db.tables.Items.ITEMS).execute()
     }
 
     context(IO)
     @Test
     fun `returns result from source of truth`() {
-        inMemoryItems.inTransaction {
-            inMemoryItems.save(initialStockList)
-        }
-        otherItems.inTransaction {
-            otherItems.save(initialStockList)
-        }
+        sourceOfTruth.transactionally { save(initialStockList) }
+        otherItems.transactionally { save(initialStockList) }
         assertEquals(
             Success(initialStockList),
-            items.inTransaction { items.load() }
+            items.transactionally { items.load() }
         )
         assertEquals(0, events.size)
     }
@@ -59,15 +51,11 @@ class DualItemsTests : ItemsContract<JooqTXContext> {
     context(IO)
     @Test
     fun `raises event if other items disagrees on load`() {
-        inMemoryItems.inTransaction {
-            inMemoryItems.save(initialStockList)
-        }
-        otherItems.inTransaction {
-            otherItems.save(nullStockist)
-        }
+        sourceOfTruth.transactionally { save(initialStockList) }
+        otherItems.transactionally { save(nullStockist) }
         assertEquals(
             Success(initialStockList),
-            items.inTransaction { items.load() }
+            items.transactionally { items.load() }
         )
         assertEquals(
             stocklistLoadingMismatch(
@@ -82,22 +70,22 @@ class DualItemsTests : ItemsContract<JooqTXContext> {
     @Test
     fun `raises event if other items throws on load`() {
         val exception = RuntimeException("Deliberate")
-        val brokenOtherItems = object: JooqItems(testDslContext) {
-            context(IO, JooqTXContext) override fun load(): Result<StockList, StockListLoadingError> {
+        val brokenOtherItems = object : JooqItems(testDslContext) {
+            context(IO, JooqTXContext)
+            override fun load():
+                Result<StockList, StockListLoadingError> {
                 throw exception
             }
         }
         val items = DualItems(
-            inMemoryItems,
+            sourceOfTruth,
             brokenOtherItems,
-            analytics = checkingAnalytics
+            analytics = printingAnalytics
         )
-        inMemoryItems.inTransaction {
-            inMemoryItems.save(initialStockList)
-        }
+        sourceOfTruth.transactionally { save(initialStockList) }
         assertEquals(
             Success(initialStockList),
-            items.inTransaction { items.load() }
+            items.transactionally { load() }
         )
         assertEquals(
             StockListLoadingExceptionCaught(exception),
@@ -108,43 +96,39 @@ class DualItemsTests : ItemsContract<JooqTXContext> {
     context(IO)
     @Test
     fun `saves to both items`() {
-        items.inTransaction {
-            val saved = items.save(initialStockList)
-            assertEquals(Success(initialStockList), saved)
-        }
-        inMemoryItems.inTransaction {
-            assertEquals(
-                Success(initialStockList),
-                inMemoryItems.load()
-            )
-        }
-        otherItems.inTransaction {
-            assertEquals(
-                Success(initialStockList),
-                otherItems.load()
-            )
-        }
+        assertEquals(
+            Success(initialStockList),
+            items.transactionally { save(initialStockList) }
+        )
+        assertEquals(
+            Success(initialStockList),
+            sourceOfTruth.transactionally { load() }
+        )
+        assertEquals(
+            Success(initialStockList),
+            otherItems.transactionally { load() }
+        )
     }
 
     context(IO)
     @Test
     fun `raises event if other items disagrees on save`() {
-        val brokenOtherItems = object: JooqItems(testDslContext) {
+        val brokenOtherItems = object : JooqItems(testDslContext) {
             context(IO, JooqTXContext)
-            override fun save(stockList: StockList): Result<StockList, StockListLoadingError.IOError> {
+            override fun save(stockList: StockList)
+                : Result<StockList, StockListLoadingError.IOError> {
                 super.save(stockList)
                 return Success(nullStockist)
             }
         }
         val items = DualItems(
-            inMemoryItems,
+            sourceOfTruth,
             brokenOtherItems,
-            analytics = checkingAnalytics
+            analytics = printingAnalytics
         )
-        // setup to have otherItems return nullStockList from save
         assertEquals(
             Success(initialStockList),
-            items.inTransaction { items.save(initialStockList) }
+            items.transactionally { save(initialStockList) }
         )
         assertEquals(
             stocklistSavingMismatch(
@@ -159,19 +143,21 @@ class DualItemsTests : ItemsContract<JooqTXContext> {
     @Test
     fun `raises event if other items throws on save`() {
         val exception = RuntimeException("Deliberate")
-        val brokenOtherItems = object: JooqItems(testDslContext) {
-            context(IO, JooqTXContext) override fun save(stockList: StockList): Result<StockList, StockListLoadingError.IOError> {
+        val brokenOtherItems = object : JooqItems(testDslContext) {
+            context(IO, JooqTXContext)
+            override fun save(stockList: StockList)
+                : Result<StockList, StockListLoadingError.IOError> {
                 throw exception
             }
         }
         val items = DualItems(
-            inMemoryItems,
+            sourceOfTruth,
             brokenOtherItems,
-            analytics = checkingAnalytics
+            analytics = printingAnalytics
         )
         assertEquals(
             Success(initialStockList),
-            items.inTransaction { items.save(initialStockList) }
+            items.transactionally { save(initialStockList) }
         )
         assertEquals(
             StockListSavingExceptionCaught(exception),
@@ -179,4 +165,11 @@ class DualItemsTests : ItemsContract<JooqTXContext> {
         )
     }
 }
+
+private fun <R, TX : TXContext> Items<TX>.transactionally(f: context(TX) Items<TX>.() -> R): R =
+    inTransaction {
+        f(magic(), this)
+    }
+
+
 
