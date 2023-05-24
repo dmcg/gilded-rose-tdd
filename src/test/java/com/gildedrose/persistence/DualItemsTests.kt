@@ -39,7 +39,7 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         otherItems.transactionally { save(initialStockList) }
         assertEquals(
             Success(initialStockList),
-            items.transactionally { items.load() }
+            items.transactionally { load() }
         )
         assertEquals(0, events.size)
     }
@@ -51,7 +51,7 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         otherItems.transactionally { save(nullStockist) }
         assertEquals(
             Success(initialStockList),
-            items.transactionally { items.load() }
+            items.transactionally { load() }
         )
         assertEquals(
             stocklistLoadingMismatch(
