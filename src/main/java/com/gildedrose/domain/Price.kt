@@ -1,7 +1,7 @@
 package com.gildedrose.domain
 
 import java.text.NumberFormat
-import java.util.Locale
+import java.util.*
 
 @JvmInline
 value class Price
@@ -11,8 +11,9 @@ private constructor(val pence: Long)  {
             if (value >= 0) Price(value)
             else null
 
-        private val numberFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.UK)
+        // This must be a function as NumberFormat is not thread safe
+        private fun getNumberFormat() = NumberFormat.getCurrencyInstance(Locale.UK)
     }
 
-    override fun toString(): String = numberFormat.format(pence / 100.0)
+    override fun toString(): String = getNumberFormat().format(pence / 100.0)
 }
