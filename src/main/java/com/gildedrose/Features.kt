@@ -1,3 +1,5 @@
 package com.gildedrose
 
-class Features()
+data class Features(
+    val isDeletingEnabled: Boolean = false
+)

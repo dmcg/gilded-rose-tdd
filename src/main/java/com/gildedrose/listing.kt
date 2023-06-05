@@ -14,12 +14,13 @@ import java.time.ZoneId
 fun listHandler(
     clock: () -> Instant,
     zoneId: ZoneId,
-    listing: context(IO) (Instant) -> Result4k<StockList, StockListLoadingError>
+    listing: context(IO) (Instant) -> Result4k<StockList, StockListLoadingError>,
+    features: Features
 ): HttpHandler = { _ ->
     runIO {
         val now = clock()
         val stockListResult = listing(magic(), now)
-        render(stockListResult, now, zoneId)
+        render(stockListResult, now, zoneId, features)
     }
 }
 
