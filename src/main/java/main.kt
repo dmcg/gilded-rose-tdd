@@ -1,5 +1,7 @@
 import com.gildedrose.App
 import com.gildedrose.config.toDbConfig
+import com.gildedrose.http.serverFor
+import com.gildedrose.routes
 import org.http4k.cloudnative.env.Environment
 
 
@@ -14,5 +16,6 @@ val environment = Environment.JVM_PROPERTIES overrides
 val dbConfig = environment.toDbConfig()
 
 fun main() {
-    App(dbConfig = dbConfig).start()
+    val app = App(dbConfig = dbConfig)
+    serverFor(port = 80, app.routes).start()
 }

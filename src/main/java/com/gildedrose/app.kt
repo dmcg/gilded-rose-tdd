@@ -8,7 +8,6 @@ import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.IO
 import com.gildedrose.foundation.loggingAnalytics
-import com.gildedrose.http.serverFor
 import com.gildedrose.persistence.*
 import com.gildedrose.pricing.valueElfClient
 import dev.forkhandles.result4k.Result
@@ -21,7 +20,6 @@ val stdOutAnalytics = loggingAnalytics(::println)
 val londonZoneId = ZoneId.of("Europe/London")
 
 data class App(
-    val port: Int = 80,
     val items: Items<TXContext>,
     val features: Features = Features(),
     val clock: () -> Instant = Instant::now,
@@ -29,7 +27,6 @@ data class App(
     val pricing: context(IO) (Item) -> Price?
 ) {
     constructor(
-        port: Int = 80,
         stockFile: File = File("stock.tsv"),
         dbConfig: DbConfig,
         features: Features = Features(),
@@ -37,7 +34,6 @@ data class App(
         clock: () -> Instant = Instant::now,
         analytics: Analytics = stdOutAnalytics
     ) : this(
-        port,
         DualItems(StockFileItems(stockFile), DbItems(dbConfig.toDslContext()), analytics),
         features,
         clock,
@@ -55,17 +51,8 @@ data class App(
         pricing = pricing,
         analytics = analytics
     )
-    val routes = routesFor(
-        clock = clock,
-        analytics = analytics,
-        features
-    ) { loadStockList(it) }
-    private val server = serverFor(port = port, routes)
 
     context(IO) fun loadStockList(now: Instant = clock()): Result<StockList, StockListLoadingError> =
         pricedLoader.load(now)
 
-    fun start() {
-        server.start()
-    }
 }

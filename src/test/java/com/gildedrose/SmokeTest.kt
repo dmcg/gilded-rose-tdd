@@ -12,10 +12,12 @@ import org.junit.jupiter.api.Test
 @Disabled
 class SmokeTest {
 
-    @Test fun `run the app and list stock`() {
+    @Test
+    fun `run the app and list stock`() {
         val app = App(dbConfig = dbConfig)
-        val response = app.routes(Request(GET, "/"))
+        val routes = app.routes
+        val response = routes(Request(GET, "/"))
         assertThat(response, hasStatus(OK))
-        app.routes(Request(GET, "/"))
+        routes(Request(GET, "/"))
     }
 }
