@@ -31,9 +31,9 @@ class PricedStockListLoaderTests {
             )
         )
         private val expectedPricedStockList = loadedStockList.withItems(
-            loadedStockList[0].withPrice(Price(666)),
-            loadedStockList[1].withPrice(null),
-            loadedStockList[2].withPrice(Price(999))
+            loadedStockList[0].withPriceResult(Price(666)),
+            loadedStockList[1].withPriceResult(null),
+            loadedStockList[2].withPriceResult(Price(999))
         )
     }
 

@@ -13,11 +13,9 @@ data class Fixture(
 ) {
     context(IO)
     fun pricing(item: Item): Price? =
-        pricedStockList.find { it.withPrice(null) == item }?.price?.valueOrNull()
+        pricedStockList.find { it.withNoPrice() == item }?.price?.valueOrNull()
 
-    val stockList = pricedStockList.copy(
-        items = pricedStockList.map { item -> item.withPrice(null) }
-    )
+    val stockList = pricedStockList.copy(items = pricedStockList.withoutPrices())
 
     val unpricedItems: InMemoryItems = InMemoryItems().apply {
         runIO {

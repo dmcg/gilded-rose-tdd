@@ -22,9 +22,9 @@ class StockListRenderingTests {
         val stockList = StockList(
             lastModified = someTime,
             items = listOf(
-                item("banana", oct29.minusDays(1), 42).withPrice(Price(100)),
-                item("kumquat", oct29.plusDays(1), 101).withPrice(Failure(RuntimeException("simulated failure"))),
-                item("undated", null, 50).withPrice(null)
+                item("banana", oct29.minusDays(1), 42).withPriceResult(Price(100)),
+                item("kumquat", oct29.plusDays(1), 101).withPriceResult(Failure(RuntimeException("simulated failure"))),
+                item("undated", null, 50).withPriceResult(null)
             )
         )
         approver.assertApproved(
@@ -42,9 +42,9 @@ class StockListRenderingTests {
         val stockList = StockList(
             lastModified = someTime,
             items = listOf(
-                item("banana", oct29.minusDays(1), 42).withPrice(Price(100)),
-                item("kumquat", oct29.plusDays(1), 101).withPrice(Failure(RuntimeException("simulated failure"))),
-                item("undated", null, 50).withPrice(null)
+                item("banana", oct29.minusDays(1), 42).withPriceResult(Price(100)),
+                item("kumquat", oct29.plusDays(1), 101).withPriceResult(Failure(RuntimeException("simulated failure"))),
+                item("undated", null, 50).withPriceResult(null)
             )
         )
         approver.assertApproved(

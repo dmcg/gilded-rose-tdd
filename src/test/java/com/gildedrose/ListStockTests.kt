@@ -36,9 +36,9 @@ class ListStockTests {
         val pricedStockList = StockList(
             lastModified,
             listOf(
-                item("banana", localDate("2022-02-08"), 42).withPrice(Price(666)),
-                item("kumquat", localDate("2022-02-10"), 101).withPrice(null),
-                item("undated", null, 50).withPrice(Price(999))
+                item("banana", localDate("2022-02-08"), 42).withPriceResult(Price(666)),
+                item("kumquat", localDate("2022-02-10"), 101).withPriceResult(null),
+                item("undated", null, 50).withPriceResult(Price(999))
             )
         )
         val fixture = Fixture(pricedStockList)
