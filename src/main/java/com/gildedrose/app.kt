@@ -2,6 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.config.DbConfig
 import com.gildedrose.config.toDslContext
+import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.StockList
@@ -11,6 +12,7 @@ import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.persistence.*
 import com.gildedrose.pricing.valueElfClient
 import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.map
 import java.io.File
 import java.net.URI
 import java.time.Instant
@@ -52,7 +54,17 @@ data class App(
         analytics = analytics
     )
 
-    context(IO) fun loadStockList(now: Instant = clock()): Result<StockList, StockListLoadingError> =
+    context(IO)
+    fun loadStockList(now: Instant = clock()): Result<StockList, StockListLoadingError> =
         pricedLoader.load(now)
 
+    context(IO)
+    fun deleteItemsWithIds(itemIds: Set<ID<Item>>, now: Instant = clock()) {
+        items.inTransaction {
+            stock.stockList(now).map { stockList ->
+                val revisedStockList = StockList(now, stockList.items.filterNot { it.id in itemIds })
+                items.save(revisedStockList)
+            }
+        }
+    }
 }

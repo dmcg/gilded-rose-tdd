@@ -40,7 +40,10 @@ private fun App.listHandler(
 private fun App.deleteHandler(
     request: Request
 ): Response {
-    println(request.form().map { it.first }.map { ID<Item>(it) })
-    return Response(Status.SEE_OTHER).header("Location", "/")
+    runIO {
+        val itemIds = request.form().map { it.first }.mapNotNull { ID<Item>(it) }.toSet()
+        deleteItemsWithIds(itemIds)
+        return Response(Status.SEE_OTHER).header("Location", "/")
+    }
 }
 

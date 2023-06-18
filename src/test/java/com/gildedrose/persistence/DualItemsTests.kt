@@ -162,7 +162,7 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
     }
 }
 
-private fun <R, TX : TXContext> Items<TX>.transactionally(f: context(TX) Items<TX>.() -> R): R =
+fun <R, TX : TXContext> Items<TX>.transactionally(f: context(TX) Items<TX>.() -> R): R =
     inTransaction {
         f(magic(), this)
     }
