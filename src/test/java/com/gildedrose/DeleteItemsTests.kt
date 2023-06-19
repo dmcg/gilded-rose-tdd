@@ -16,6 +16,8 @@ import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
+import org.jooq.TransactionContext
+import org.jooq.TransactionListener
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -41,7 +43,8 @@ class DeleteItemsTests {
             item("undated", null, 50).withPriceResult(Price(999))
         )
     )
-    val fixture = Fixture(pricedStockList, DbItems(testDslContext))
+    val instrumentedDslContext = testDslContext.configuration().derive(transactionListener).dsl()
+    val fixture = Fixture(pricedStockList, DbItems(instrumentedDslContext))
     val app = App(
         items = fixture.unpricedItems,
         pricing = fixture::pricing,
@@ -51,6 +54,7 @@ class DeleteItemsTests {
     @BeforeEach
     fun clearDB() {
         testDslContext.truncate(Items.ITEMS).execute()
+        println("fixture init")
         fixture.init()
     }
 
@@ -81,5 +85,28 @@ class DeleteItemsTests {
             Success(StockList(sameDayAsLastModified, listOf(pricedStockList[1].withNoPrice()))),
             fixture.unpricedItems.transactionally { load() }
         )
+    }
+}
+
+object transactionListener : TransactionListener {
+    override fun beginStart(ctx: TransactionContext?) {
+    }
+
+    override fun beginEnd(ctx: TransactionContext?) {
+        println("begin")
+    }
+
+    override fun commitStart(ctx: TransactionContext?) {
+    }
+
+    override fun commitEnd(ctx: TransactionContext?) {
+        println("commit")
+    }
+
+    override fun rollbackStart(ctx: TransactionContext?) {
+    }
+
+    override fun rollbackEnd(ctx: TransactionContext?) {
+        println("rollback")
     }
 }
