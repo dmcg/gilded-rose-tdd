@@ -2,17 +2,18 @@ package com.gildedrose
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
+import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.*
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.testing.IOResolver
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import java.time.Instant.parse as t
 import java.time.LocalDate.parse as localdate
 
@@ -30,10 +31,13 @@ class PricedStockListLoaderTests {
                 item("undated", null, 50)
             )
         )
-        private val expectedPricedStockList = loadedStockList.withItems(
-            loadedStockList[0].withPriceResult(Price(666)),
-            loadedStockList[1].withPriceResult(null),
-            loadedStockList[2].withPriceResult(Price(999))
+        private val expectedPricedStockList = PricedStockList(
+            loadedStockList.lastModified,
+            items = listOf(
+                loadedStockList[0].withPriceResult(Price(666)),
+                loadedStockList[1].withPriceResult(null),
+                loadedStockList[2].withPriceResult(Price(999))
+            )
         )
     }
 

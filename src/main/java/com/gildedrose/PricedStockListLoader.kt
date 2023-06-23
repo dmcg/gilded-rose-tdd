@@ -2,6 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
+import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.*
 import com.gildedrose.persistence.StockListLoadingError
@@ -26,7 +27,7 @@ class PricedStockListLoader(
         pricing.wrappedWith(retry(1, reporter = ::reportException))
 
     context(IO)
-    fun load(now: Instant): StockLoadingResult =
+    fun load(now: Instant): Result<PricedStockList, StockListLoadingError> =
         loading(magic(), now).map {
             it.pricedBy(retryingPricing)
         }
@@ -34,9 +35,12 @@ class PricedStockListLoader(
     context(IO)
     private fun StockList.pricedBy(
         pricing: context(IO) (Item) -> Price?
-    ): StockList =
+    ): PricedStockList =
         runBlocking(threadPool.asCoroutineDispatcher()) {
-            copy(items = items.parallelMapCoroutines { it.pricedBy(pricing) })
+            PricedStockList(
+                lastModified = lastModified,
+                items = items.parallelMapCoroutines { it.pricedBy(pricing) }
+            )
         }
 
     context(IO)

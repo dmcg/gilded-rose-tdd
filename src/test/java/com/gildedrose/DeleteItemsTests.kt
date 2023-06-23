@@ -35,7 +35,7 @@ class DeleteItemsTests {
     private val lastModified = t("2022-02-09T12:00:00Z")
     private val sameDayAsLastModified = t("2022-02-09T23:59:59Z")
 
-    val pricedStockList = StockList(
+    val pricedStockList = PricedStockList(
         lastModified,
         listOf(
             item("banana", localDate("2022-02-08"), 42).withPriceResult(Price(666)),

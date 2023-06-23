@@ -33,7 +33,7 @@ class ListStockTests {
 
     @Test
     fun `list stock`(approver: Approver) {
-        val pricedStockList = StockList(
+        val pricedStockList = PricedStockList(
             lastModified,
             listOf(
                 item("banana", localDate("2022-02-08"), 42).withPriceResult(Price(666)),

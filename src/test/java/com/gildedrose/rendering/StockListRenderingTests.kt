@@ -2,7 +2,7 @@ package com.gildedrose.rendering
 
 import com.gildedrose.*
 import com.gildedrose.domain.Price
-import com.gildedrose.domain.StockList
+import com.gildedrose.domain.PricedStockList
 import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
@@ -19,7 +19,7 @@ class StockListRenderingTests {
 
     @Test
     fun `list stock`(approver: Approver) {
-        val stockList = StockList(
+        val stockList = PricedStockList(
             lastModified = someTime,
             items = listOf(
                 item("banana", oct29.minusDays(1), 42).withPriceResult(Price(100)),
@@ -39,7 +39,7 @@ class StockListRenderingTests {
 
     @Test
     fun `list stock with deleting enabled`(approver: Approver) {
-        val stockList = StockList(
+        val stockList = PricedStockList(
             lastModified = someTime,
             items = listOf(
                 item("banana", oct29.minusDays(1), 42).withPriceResult(Price(100)),

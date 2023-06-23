@@ -2,6 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
+import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
 import com.gildedrose.foundation.runIO
@@ -12,10 +13,10 @@ import com.gildedrose.persistence.transactionally
 import dev.forkhandles.result4k.valueOrNull
 
 data class Fixture(
-    val pricedStockList: StockList,
+    val pricedStockList: PricedStockList,
     val unpricedItems: Items<TXContext> = InMemoryItems()
 ) {
-    val stockList = pricedStockList.copy(
+    val stockList = StockList(pricedStockList.lastModified,
         items = pricedStockList.map { item -> item.withNoPrice() }
     )
 

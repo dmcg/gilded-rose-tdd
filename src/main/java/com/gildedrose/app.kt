@@ -2,10 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.config.DbConfig
 import com.gildedrose.config.toDslContext
-import com.gildedrose.domain.ID
-import com.gildedrose.domain.Item
-import com.gildedrose.domain.Price
-import com.gildedrose.domain.StockList
+import com.gildedrose.domain.*
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.IO
 import com.gildedrose.foundation.loggingAnalytics
@@ -55,7 +52,7 @@ data class App(
     )
 
     context(IO)
-    fun loadStockList(now: Instant = clock()): Result<StockList, StockListLoadingError> =
+    fun loadStockList(now: Instant = clock()): Result<PricedStockList, StockListLoadingError> =
         pricedLoader.load(now)
 
     context(IO)

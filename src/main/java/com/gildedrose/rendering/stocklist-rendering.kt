@@ -2,7 +2,7 @@ package com.gildedrose.rendering
 
 import com.gildedrose.Features
 import com.gildedrose.domain.Item
-import com.gildedrose.domain.StockList
+import com.gildedrose.domain.PricedStockList
 import com.gildedrose.http.ResponseErrors.withError
 import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.*
@@ -23,7 +23,7 @@ private val handlebars = HandlebarsTemplates().HotReload("src/main/java")
 private val view = Body.viewModel(handlebars, ContentType.TEXT_HTML).toLens()
 
 fun render(
-    stockListResult: Result4k<StockList, StockListLoadingError>,
+    stockListResult: Result4k<PricedStockList, StockListLoadingError>,
     now: Instant,
     zoneId: ZoneId,
     features: Features
