@@ -2,7 +2,6 @@ package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
-import com.gildedrose.withoutPrices
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import java.time.Instant
@@ -18,7 +17,7 @@ class InMemoryItems(
     context(IO, NoTX) override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError> {
-        this@InMemoryItems.stockList.set(stockList.withoutPrices())
+        this@InMemoryItems.stockList.set(stockList)
         return Success(stockList)
     }
 

@@ -1,7 +1,7 @@
 package com.gildedrose.rendering
 
 import com.gildedrose.Features
-import com.gildedrose.domain.Item
+import com.gildedrose.domain.PricedItem
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.http.ResponseErrors.withError
 import com.gildedrose.persistence.StockListLoadingError
@@ -36,7 +36,6 @@ fun render(
                     now = dateFormat.format(today),
                     items = stockList.map { item ->
                         val priceString = when (val price = item.price) {
-                            null -> ""
                             is Success -> price.value?.toString().orEmpty()
                             is Failure -> "error"
                         }
@@ -58,7 +57,7 @@ private data class StockListViewModel(
     val isDeletingEnabled: Boolean
 ) : ViewModel
 
-private fun Item.toMap(now: LocalDate, priceString: String): Map<String, String> = mapOf(
+private fun PricedItem.toMap(now: LocalDate, priceString: String): Map<String, String> = mapOf(
     "id" to id.toString(),
     "name" to name.value,
     "sellByDate" to if (sellByDate == null) "" else dateFormat.format(sellByDate),
@@ -67,6 +66,6 @@ private fun Item.toMap(now: LocalDate, priceString: String): Map<String, String>
     "price" to priceString
 )
 
-private fun Item.daysUntilSellBy(now: LocalDate): Long =
+private fun PricedItem.daysUntilSellBy(now: LocalDate): Long =
     if (sellByDate == null) 0 else
         ChronoUnit.DAYS.between(now, this.sellByDate)

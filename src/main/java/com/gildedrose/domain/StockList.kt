@@ -9,5 +9,5 @@ data class StockList(
 
 data class PricedStockList(
     val lastModified: Instant,
-    val items: List<Item>
-) : List<Item> by items
+    val items: List<PricedItem>
+) : List<PricedItem> by items

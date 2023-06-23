@@ -26,13 +26,8 @@ fun item(
 
 fun initialsFrom(name: String) = name.split(" ").map { it[0] }.joinToString("").uppercase()
 
-fun Item.withNoPrice() = this.copy(price = null)
+fun PricedItem.withNoPrice() = Item(id, name, sellByDate, quality)
 fun Item.withPriceResult(price: Price?) = this.withPriceResult(Success(price))
-fun Item.withPriceResult(price: Result<Price?, Exception>) = this.copy(price = price)
-
-fun StockList.withItems(vararg items: Item) = this.copy(items = items.toList())
-fun StockList.withoutPrices() =
-    this.copy(items = items.map { item -> item.withNoPrice() })
-
+fun Item.withPriceResult(price: Result<Price?, Exception>) = PricedItem(this, price = price)
 
 val oct29: LocalDate = LocalDate.parse("2021-10-29")

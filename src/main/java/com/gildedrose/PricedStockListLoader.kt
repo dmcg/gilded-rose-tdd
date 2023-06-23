@@ -1,9 +1,6 @@
 package com.gildedrose
 
-import com.gildedrose.domain.Item
-import com.gildedrose.domain.Price
-import com.gildedrose.domain.PricedStockList
-import com.gildedrose.domain.StockList
+import com.gildedrose.domain.*
 import com.gildedrose.foundation.*
 import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.Result
@@ -46,12 +43,12 @@ class PricedStockListLoader(
     context(IO)
     private fun Item.pricedBy(
         pricing: context(IO) (Item) -> Price?
-    ): Item =
-        this.copy(
-            price = resultFrom {
-                pricing(magic<IO>(), this)
-            }.peekFailure(::reportException)
-        )
+    ) = PricedItem(
+        this,
+        price = resultFrom {
+            pricing(magic<IO>(), this)
+        }.peekFailure(::reportException)
+    )
 
     private fun reportException(x: Exception) {
         analytics(UncaughtExceptionEvent(x))

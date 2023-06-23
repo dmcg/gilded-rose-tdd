@@ -1,12 +1,10 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.domain.Price
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
 import com.gildedrose.item
 import com.gildedrose.oct29
 import com.gildedrose.testing.IOResolver
-import com.gildedrose.withPriceResult
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -63,20 +61,6 @@ abstract class ItemsContract<TX : TXContext> {
             items.save(modifiedStockList)
             assertEquals(
                 Success(modifiedStockList),
-                items.load()
-            )
-        }
-    }
-
-    @Test
-    fun `doesn't save prices`() {
-        val stockListWithPrices = initialStockList.copy(
-            items = initialStockList.items.map { it.withPriceResult(Price(100))}
-        )
-        items.inTransaction {
-            items.save(stockListWithPrices)
-            assertEquals(
-                Success(initialStockList),
                 items.load()
             )
         }
