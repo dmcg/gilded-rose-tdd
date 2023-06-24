@@ -8,6 +8,7 @@ import com.gildedrose.foundation.IO
 import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.persistence.*
 import com.gildedrose.pricing.valueElfClient
+import com.gildedrose.updating.Stock
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
 import java.io.File
@@ -40,13 +41,10 @@ data class App(
         valueElfClient(valueElfUri)
     )
 
-    private val stock = Stock(
-        items,
-        londonZoneId,
-        itemUpdate = Item::updatedBy
-    )
+    private val stock = Stock(items, londonZoneId)
+
     private val pricedLoader = PricedStockListLoader(
-        loading = { stock.stockList(it) },
+        loading = { stock.loadAndUpdateStockList(it) },
         pricing = pricing,
         analytics = analytics
     )
@@ -60,7 +58,7 @@ data class App(
         println("delete")
         items.inTransaction {
             println("before load")
-            stock.stockList(now).map { stockList ->
+            stock.loadAndUpdateStockList(now).map { stockList ->
                 println("after load")
                 val revisedStockList = StockList(now, stockList.items.filterNot { it.id in itemIds })
                 items.save(revisedStockList)

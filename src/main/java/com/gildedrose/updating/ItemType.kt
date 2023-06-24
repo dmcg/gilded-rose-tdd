@@ -1,5 +1,8 @@
-package com.gildedrose.domain
+package com.gildedrose.updating
 
+import com.gildedrose.domain.Item
+import com.gildedrose.domain.NonBlankString
+import com.gildedrose.domain.Quality
 import java.time.LocalDate
 
 fun interface ItemType {

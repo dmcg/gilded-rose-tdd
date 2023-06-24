@@ -1,9 +1,8 @@
-package com.gildedrose.domain
+package com.gildedrose.updating
 
+import com.gildedrose.domain.NonBlankString
 import com.gildedrose.item
 import com.gildedrose.oct29
-import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.containsSubstring
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
@@ -43,13 +42,6 @@ class ItemTests {
         assertNotEquals(
             item("Conjured banana", oct29, 50),
             item("Conjured Aged Brie", oct29, 50).copy(name = NonBlankString("Conjured banana")!!)
-        )
-    }
-
-    @Test fun `item types for toString`() {
-        assertThat(
-            item("Conjured banana", oct29, 50).toString(),
-            containsSubstring("type=CONJURED STANDARD")
         )
     }
 }

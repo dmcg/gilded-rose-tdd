@@ -4,7 +4,8 @@ import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.NonBlankString
 import com.gildedrose.domain.Quality
-import com.gildedrose.persistence.daysTo
+import com.gildedrose.updating.daysTo
+import com.gildedrose.updating.updatedBy
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZonedDateTime

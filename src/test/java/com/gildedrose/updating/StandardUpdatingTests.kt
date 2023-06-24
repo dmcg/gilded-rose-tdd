@@ -1,4 +1,4 @@
-package com.gildedrose.domain
+package com.gildedrose.updating
 
 import com.gildedrose.item
 import com.gildedrose.oct29

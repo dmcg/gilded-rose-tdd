@@ -1,4 +1,4 @@
-package com.gildedrose.persistence
+package com.gildedrose.updating
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
