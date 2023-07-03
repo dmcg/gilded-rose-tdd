@@ -1,6 +1,6 @@
 package com.gildedrose.rendering
 
-import com.gildedrose.Features
+import com.gildedrose.config.Features
 import com.gildedrose.domain.PricedItem
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.http.ResponseErrors.withError

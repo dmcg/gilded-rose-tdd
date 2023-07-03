@@ -1,5 +1,5 @@
 import com.gildedrose.App
-import com.gildedrose.Features
+import com.gildedrose.config.Features
 import com.gildedrose.http.serverFor
 import com.gildedrose.routes
 

@@ -1,12 +1,17 @@
-package com.gildedrose
+package com.gildedrose.pricing
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.*
+import com.gildedrose.foundation.AnalyticsEvent
+import com.gildedrose.foundation.IO
+import com.gildedrose.foundation.UncaughtExceptionEvent
+import com.gildedrose.foundation.succeedAfter
+import com.gildedrose.item
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.testing.IOResolver
+import com.gildedrose.withPriceResult
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test

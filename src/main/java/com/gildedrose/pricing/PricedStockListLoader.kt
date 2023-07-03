@@ -1,4 +1,4 @@
-package com.gildedrose
+package com.gildedrose.pricing
 
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.*
