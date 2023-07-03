@@ -1,69 +1,53 @@
-
 import java.io.File
-import java.io.IOException
-import java.nio.file.*
-import java.nio.file.attribute.BasicFileAttributes
-import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.test.assertEquals
+
+private val packagePattern = Pattern.compile("^package\\s+(.*)$")
+private val importPattern = Pattern.compile("^import\\s+(.*)$")
 
 fun main() {
-    val fileTree = mutableMapOf<String, MutableSet<String>>()
-    val srcDirPath = Paths.get("./src/main")
-    walkTree(fileTree, srcDirPath)
+    val outputDot = File.createTempFile("output", ".dot")
+    val outputPng = File("packages.png")
+    val srcDirPath = File("./src/main")
+    val fileTree = walkTree(srcDirPath)
 
-    generateDotFile(fileTree)
-
-    createImageOutput()
+    generateDotFile(outputDot, fileTree)
+    createImageOutput(outputDot, outputPng)
+    checkDotFile(outputDot)
 }
 
-private fun walkTree(fileTree: MutableMap<String, MutableSet<String>>, srcDirPath: Path) {
-    Files.walkFileTree(srcDirPath, object : FileVisitor<Path> {
-        private val packagePattern = Pattern.compile("^package\\s+(.*)$")
-        private val importPattern = Pattern.compile("^import\\s+(.*)$")
+private fun walkTree(srcDirPath: File): Map<String, Set<String>> =
+    srcDirPath.walkTopDown()
+        .filter { it.isFile && it.path.endsWith(".kt") }
+        .map { file -> file.extractPackageAndImports() }
+        .groupingBy { it.first }
+        .fold(emptySet()) { acc, (_, importedPackages) -> acc union importedPackages }
 
-        override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?) = FileVisitResult.CONTINUE
+private fun File.extractPackageAndImports(): Pair<String, Set<String>> {
+    val lines = this.readLines()
+    val matcher = packagePattern.matcher(lines.firstOrNull() ?: "")
+    val packageName = if (matcher.find()) matcher.group(1) else "<root>"
 
-        override fun visitFileFailed(file: Path?, exc: IOException?) = FileVisitResult.CONTINUE
+    val importedPackages = lines.drop(1)
+        .mapNotNull { line ->
+            val importMatcher = importPattern.matcher(line)
+            if (importMatcher.find()) {
+                val importedPackage = importMatcher.group(1).split('.').dropLast(1).joinToString(".")
+                if (importedPackage.startsWith("com.gildedrose")) importedPackage else null
+            } else null
+        }.toSet()
 
-        override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
-            file?.getKotlinFilePackages(fileTree, packagePattern, importPattern)
-
-            return FileVisitResult.CONTINUE
-        }
-
-        override fun postVisitDirectory(dir: Path?, exc: IOException?) = FileVisitResult.CONTINUE
-    })
+    return Pair(packageName, importedPackages)
 }
 
-private fun Path.getKotlinFilePackages(fileTree: MutableMap<String, MutableSet<String>>, packagePattern: Pattern, importPattern: Pattern) {
-    if (this.toString().endsWith(".kt")) {
-        var currentPackage: String? = null
-        this.toFile().readLines().forEach { line ->
-            var matcher = packagePattern.matcher(line)
-            currentPackage = currentPackage.processPackage(matcher)
-
-            matcher = importPattern.matcher(line)
-            matcher.processImport(currentPackage, fileTree)
-        }
-    }
+private fun checkDotFile(dotFile: File) {
+    val dotFileContents = dotFile.readLines()
+    val approvedFileContents = File("src/test/resources/package-dotfile.approved").readLines()
+    assertEquals(approvedFileContents, dotFileContents)
 }
 
-private fun String?.processPackage(matcher: Matcher): String? {
-    return if (matcher.find()) {
-        val matchedPkg = matcher.group(1)
-        if (matchedPkg.startsWith("com.gildedrose")) matchedPkg else this
-    } else this
-}
-
-private fun Matcher.processImport(targetPackage: String?, fileTree: MutableMap<String, MutableSet<String>>) {
-    if (targetPackage != null && this.find()) {
-        val importedPackage = this.group(1).split('.').dropLast(1).joinToString(".")
-        if (importedPackage.startsWith("com.gildedrose")) fileTree.getOrPut(targetPackage) { mutableSetOf() }.add(importedPackage)
-    }
-}
-
-private fun generateDotFile(fileTree: MutableMap<String, MutableSet<String>>) {
-    File("output.dot").printWriter().use { out ->
+private fun generateDotFile(dotFile: File, fileTree: Map<String, Set<String>>) {
+    dotFile.printWriter().use { out ->
         out.println("digraph KotlinPackageDependencies {")
         out.println("rankdir=TB;")
         out.println("node [shape=box];")
@@ -77,10 +61,6 @@ private fun generateDotFile(fileTree: MutableMap<String, MutableSet<String>>) {
     }
 }
 
-private fun createImageOutput() {
-    try {
-        Runtime.getRuntime().exec("dot -Tpng output.dot -o output.png")
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
+private fun createImageOutput(dotFile: File, outputPngFile: File) {
+    Runtime.getRuntime().exec(arrayOf("dot", "-Tpng", dotFile.path, "-o", outputPngFile.path))
 }
