@@ -57,11 +57,8 @@ data class App(
 
     context(IO)
     fun deleteItemsWithIds(itemIds: Set<ID<Item>>, now: Instant = clock()) {
-        println("delete")
         items.inTransaction {
-            println("before load")
             stock.loadAndUpdateStockList(now).map { stockList ->
-                println("after load")
                 val revisedStockList = StockList(now, stockList.items.filterNot { it.id in itemIds })
                 items.save(revisedStockList)
             }
