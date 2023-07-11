@@ -56,6 +56,24 @@ class DeleteItemsTests {
     }
 
     @Test
+    fun `delete no items doesnt save stocklist`() {
+        app.deleteItemsWithIds(emptySet())
+        assertEquals(
+            Success(fixture.stockList),
+            fixture.unpricedItems.transactionally { load() }
+        )
+    }
+
+    @Test
+    fun `delete non-existent item doesnt save stocklist`() {
+        app.deleteItemsWithIds(setOf(ID("no-such")!!))
+        assertEquals(
+            Success(fixture.stockList),
+            fixture.unpricedItems.transactionally { load() }
+        )
+    }
+
+    @Test
     fun `delete items via http`(approver: Approver) {
         val response = app.routes(
             Request(Method.POST, "/delete-items")
