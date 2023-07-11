@@ -1,6 +1,5 @@
 package com.gildedrose
 
-import com.gildedrose.db.tables.Items
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.IO
 import com.gildedrose.persistence.*
@@ -16,16 +15,13 @@ import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.parallel.ResourceLock
 import kotlin.test.assertEquals
 import java.time.Instant.parse as t
 import java.time.LocalDate.parse as localDate
 
 context(IO)
-@ResourceLock("DATABASE")
 @ExtendWith(IOResolver::class)
 @ExtendWith(ApprovalTest::class)
 class DeleteItemsTests {
@@ -41,19 +37,12 @@ class DeleteItemsTests {
             item("undated", null, 50).withPriceResult(Price(999))
         )
     )
-    val fixture = Fixture(pricedStockList, DbItems(testDslContext))
+    val fixture = Fixture(pricedStockList, InMemoryItems()).apply { init() }
     val app = App(
         items = fixture.unpricedItems,
         pricing = fixture::pricing,
         clock = { sameDayAsLastModified }
     )
-
-    @BeforeEach
-    fun clearDB() {
-        testDslContext.truncate(Items.ITEMS).execute()
-        fixture.init()
-    }
-
 
     @Test
     fun `delete items`() {
