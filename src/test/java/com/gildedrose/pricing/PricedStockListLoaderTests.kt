@@ -9,6 +9,7 @@ import com.gildedrose.foundation.IO
 import com.gildedrose.foundation.UncaughtExceptionEvent
 import com.gildedrose.foundation.succeedAfter
 import com.gildedrose.item
+import com.gildedrose.persistence.NoTX
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.testing.IOResolver
 import com.gildedrose.withPriceResult
@@ -66,7 +67,7 @@ class PricedStockListLoaderTests {
     fun `loads and prices items`() {
         assertEquals(
             Success(expectedPricedStockList),
-            loader.load(sameDayAsLastModified)
+            with(NoTX) { loader.load(sameDayAsLastModified) }
         )
         assertTrue(analyticsEvents.isEmpty())
     }
@@ -78,7 +79,7 @@ class PricedStockListLoaderTests {
         stockValues[sameDayAsLastModified] = Failure(loadingError)
         assertEquals(
             Failure(loadingError),
-            loader.load(sameDayAsLastModified)
+            with(NoTX) { loader.load(sameDayAsLastModified) }
         )
         assertTrue(analyticsEvents.isEmpty())
     }
@@ -96,7 +97,7 @@ class PricedStockListLoaderTests {
                     }
                 )
             ),
-            loader.load(sameDayAsLastModified)
+            with(NoTX) { loader.load(sameDayAsLastModified) }
         )
         with(analyticsEvents) {
             assertEquals(2, size) // one for the try and the retry
@@ -113,7 +114,7 @@ class PricedStockListLoaderTests {
         }
         assertEquals(
             Success(expectedPricedStockList),
-            loader.load(sameDayAsLastModified)
+            with(NoTX) { loader.load(sameDayAsLastModified) }
         )
         with(analyticsEvents) {
             assertEquals(1, size)

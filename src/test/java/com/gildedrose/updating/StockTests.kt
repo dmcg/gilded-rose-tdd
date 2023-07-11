@@ -38,7 +38,10 @@ class StockTests {
     @Test
     fun `loads stock from file`() {
         val now = Instant.parse("2022-02-09T23:59:59Z")
-        assertEquals(initialStockList, stock.loadAndUpdateStockList(now).valueOrNull())
+        assertEquals(
+            initialStockList,
+            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
+        )
     }
 
     context(IO)
@@ -52,7 +55,10 @@ class StockTests {
                 item("kumquat", oct29.plusDays(1), 100)
             )
         )
-        assertEquals(expectedUpdatedResult, stock.loadAndUpdateStockList(now).valueOrNull())
+        assertEquals(
+            expectedUpdatedResult,
+            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
+        )
         items.inTransaction {
             assertEquals(expectedUpdatedResult, items.load().valueOrNull())
         }
@@ -69,7 +75,10 @@ class StockTests {
                 item("kumquat", oct29.plusDays(1), 99)
             )
         )
-        assertEquals(expectedUpdatedResult, stock.loadAndUpdateStockList(now).valueOrNull())
+        assertEquals(
+            expectedUpdatedResult,
+            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
+        )
         items.inTransaction {
             assertEquals(expectedUpdatedResult, items.load().valueOrNull())
         }
@@ -79,7 +88,10 @@ class StockTests {
     @Test
     fun `does not update stock if modified tomorrow`() {
         val now = Instant.parse("2022-02-08T00:00:01Z")
-        assertEquals(initialStockList, stock.loadAndUpdateStockList(now).valueOrNull())
+        assertEquals(
+            initialStockList,
+            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
+        )
         items.inTransaction {
             assertEquals(initialStockList, items.load().valueOrNull())
         }
