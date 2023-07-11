@@ -6,7 +6,7 @@ import com.gildedrose.routes
 fun main() {
     App(
         dbConfig = dbConfig,
-        features = Features(isDeletingEnabled = true)
+        features = Features()
     ).apply {
         val port = 8088
         serverFor(port = port, routes).start()

@@ -36,27 +36,7 @@ class StockListRenderingTests {
                 stockListResult = Success(stockList),
                 now = Instant.parse("2021-10-29T12:00:00Z"),
                 zoneId = londonZoneId,
-                features = Features(isDeletingEnabled = false)
-            )
-        )
-    }
-
-    @Test
-    fun `list stock with deleting enabled`(approver: Approver) {
-        val stockList = PricedStockList(
-            lastModified = someTime,
-            items = listOf(
-                item("banana", oct29.minusDays(1), 42).withPriceResult(Price(100)),
-                item("kumquat", oct29.plusDays(1), 101).withPriceResult(Failure(RuntimeException("simulated failure"))),
-                item("undated", null, 50).withPriceResult(null)
-            )
-        )
-        approver.assertApproved(
-            render(
-                stockListResult = Success(stockList),
-                now = Instant.parse("2021-10-29T12:00:00Z"),
-                zoneId = londonZoneId,
-                features = Features(isDeletingEnabled = true)
+                features = Features()
             )
         )
     }
@@ -68,7 +48,7 @@ class StockListRenderingTests {
                 stockListResult = Failure(StockListLoadingError.BlankName("line")),
                 now = Instant.parse("2021-10-29T12:00:00Z"),
                 zoneId = londonZoneId,
-                features = Features(isDeletingEnabled = false)
+                features = Features()
             )
         )
     }

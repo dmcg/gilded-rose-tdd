@@ -26,7 +26,7 @@ fun render(
     stockListResult: Result4k<PricedStockList, StockListLoadingError>,
     now: Instant,
     zoneId: ZoneId,
-    features: Features
+    @Suppress("UNUSED_PARAMETER") features: Features
 ): Response {
     val today = LocalDate.ofInstant(now, zoneId)
     return stockListResult.map { stockList ->
@@ -41,7 +41,6 @@ fun render(
                         }
                         item.toMap(today, priceString)
                     },
-                    isDeletingEnabled = features.isDeletingEnabled
                 )
         )
     }.recover { error ->
@@ -54,7 +53,6 @@ fun render(
 private data class StockListViewModel(
     val now: String,
     val items: List<Map<String, String>>,
-    val isDeletingEnabled: Boolean
 ) : ViewModel
 
 private fun PricedItem.toMap(now: LocalDate, priceString: String): Map<String, String> = mapOf(

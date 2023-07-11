@@ -2,10 +2,10 @@
 <body>
 <h1>29 October 2021</h1>
 <form method="post" action="/delete-items">
-    
+    <input type="submit" value="Delete">
     <table>
         <tr>
-        
+        <th></th>
             <th>ID</th>
             <th>Name</th>
             <th>Sell By Date</th>
@@ -15,7 +15,7 @@
         </tr>
         
             <tr>
-                
+                <td><input type="checkbox" name="B1"></td>
                 <td>B1</td>
                 <td>banana</td>
                 <td>28 October 2021</td>
@@ -25,7 +25,7 @@
             </tr>
         
             <tr>
-                
+                <td><input type="checkbox" name="K1"></td>
                 <td>K1</td>
                 <td>kumquat</td>
                 <td>30 October 2021</td>
@@ -35,7 +35,7 @@
             </tr>
         
             <tr>
-                
+                <td><input type="checkbox" name="U1"></td>
                 <td>U1</td>
                 <td>undated</td>
                 <td></td>

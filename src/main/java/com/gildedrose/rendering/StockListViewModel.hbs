@@ -2,10 +2,10 @@
 <body>
 <h1>{{now}}</h1>
 <form method="post" action="/delete-items">
-    {{#if isDeletingEnabled}}<input type="submit" value="Delete">{{/if}}
+    <input type="submit" value="Delete">
     <table>
         <tr>
-        {{#if isDeletingEnabled}}<th></th>{{/if}}
+        <th></th>
             <th>ID</th>
             <th>Name</th>
             <th>Sell By Date</th>
@@ -15,7 +15,7 @@
         </tr>
         {{#each this.items}}
             <tr>
-                {{#if isDeletingEnabled}}<td><input type="checkbox" name="{{id}}"></td>{{/if}}
+                <td><input type="checkbox" name="{{id}}"></td>
                 <td>{{id}}</td>
                 <td>{{name}}</td>
                 <td>{{sellByDate}}</td>
