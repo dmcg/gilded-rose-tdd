@@ -84,10 +84,14 @@ Display the price in the stock list screen.
 
 Superceded - ValueElf turns out to be giving us good enough prices
 
-# ☐ Add and Remove Items from the Stock List
+# ✓ Remove Items from the Stock List
 
 We are currently reflecting (and updating the quality in) an Excel TSV file that I am editing by hand.
 
-I'd like a way to add and remove items from the stock list through the software.
+I'd like a way to remove items from the stock list through the software.
+
+# ☐ Add Items to the Stock List
+
+I'd like a way to add new items when they come into stock.
 
 
