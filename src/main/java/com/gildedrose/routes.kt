@@ -24,9 +24,15 @@ val App.routes: HttpHandler
             routes(
                 "/" bind Method.GET to ::listHandler,
                 "/error" bind Method.GET to { error("deliberate") },
-                "/delete-items" bind Method.POST to ::deleteHandler
+                "/delete-items" bind Method.POST to ::deleteHandler,
+                "/add-item" bind Method.POST to ::addHandler
             )
         )
+
+fun App.addHandler(request: Request): Response {
+    println(request)
+    return Response(Status.SEE_OTHER).header("Location", "/")
+}
 
 private fun App.listHandler(
     @Suppress("UNUSED_PARAMETER") request: Request

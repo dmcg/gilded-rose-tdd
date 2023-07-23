@@ -1,5 +1,5 @@
 package com.gildedrose.config
 
 data class Features(
-    val dummy: Boolean = false
+    val newItemEnabled: Boolean = false
 )

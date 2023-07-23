@@ -1,3 +1,4 @@
+<!--suppress HtmlFormInputWithoutLabel -->
 <html lang="en">
 <body>
 <h1>9 February 2022</h1>
@@ -13,6 +14,7 @@
             <th>Quality</th>
             <th>Price</th>
         </tr>
+        
         
             <tr>
                 <td><input type="checkbox" name="B1"></td>
