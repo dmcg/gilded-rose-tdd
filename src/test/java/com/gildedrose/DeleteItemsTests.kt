@@ -13,8 +13,6 @@ import org.http4k.core.Status
 import org.http4k.core.body.form
 import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
-import org.http4k.testing.ApprovalTest
-import org.http4k.testing.Approver
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
@@ -23,7 +21,6 @@ import java.time.LocalDate.parse as localDate
 
 context(IO)
 @ExtendWith(IOResolver::class)
-@ExtendWith(ApprovalTest::class)
 class DeleteItemsTests {
 
     private val lastModified = t("2022-02-09T12:00:00Z")
@@ -74,7 +71,7 @@ class DeleteItemsTests {
     }
 
     @Test
-    fun `delete items via http`(approver: Approver) {
+    fun `delete items via http`() {
         val response = app.routes(
             Request(Method.POST, "/delete-items")
                 .form(pricedStockList[0].id.toString(), "on")

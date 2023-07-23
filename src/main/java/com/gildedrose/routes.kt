@@ -2,6 +2,8 @@ package com.gildedrose
 
 import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
+import com.gildedrose.domain.NonBlankString
+import com.gildedrose.domain.Quality
 import com.gildedrose.foundation.runIO
 import com.gildedrose.http.ResponseErrors
 import com.gildedrose.http.catchAll
@@ -13,6 +15,7 @@ import org.http4k.filter.ServerFilters
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import java.time.Duration
+import java.time.LocalDate
 
 
 val App.routes: HttpHandler
@@ -29,8 +32,20 @@ val App.routes: HttpHandler
             )
         )
 
-fun App.addHandler(request: Request): Response {
-    println(request)
+private fun App.addHandler(request: Request): Response {
+    val item = try {
+        Item(
+            ID(request.form("new-itemId")!!)!!,
+            NonBlankString(request.form("new-itemName")!!)!!,
+            LocalDate.parse(request.form("new-itemSellBy")!!),
+            Quality(request.form("new-itemQuality")!!.toInt())!!,
+        )
+    } catch (x: Exception) {
+        return Response(Status.BAD_REQUEST)
+    }
+    runIO {
+        addItem(newItem = item)
+    }
     return Response(Status.SEE_OTHER).header("Location", "/")
 }
 

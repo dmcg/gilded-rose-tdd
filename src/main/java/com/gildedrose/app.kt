@@ -68,4 +68,14 @@ data class App(
             }
         }
     }
+
+    context(IO)
+    fun addItem(newItem: Item, now: Instant = clock()) {
+        items.inTransaction {
+            stock.loadAndUpdateStockList(now).map { stockList ->
+                val newItems = stockList.items + newItem
+                items.save(StockList(now, newItems))
+            }
+        }
+    }
 }
