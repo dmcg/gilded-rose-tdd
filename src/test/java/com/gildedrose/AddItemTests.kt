@@ -1,9 +1,13 @@
 package com.gildedrose
 
 import com.gildedrose.config.Features
-import com.gildedrose.domain.*
+import com.gildedrose.domain.Item
+import com.gildedrose.domain.Price
+import com.gildedrose.domain.PricedStockList
+import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
-import com.gildedrose.persistence.*
+import com.gildedrose.persistence.InMemoryItems
+import com.gildedrose.persistence.transactionally
 import com.gildedrose.testing.IOResolver
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
@@ -17,6 +21,7 @@ import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.time.Instant
 import kotlin.test.assertEquals
 import java.time.Instant.parse as t
 import java.time.LocalDate.parse as localDate
@@ -46,17 +51,10 @@ class AddItemTests {
     fun `add item`() {
         val newItem = item("new-id", "new name", localDate("2023-07-23"), 99)
         app.addItem(newItem)
-        assertEquals(
-            Success(
-                StockList(
-                    sameDayAsLastModified,
-                    listOf(
-                        fixture.stockList[0],
-                        newItem
-                    )
-                )
-            ),
-            fixture.unpricedItems.transactionally { load() }
+        checkStocklistHas(
+            sameDayAsLastModified,
+            fixture.stockList[0],
+            newItem
         )
     }
 
@@ -73,23 +71,54 @@ class AddItemTests {
             response,
             hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
         )
-        assertEquals(
-            Success(
-                StockList(
-                    sameDayAsLastModified,
-                    listOf(
-                        fixture.stockList[0],
-                        item("new-id", "new name", localDate("2023-07-23"), 99)
-                    )
-                )
-            ),
-            fixture.unpricedItems.transactionally { load() }
+        checkStocklistHas(
+            sameDayAsLastModified,
+            fixture.stockList[0],
+            item("new-id", "new name", localDate("2023-07-23"), 99)
         )
-        // TODO - check blank fields, invalid date, negative qualities
     }
 
     @Test
-    fun `validations`() {
+    fun `add item with no date via http`() {
+        val response = app.routes(
+            Request(Method.POST, "/add-item")
+                .form("new-itemId", "new-id")
+                .form("new-itemName", "new name")
+                .form("new-itemQuality", "99")
+        )
+        assertThat(
+            response,
+            hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
+        )
+        checkStocklistHas(
+            sameDayAsLastModified,
+            fixture.stockList[0],
+            item("new-id", "new name", null, 99)
+        )
+    }
+
+    @Test
+    fun `add item with blank date via http`() {
+        val response = app.routes(
+            Request(Method.POST, "/add-item")
+                .form("new-itemId", "new-id")
+                .form("new-itemName", "new name")
+                .form("new-itemSellBy", "")
+                .form("new-itemQuality", "99")
+        )
+        assertThat(
+            response,
+            hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
+        )
+        checkStocklistHas(
+            sameDayAsLastModified,
+            fixture.stockList[0],
+            item("new-id", "new name", null, 99)
+        )
+    }
+
+    @Test
+    fun validations() {
         val goodPost = Request(Method.POST, "/add-item")
             .form("new-itemId", "new-id")
             .form("new-itemName", "new name")
@@ -113,10 +142,14 @@ class AddItemTests {
         )
         assertThat(
             app.routes(goodPost.formWithout("new-itemSellBy")),
-            hasStatus(Status.BAD_REQUEST)
+            hasStatus(Status.SEE_OTHER)
         )
         assertThat(
             app.routes(goodPost.replacingForm("new-itemSellBy", "")),
+            hasStatus(Status.SEE_OTHER)
+        )
+        assertThat(
+            app.routes(goodPost.replacingForm("new-itemSellBy", "2023-00-99")),
             hasStatus(Status.BAD_REQUEST)
         )
         assertThat(
@@ -126,6 +159,20 @@ class AddItemTests {
         assertThat(
             app.routes(goodPost.replacingForm("new-itemQuality", "")),
             hasStatus(Status.BAD_REQUEST)
+        )
+        assertThat(
+            app.routes(goodPost.replacingForm("new-itemQuality", "-1")),
+            hasStatus(Status.BAD_REQUEST)
+        )
+        assertThat(
+            app.routes(goodPost.replacingForm("new-itemQuality", "1.0")),
+            hasStatus(Status.BAD_REQUEST)
+        )
+    }
+
+    private fun checkStocklistHas(lastModified: Instant, vararg items: Item) {
+        assertEquals(Success(StockList(lastModified, items.toList())),
+            fixture.unpricedItems.transactionally { load() }
         )
     }
 }

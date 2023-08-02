@@ -34,10 +34,16 @@ val App.routes: HttpHandler
 
 private fun App.addHandler(request: Request): Response {
     val item = try {
+        val sellByDate = request.form("new-itemSellBy")?.let { dateString ->
+            when {
+                dateString.isEmpty() -> null
+                else -> LocalDate.parse(dateString)
+            }
+        }
         Item(
             ID(request.form("new-itemId")!!)!!,
             NonBlankString(request.form("new-itemName")!!)!!,
-            LocalDate.parse(request.form("new-itemSellBy")!!),
+            sellByDate,
             Quality(request.form("new-itemQuality")!!.toInt())!!,
         )
     } catch (x: Exception) {
