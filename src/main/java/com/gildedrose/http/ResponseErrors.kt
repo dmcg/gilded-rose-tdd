@@ -19,6 +19,8 @@ open class ResponseErrorsImpl(
         return this.header(headerName, uuid)
     }
 
+    val Response.attachedError: AnalyticsEvent? get() = header(headerName)?.let { lookup[it] }
+
     fun reportTo(analytics: (AnalyticsEvent) -> Unit): Filter = Filter { next ->
         { request ->
             val base = next(request)

@@ -5,15 +5,21 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
+import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.foundation.IO
+import com.gildedrose.http.ResponseErrors.attachedError
 import com.gildedrose.persistence.InMemoryItems
 import com.gildedrose.persistence.transactionally
 import com.gildedrose.testing.IOResolver
+import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.equalTo
+import com.natpryce.hamkrest.has
 import dev.forkhandles.result4k.Success
 import org.http4k.core.Method
 import org.http4k.core.Request
+import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.body.form
 import org.http4k.core.body.toBody
@@ -61,7 +67,7 @@ class AddItemTests {
     @Test
     fun `add item via http`() {
         val response = app.routes(
-            Request(Method.POST, "/add-item")
+            postFormToAddItemsRoute()
                 .form("new-itemId", "new-id")
                 .form("new-itemName", "new name")
                 .form("new-itemSellBy", "2023-07-23")
@@ -81,7 +87,7 @@ class AddItemTests {
     @Test
     fun `add item with no date via http`() {
         val response = app.routes(
-            Request(Method.POST, "/add-item")
+            postFormToAddItemsRoute()
                 .form("new-itemId", "new-id")
                 .form("new-itemName", "new name")
                 .form("new-itemQuality", "99")
@@ -100,7 +106,7 @@ class AddItemTests {
     @Test
     fun `add item with blank date via http`() {
         val response = app.routes(
-            Request(Method.POST, "/add-item")
+            postFormToAddItemsRoute()
                 .form("new-itemId", "new-id")
                 .form("new-itemName", "new name")
                 .form("new-itemSellBy", "")
@@ -119,7 +125,7 @@ class AddItemTests {
 
     @Test
     fun validations() {
-        val goodPost = Request(Method.POST, "/add-item")
+        val goodPost = postFormToAddItemsRoute()
             .form("new-itemId", "new-id")
             .form("new-itemName", "new name")
             .form("new-itemSellBy", "2023-07-23")
@@ -170,6 +176,24 @@ class AddItemTests {
         )
     }
 
+    @Test
+    fun `reports all form errors`() {
+        val postWithTwoMissingFields = postFormToAddItemsRoute()
+            .form("new-itemName", "new name")
+            .form("new-itemSellBy", "2023-07-23")
+            .form("new-itemQuality", "1.0")
+        assertThat(
+            app.addHandler(postWithTwoMissingFields),
+            hasStatus(Status.BAD_REQUEST) and
+                hasAttachedError(
+                    NewItemFailedEvent("[formData 'new-itemId' is required, formData 'new-itemQuality' must be integer]")
+                )
+        )
+    }
+
+    private fun postFormToAddItemsRoute() =
+        Request(Method.POST, "/add-item").header("Content-Type", "application/x-www-form-urlencoded")
+
     private fun checkStocklistHas(lastModified: Instant, vararg items: Item) {
         assertEquals(Success(StockList(lastModified, items.toList())),
             fixture.unpricedItems.transactionally { load() }
@@ -182,3 +206,10 @@ private fun Request.formWithout(parameterName: String): Request =
 
 private fun Request.replacingForm(parameterName: String, parameterValue: String) =
     formWithout(parameterName).form(parameterName, parameterValue)
+
+private fun hasAttachedError(event: AnalyticsEvent): Matcher<Response> =
+    has(
+        "attached error",
+        { response -> response.attachedError },
+        equalTo(event)
+    )
