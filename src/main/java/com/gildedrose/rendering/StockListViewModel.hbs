@@ -2,6 +2,7 @@
 <html lang="en">
 <body>
 <h1>{{now}}</h1>
+<form method="post" action="/add-item" id="new-item-form"></form>
 <form method="post" action="/delete-items">
     <input type="submit" value="Delete">
     <table>
@@ -17,12 +18,12 @@
         {{#if showNewItemRow}}
         <tr>
             <td></td>
-            <td><input type="text" name="new-itemId" required size="5"></td>
-            <td><input type="text" name="new-itemName" required size="20"></td>
-            <td><input type="date" name="new-itemSellBy"></td>
+            <td><input form="new-item-form" type="text" name="new-itemId" required size="5"></td>
+            <td><input form="new-item-form" type="text" name="new-itemName" required size="20"></td>
+            <td><input form="new-item-form" type="date" name="new-itemSellBy"></td>
             <td></td>
-            <td style="text-align: right"><input type="number" name="new-itemQuality" required size="3"></td>
-            <td><input type="submit" formaction="/add-item" value="Add" style="width: 100%"></td>
+            <td style="text-align: right"><input type="number" form="new-item-form" name="new-itemQuality" required size="3"></td>
+            <td><input type="submit" form="new-item-form" value="Add" style="width: 100%"></td>
         </tr>
         {{/if}}
         {{#each this.items}}
