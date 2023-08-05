@@ -2,6 +2,7 @@
 <html lang="en">
 <body>
 <h1>29 October 2021</h1>
+
 <form method="post" action="/delete-items">
     <input type="submit" value="Delete">
     <table>

@@ -2,7 +2,7 @@
 <html lang="en">
 <body>
 <h1>{{now}}</h1>
-<form method="post" action="/add-item" id="new-item-form"></form>
+{{#if showNewItemRow}} <form method="post" action="/add-item" id="new-item-form"></form> {{/if}}
 <form method="post" action="/delete-items">
     <input type="submit" value="Delete">
     <table>
