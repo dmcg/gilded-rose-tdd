@@ -1,5 +1,7 @@
 package com.gildedrose.domain
 
+import arrow.core.raise.Raise
+
 @JvmInline
 value class Quality(
     private val value: NonNegativeInt
@@ -11,6 +13,10 @@ value class Quality(
 
         operator fun invoke(value: Int): Quality? =
             NonNegativeInt(value)?.let { Quality(it) }
+
+        context(Raise<String>)
+        operator fun invoke(value: Int): Quality =
+            Quality(NonNegativeInt(value))
     }
 
     override fun toString() = value.toString()

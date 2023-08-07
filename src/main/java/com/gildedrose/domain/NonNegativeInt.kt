@@ -1,5 +1,7 @@
 package com.gildedrose.domain
 
+import arrow.core.raise.Raise
+
 @JvmInline
 value class NonNegativeInt
 private constructor(val value: Int)  {
@@ -7,6 +9,11 @@ private constructor(val value: Int)  {
         operator fun invoke(value: Int): NonNegativeInt? =
             if (value >= 0) NonNegativeInt(value)
             else null
+
+        context(Raise<String>)
+        operator fun invoke(value: Int): NonNegativeInt =
+            if (value >= 0) NonNegativeInt(value)
+            else raise("Integer cannot be negative")
     }
 
     init {
