@@ -16,7 +16,6 @@ import org.http4k.lens.ParamMeta.IntegerParam
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import java.time.Duration
-import java.time.LocalDate
 
 
 val App.routes: HttpHandler
@@ -36,7 +35,7 @@ val App.routes: HttpHandler
 internal fun App.addHandler(request: Request): Response {
     val idLens = FormField.nonBlankString().map { ID<Item>(it) }.required("new-itemId")
     val nameLens = FormField.nonBlankString().required("new-itemName")
-    val sellByLens = FormField.nullOnEmptyLocalDate().optional("new-itemSellBy")
+    val sellByLens = FormField.localDate().optional("new-itemSellBy")
     val qualityLens = FormField.nonNegativeInt().map { Quality(it) }.required("new-itemQuality")
     val formBody = Body.webForm(Validator.Feedback, idLens, nameLens, sellByLens, qualityLens).toLens()
     val form: WebForm = formBody(request)
@@ -59,8 +58,6 @@ fun FormField.nonNegativeInt() =
             NonNegativeInt::toString
         ), IntegerParam
     )
-
-fun FormField.nullOnEmptyLocalDate() = string().map { if (it.isEmpty()) null else LocalDate.parse(it) }
 
 fun FormField.nonBlankString(): BiDiLensSpec<WebForm, NonBlankString> =
     map(BiDiMapping<String, NonBlankString>({ s: String ->
