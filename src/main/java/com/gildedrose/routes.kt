@@ -36,17 +36,20 @@ val App.routes: HttpHandler
         )
 
 internal fun App.addHandler(request: Request): Response = recover({
-    val form = request.form()
-    val item = Item(
-        form.required("new-itemId") { ID(it) },
-        form.required("new-itemName") { NonBlankString(it) },
-        form.optional("new-itemSellBy") { it?.ifEmpty { null }?.toLocalDate() },
-        form.required("new-itemQuality") { Quality(it.toIntSafe()) })
-    runIO { addItem(newItem = item) }
+    with(request.form()) {
+        val item = zipOrAccumulate(
+            { required("new-itemId") { ID(it) }},
+            { required("new-itemName") { NonBlankString(it) } },
+            { optional("new-itemSellBy") { it?.ifEmpty { null }?.toLocalDate() } },
+            { required("new-itemQuality") { Quality(it.toIntSafe()) } },
+            ::Item)
+        runIO { addItem(newItem = item) }
+    }
     Response(Status.SEE_OTHER).header("Location", "/")
-}) { error ->
-    Response(Status.BAD_REQUEST).withError(NewItemFailedEvent(error))
+}) { errorList ->
+    Response(Status.BAD_REQUEST).withError(NewItemFailedEvent(errorList.toList().toString()))
 }
+
 
 data class NewItemFailedEvent(val message: String) : AnalyticsEvent
 

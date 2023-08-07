@@ -186,7 +186,7 @@ class AddItemTests {
             app.addHandler(postWithTwoMissingFields),
             hasStatus(Status.BAD_REQUEST) and
                 hasAttachedError(
-                    NewItemFailedEvent("[formData 'new-itemId' is required, formData 'new-itemQuality' must be integer]")
+                    NewItemFailedEvent("[formData 'new-itemId' is required, formData 'new-itemQuality': Invalid number format]")
                 )
         )
     }
