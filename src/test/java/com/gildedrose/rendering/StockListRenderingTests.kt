@@ -21,22 +21,41 @@ class StockListRenderingTests {
 
     val someTime = Instant.now()
 
+    private val pricedStockList: PricedStockList = PricedStockList(
+        lastModified = someTime,
+        items = listOf(
+            item("banana", oct29.minusDays(1), 42).withPriceResult(Price(100)),
+            item(
+                "kumquat",
+                oct29.plusDays(1),
+                101
+            ).withPriceResult(Failure(RuntimeException("simulated failure"))),
+            item("undated", null, 50).withPriceResult(null)
+        )
+    )
+
     @Test
     fun `list stock`(approver: Approver) {
-        val stockList = PricedStockList(
-            lastModified = someTime,
-            items = listOf(
-                item("banana", oct29.minusDays(1), 42).withPriceResult(Price(100)),
-                item("kumquat", oct29.plusDays(1), 101).withPriceResult(Failure(RuntimeException("simulated failure"))),
-                item("undated", null, 50).withPriceResult(null)
-            )
-        )
         approver.assertApproved(
             render(
-                stockListResult = Success(stockList),
+                stockListResult = Success(pricedStockList),
                 now = Instant.parse("2021-10-29T12:00:00Z"),
                 zoneId = londonZoneId,
-                features = Features()
+                features = Features(),
+                justTable = false
+            )
+        )
+    }
+
+    @Test
+    fun `list just stock table`(approver: Approver) {
+        approver.assertApproved(
+            render(
+                stockListResult = Success(pricedStockList),
+                now = Instant.parse("2021-10-29T12:00:00Z"),
+                zoneId = londonZoneId,
+                features = Features(),
+                justTable = true
             )
         )
     }
@@ -48,7 +67,8 @@ class StockListRenderingTests {
                 stockListResult = Failure(StockListLoadingError.BlankName("line")),
                 now = Instant.parse("2021-10-29T12:00:00Z"),
                 zoneId = londonZoneId,
-                features = Features()
+                features = Features(),
+                justTable = true
             )
         )
     }

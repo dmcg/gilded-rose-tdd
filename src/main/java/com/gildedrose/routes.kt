@@ -46,7 +46,10 @@ internal fun App.addHandler(request: Request): Response {
     runIO {
         addItem(newItem = item)
     }
-    return Response(Status.SEE_OTHER).header("Location", "/")
+    return when {
+        request.isHtmx -> listHandler(request)
+        else -> Response(Status.SEE_OTHER).header("Location", "/")
+    }
 }
 
 data class NewItemFailedEvent(val message: String) : AnalyticsEvent
@@ -65,12 +68,12 @@ fun FormField.nonBlankString(): BiDiLensSpec<WebForm, NonBlankString> =
     }, { it.toString() }))
 
 private fun App.listHandler(
-    @Suppress("UNUSED_PARAMETER") request: Request
+    request: Request
 ): Response =
     runIO {
         val now = this.clock()
         val stockListResult = loadStockList(now)
-        render(stockListResult, now, londonZoneId, this.features)
+        render(stockListResult, now, londonZoneId, this.features, request.isHtmx)
     }
 
 private fun App.deleteHandler(
@@ -82,4 +85,7 @@ private fun App.deleteHandler(
         return Response(Status.SEE_OTHER).header("Location", "/")
     }
 }
+
+private val Request.isHtmx: Boolean get() = header("HX-Request") != null
+
 

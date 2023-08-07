@@ -1,14 +1,4 @@
 
-<html lang="en">
-<head title="Gilded Rose">
-    <script src="https://unpkg.com/htmx.org@1.9.4" integrity="sha384-zUfuhFKKZCbHTY6aRR46gxiqszMk5tcHjsVFxnUo8VMus4kHGVdIYVbOYYNlKmHV" crossorigin="anonymous"></script>
-</head>
-<body>
-<h1>9 February 2022</h1>
- <form method="post" action="/add-item" hx-post="/add-item" hx-target="table" id="new-item-form"></form> 
-<form method="post" action="/delete-items" hx-confirm="Are you sure you want to delete the items?">
-    <input type="submit" value="Delete" aria-label="Delete selected items" >
-
     <table>
         <tr>
         <th></th>
@@ -35,20 +25,20 @@
                 <td><input type="checkbox" name="B1" aria-label="Select item"></td>
                 <td>B1</td>
                 <td>banana</td>
-                <td>8 February 2022</td>
+                <td>28 October 2021</td>
                 <td style="text-align: right">-1</td>
                 <td style="text-align: right">42</td>
-                <td style="text-align: right">£6.66</td>
+                <td style="text-align: right">£1.00</td>
             </tr>
         
             <tr>
                 <td><input type="checkbox" name="K1" aria-label="Select item"></td>
                 <td>K1</td>
                 <td>kumquat</td>
-                <td>10 February 2022</td>
+                <td>30 October 2021</td>
                 <td style="text-align: right">1</td>
                 <td style="text-align: right">101</td>
-                <td style="text-align: right"></td>
+                <td style="text-align: right">error</td>
             </tr>
         
             <tr>
@@ -58,12 +48,8 @@
                 <td></td>
                 <td style="text-align: right">0</td>
                 <td style="text-align: right">50</td>
-                <td style="text-align: right">£9.99</td>
+                <td style="text-align: right"></td>
             </tr>
         
     </table>
-
-</form>
-</body>
-</html>
 

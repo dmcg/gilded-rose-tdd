@@ -26,7 +26,8 @@ fun render(
     stockListResult: Result4k<PricedStockList, StockListLoadingError>,
     now: Instant,
     zoneId: ZoneId,
-    features: Features
+    features: Features,
+    justTable: Boolean
 ): Response {
     val today = LocalDate.ofInstant(now, zoneId)
     return stockListResult.map { stockList ->
@@ -41,7 +42,8 @@ fun render(
                         }
                         item.toMap(today, priceString)
                     },
-                    showNewItemRow = features.newItemEnabled
+                    showNewItemRow = features.newItemEnabled,
+                    justTable = justTable
                 )
         )
     }.recover { error ->
@@ -54,7 +56,8 @@ fun render(
 private data class StockListViewModel(
     val now: String,
     val items: List<Map<String, String>>,
-    val showNewItemRow: Boolean
+    val showNewItemRow: Boolean,
+    val justTable: Boolean
 ) : ViewModel
 
 private fun PricedItem.toMap(now: LocalDate, priceString: String): Map<String, String> = mapOf(
