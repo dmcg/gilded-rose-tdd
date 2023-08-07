@@ -1,12 +1,13 @@
 
 <html lang="en">
-<head title="Gilded Rose">
+<head>
+    <title>Gilded Rose</title>
     <script src="https://unpkg.com/htmx.org@1.9.4" integrity="sha384-zUfuhFKKZCbHTY6aRR46gxiqszMk5tcHjsVFxnUo8VMus4kHGVdIYVbOYYNlKmHV" crossorigin="anonymous"></script>
 </head>
 <body>
 <h1>9 February 2022</h1>
  <form method="post" action="/add-item" hx-post="/add-item" hx-target="table" id="new-item-form"></form> 
-<form method="post" action="/delete-items" hx-confirm="Are you sure you want to delete the items?">
+<form method="post" action="/delete-items" hx-post="/delete-items" hx-target="table" hx-confirm="Are you sure you want to delete the items?">
     <input type="submit" value="Delete" aria-label="Delete selected items" >
 
     <table>

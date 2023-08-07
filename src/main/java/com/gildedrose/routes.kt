@@ -82,7 +82,10 @@ private fun App.deleteHandler(
     runIO {
         val itemIds = request.form().map { it.first }.mapNotNull { ID<Item>(it) }.toSet()
         deleteItemsWithIds(itemIds)
-        return Response(Status.SEE_OTHER).header("Location", "/")
+        return when {
+            request.isHtmx -> listHandler(request)
+            else -> Response(Status.SEE_OTHER).header("Location", "/")
+        }
     }
 }
 

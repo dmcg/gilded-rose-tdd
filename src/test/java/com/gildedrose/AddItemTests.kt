@@ -229,4 +229,4 @@ private fun postFormToAddItemsRoute(withHTMX: Boolean = true) =
         if (withHTMX) header("HX-Request", "true") else this
     }
 
-private fun hasJustATableElementBody() = hasBody(Regex("""\A\s*<table>.*</table>\s*\z""", RegexOption.DOT_MATCHES_ALL))
+fun hasJustATableElementBody() = hasBody(Regex("""\A\s*<table>.*</table>\s*\z""", RegexOption.DOT_MATCHES_ALL))

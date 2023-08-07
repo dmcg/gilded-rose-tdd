@@ -1,8 +1,12 @@
 package com.gildedrose
 
-import com.gildedrose.domain.*
+import com.gildedrose.domain.ID
+import com.gildedrose.domain.Price
+import com.gildedrose.domain.PricedStockList
+import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
-import com.gildedrose.persistence.*
+import com.gildedrose.persistence.InMemoryItems
+import com.gildedrose.persistence.transactionally
 import com.gildedrose.testing.IOResolver
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
@@ -72,6 +76,24 @@ class DeleteItemsTests {
 
     @Test
     fun `delete items via http`() {
+        val response = app.routes(
+            Request(Method.POST, "/delete-items")
+                .header("HX-Request", "True")
+                .form(pricedStockList[0].id.toString(), "on")
+                .form(pricedStockList[2].id.toString(), "on")
+        )
+        assertThat(
+            response,
+            hasStatus(Status.OK) and hasJustATableElementBody()
+        )
+        assertEquals(
+            Success(StockList(sameDayAsLastModified, listOf(pricedStockList[1].withNoPrice()))),
+            fixture.unpricedItems.transactionally { load() }
+        )
+    }
+
+    @Test
+    fun `delete items via http with no htmx`() {
         val response = app.routes(
             Request(Method.POST, "/delete-items")
                 .form(pricedStockList[0].id.toString(), "on")
