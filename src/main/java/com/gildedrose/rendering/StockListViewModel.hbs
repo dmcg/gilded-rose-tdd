@@ -1,10 +1,9 @@
-<!--suppress HtmlFormInputWithoutLabel -->
 <html lang="en">
 <body>
 <h1>{{now}}</h1>
 {{#if showNewItemRow}} <form method="post" action="/add-item" id="new-item-form"></form> {{/if}}
 <form method="post" action="/delete-items">
-    <input type="submit" value="Delete">
+    <input type="submit" value="Delete" aria-label="Delete selected items">
     <table>
         <tr>
         <th></th>
@@ -18,17 +17,17 @@
         {{#if showNewItemRow}}
         <tr>
             <td></td>
-            <td><input form="new-item-form" type="text" name="new-itemId" required size="5"></td>
-            <td><input form="new-item-form" type="text" name="new-itemName" required size="20"></td>
-            <td><input form="new-item-form" type="date" name="new-itemSellBy"></td>
+            <td><input form="new-item-form" type="text" name="new-itemId" required size="5" aria-label="New item id"></td>
+            <td><input form="new-item-form" type="text" name="new-itemName" required size="20" aria-label="New item name"></td>
+            <td><input form="new-item-form" type="date" name="new-itemSellBy" aria-label="New item sell by date"></td>
             <td></td>
-            <td style="text-align: right"><input type="number" form="new-item-form" name="new-itemQuality" required size="3"></td>
-            <td><input type="submit" form="new-item-form" value="Add" style="width: 100%"></td>
+            <td style="text-align: right"><input type="number" form="new-item-form" name="new-itemQuality" required min="0" size="3" aria-label="New item quality"></td>
+            <td><input type="submit" form="new-item-form" value="Add" style="width: 100%" aria-label="Add new item"></td>
         </tr>
         {{/if}}
         {{#each this.items}}
             <tr>
-                <td><input type="checkbox" name="{{id}}"></td>
+                <td><input type="checkbox" name="{{id}}" aria-label="Select item"></td>
                 <td>{{id}}</td>
                 <td>{{name}}</td>
                 <td>{{sellByDate}}</td>
