@@ -1,23 +1,25 @@
 package com.gildedrose
 
+import arrow.core.raise.*
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.AnalyticsEvent
+import com.gildedrose.foundation.magic
 import com.gildedrose.foundation.runIO
 import com.gildedrose.http.ResponseErrors
 import com.gildedrose.http.ResponseErrors.withError
 import com.gildedrose.http.catchAll
 import com.gildedrose.http.reportHttpTransactions
 import com.gildedrose.rendering.render
+import java.time.Duration
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
 import org.http4k.core.*
+import org.http4k.core.body.Form
 import org.http4k.core.body.form
 import org.http4k.filter.ServerFilters
 import org.http4k.lens.*
-import org.http4k.lens.ParamMeta.IntegerParam
 import org.http4k.routing.bind
 import org.http4k.routing.routes
-import java.time.Duration
-import java.time.LocalDate
-
 
 val App.routes: HttpHandler
     get() = ServerFilters.RequestTracing()
@@ -33,39 +35,56 @@ val App.routes: HttpHandler
             )
         )
 
-internal fun App.addHandler(request: Request): Response {
-    val idLens = FormField.nonBlankString().map { ID<Item>(it) }.required("new-itemId")
-    val nameLens = FormField.nonBlankString().required("new-itemName")
-    val sellByLens = FormField.nullOnEmptyLocalDate().optional("new-itemSellBy")
-    val qualityLens = FormField.nonNegativeInt().map { Quality(it) }.required("new-itemQuality")
-    val formBody = Body.webForm(Validator.Feedback, idLens, nameLens, sellByLens, qualityLens).toLens()
-    val form: WebForm = formBody(request)
-    if (form.errors.isNotEmpty())
-        return Response(Status.BAD_REQUEST).withError(NewItemFailedEvent(form.errors.toString()))
-
-    val item = Item(idLens(form), nameLens(form), sellByLens(form), qualityLens(form))
-    runIO {
-        addItem(newItem = item)
+internal fun App.addHandler(request: Request): Response = recover({
+    with(request.form()) {
+        val item = zipOrAccumulate(
+            { required("new-itemId") { ID(it) }},
+            { required("new-itemName") { NonBlankString(it) } },
+            { optional("new-itemSellBy") { it?.ifEmpty { null }?.toLocalDate() } },
+            { required("new-itemQuality") { Quality(it.toIntSafe()) } },
+            ::Item)
+        runIO { addItem(newItem = item) }
     }
-    return Response(Status.SEE_OTHER).header("Location", "/")
+    Response(Status.SEE_OTHER).header("Location", "/")
+}) { errorList ->
+    Response(Status.BAD_REQUEST).withError(NewItemFailedEvent(errorList.toList().toString()))
 }
+
 
 data class NewItemFailedEvent(val message: String) : AnalyticsEvent
 
-fun FormField.nonNegativeInt() =
-    mapWithNewMeta(
-        BiDiMapping<String, NonNegativeInt>(
-            { NonNegativeInt(it.toInt()) ?: throw IllegalArgumentException("Integer cannot be negative") },
-            NonNegativeInt::toString
-        ), IntegerParam
-    )
+context(Raise<String>)
+fun Form.required(name: String): String =
+    findSingle(name) ?: raise("formData '$name' is required")
 
-fun FormField.nullOnEmptyLocalDate() = string().map { if (it.isEmpty()) null else LocalDate.parse(it) }
+fun Form.optional(name: String): String? = findSingle(name)
 
-fun FormField.nonBlankString(): BiDiLensSpec<WebForm, NonBlankString> =
-    map(BiDiMapping<String, NonBlankString>({ s: String ->
-        NonBlankString(s) ?: throw IllegalArgumentException("String cannot be blank")
-    }, { it.toString() }))
+// The following 2 functions take care of including the invalid field name in the error message.
+context(Raise<String>)
+fun <T> Form.required(name: String, transform: context(Raise<String>) (String) -> T): T {
+    val value = required(name)
+    return withError({ e -> "formData '$name': $e" }) {
+        transform(magic(), value)
+    }
+}
+
+context(Raise<String>)
+fun <T> Form.optional(name: String, transform: context(Raise<String>) (String?) -> T): T {
+    val value = optional(name)
+    return withError({ e -> "formData '$name': $e" }) {
+        transform(magic(), value)
+    }
+}
+
+// In a Raise world, these would already be defined instead of their exception-throwing counterparts
+context(Raise<String>)
+fun String.toLocalDate(): LocalDate =
+    // This catch function is reified! So it only catches DateTimeParseException
+    catch<DateTimeParseException, _>({ LocalDate.parse(this) }) { raise("Invalid date format") }
+
+context(Raise<String>)
+fun String.toIntSafe(): Int =
+    catch<NumberFormatException, _>({ toInt() }) { raise("Invalid number format") }
 
 private fun App.listHandler(
     @Suppress("UNUSED_PARAMETER") request: Request

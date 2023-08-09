@@ -1,5 +1,6 @@
 package com.gildedrose
 
+import arrow.core.raise.Raise
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.IO
 import com.gildedrose.persistence.*
@@ -7,7 +8,6 @@ import com.gildedrose.testing.IOResolver
 import com.gildedrose.testing.fake
 import com.natpryce.hamkrest.assertion.assertThat
 import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
@@ -61,8 +61,9 @@ class ListStockTests {
         val itemsThatFails = object : Items<NoTX> by fake() {
             override fun <R> inTransaction(block: context(NoTX) () -> R) = block(NoTX)
 
-            context(IO, NoTX) override fun load(): Result<StockList, StockListLoadingError> {
-                return Failure(expectedError)
+            context(IO, NoTX, Raise<StockListLoadingError>)
+            override fun load(): StockList {
+                raise(expectedError)
             }
         }
         val events: MutableList<Any> = mutableListOf()

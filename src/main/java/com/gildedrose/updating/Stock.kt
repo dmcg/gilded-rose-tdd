@@ -1,14 +1,12 @@
 package com.gildedrose.updating
 
+import arrow.core.raise.Raise
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
 import com.gildedrose.persistence.Items
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.persistence.TXContext
-import dev.forkhandles.result4k.Result4k
-import dev.forkhandles.result4k.Success
-import dev.forkhandles.result4k.flatMap
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -18,23 +16,22 @@ class Stock(
     private val zoneId: ZoneId,
     private val itemUpdate: (Item).(days: Int, on: LocalDate) -> Item = Item::updatedBy
 ) {
-    context(IO, TXContext)
-    fun loadAndUpdateStockList(now: Instant): Result4k<StockList, StockListLoadingError> =
-        items.load().flatMap { loadedStockList ->
-            val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
-            when {
-                daysOutOfDate > 0L -> {
-                    val updatedStockList = loadedStockList.updated(
-                        now,
-                        daysOutOfDate.toInt(),
-                        LocalDate.ofInstant(now, zoneId)
-                    )
-                    items.save(updatedStockList)
-                }
-
-                else -> Success(loadedStockList)
+    context(IO, TXContext, Raise<StockListLoadingError>)
+    fun loadAndUpdateStockList(now: Instant): StockList {
+        val loadedStockList = items.load()
+        val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
+        return when {
+            daysOutOfDate > 0L -> {
+                loadedStockList.updated(
+                    now,
+                    daysOutOfDate.toInt(),
+                    LocalDate.ofInstant(now, zoneId)
+                ).also { items.save(it) }
             }
+
+            else -> loadedStockList
         }
+    }
 
     private fun StockList.updated(
         now: Instant,

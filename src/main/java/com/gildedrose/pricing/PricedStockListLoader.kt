@@ -1,22 +1,18 @@
 package com.gildedrose.pricing
 
+import arrow.core.raise.Raise
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.*
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.persistence.TXContext
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.map
 import dev.forkhandles.result4k.peekFailure
-import dev.forkhandles.result4k.resultFrom
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import java.util.concurrent.Executors
 
-typealias StockLoadingResult = Result<StockList, StockListLoadingError>
-
 class PricedStockListLoader(
-    private val loading: context(IO, TXContext) (Instant) -> StockLoadingResult,
+    private val loading: context(IO, TXContext, Raise<StockListLoadingError>) (Instant) -> StockList,
     pricing: context(IO) (Item) -> Price?,
     private val analytics: Analytics
 ) {
@@ -24,11 +20,8 @@ class PricedStockListLoader(
     private val retryingPricing: context(IO) (Item) -> Price? =
         pricing.wrappedWith(retry(1, reporter = ::reportException))
 
-    context(IO, TXContext)
-    fun load(now: Instant): Result<PricedStockList, StockListLoadingError> =
-        loading(magic<IO>(), magic<TXContext>(),now).map {
-            it.pricedBy(retryingPricing)
-        }
+    context(IO, TXContext, Raise<StockListLoadingError>)
+    fun load(now: Instant): PricedStockList = loading(now).pricedBy(retryingPricing)
 
     context(IO)
     private fun StockList.pricedBy(
@@ -46,8 +39,8 @@ class PricedStockListLoader(
         pricing: context(IO) (Item) -> Price?
     ) = PricedItem(
         this,
-        price = resultFrom {
-            pricing(magic<IO>(), this)
+        price = resultCatch {
+            pricing(this)
         }.peekFailure(::reportException)
     )
 

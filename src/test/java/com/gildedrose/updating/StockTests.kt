@@ -5,9 +5,9 @@ import com.gildedrose.foundation.IO
 import com.gildedrose.item
 import com.gildedrose.oct29
 import com.gildedrose.persistence.InMemoryItems
+import com.gildedrose.persistence.transactionally
 import com.gildedrose.testing.IOResolver
 import dev.forkhandles.result4k.valueOrNull
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
@@ -15,6 +15,7 @@ import java.time.ZoneId
 import java.util.concurrent.Callable
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.Executors
+import kotlin.test.assertEquals
 
 @ExtendWith(IOResolver::class)
 class StockTests {
@@ -40,7 +41,7 @@ class StockTests {
         val now = Instant.parse("2022-02-09T23:59:59Z")
         assertEquals(
             initialStockList,
-            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
+            items.transactionally { stock.loadAndUpdateStockList(now) }.valueOrNull()
         )
     }
 
@@ -57,11 +58,12 @@ class StockTests {
         )
         assertEquals(
             expectedUpdatedResult,
-            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
+            items.transactionally { stock.loadAndUpdateStockList(now) }.valueOrNull()
         )
-        items.inTransaction {
-            assertEquals(expectedUpdatedResult, items.load().valueOrNull())
-        }
+        assertEquals(
+            expectedUpdatedResult,
+            items.transactionally { load() }.valueOrNull()
+        )
     }
 
     context(IO)
@@ -77,11 +79,12 @@ class StockTests {
         )
         assertEquals(
             expectedUpdatedResult,
-            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
+            items.transactionally { stock.loadAndUpdateStockList(now) }.valueOrNull()
         )
-        items.inTransaction {
-            assertEquals(expectedUpdatedResult, items.load().valueOrNull())
-        }
+        assertEquals(
+            expectedUpdatedResult,
+            items.transactionally { load() }.valueOrNull()
+        )
     }
 
     context(IO)
@@ -90,11 +93,12 @@ class StockTests {
         val now = Instant.parse("2022-02-08T00:00:01Z")
         assertEquals(
             initialStockList,
-            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
+            items.transactionally { stock.loadAndUpdateStockList(now) }.valueOrNull()
         )
-        items.inTransaction {
-            assertEquals(initialStockList, items.load().valueOrNull())
-        }
+        assertEquals(
+            initialStockList,
+            items.transactionally { load() }.valueOrNull()
+        )
     }
 
     context(IO)

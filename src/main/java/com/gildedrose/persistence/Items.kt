@@ -1,8 +1,8 @@
 package com.gildedrose.persistence
 
+import arrow.core.raise.Raise
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
-import dev.forkhandles.result4k.Result
 
 /**
  * The transaction that Items methods are running in.
@@ -21,9 +21,9 @@ interface Items<out TX: TXContext> {
 
     fun <R> inTransaction(block: context(TX) () -> R): R
 
-    context(IO, TX) fun save(
-        stockList: StockList
-    ): Result<StockList, StockListLoadingError.IOError>
+    context(IO, TX, Raise<StockListLoadingError.IOError>)
+    fun save(stockList: StockList): StockList
 
-    context(IO, TX) fun load(): Result<StockList, StockListLoadingError>
+    context(IO, TX, Raise<StockListLoadingError>)
+    fun load(): StockList
 }

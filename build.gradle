@@ -43,6 +43,8 @@ dependencies {
 
     implementation "org.jooq:jooq:3.17.6"
 
+    implementation "io.arrow-kt:arrow-core:1.2.0"
+
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
