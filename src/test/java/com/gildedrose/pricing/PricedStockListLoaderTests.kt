@@ -4,16 +4,16 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.AnalyticsEvent
-import com.gildedrose.foundation.IO
-import com.gildedrose.foundation.UncaughtExceptionEvent
-import com.gildedrose.foundation.succeedAfter
+import com.gildedrose.foundation.*
 import com.gildedrose.item
 import com.gildedrose.persistence.NoTX
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.testing.IOResolver
+import com.gildedrose.testing.assertFailsWith
+import com.gildedrose.testing.assertSucceedsWith
 import com.gildedrose.withPriceResult
 import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -47,7 +47,7 @@ class PricedStockListLoaderTests {
         )
     }
 
-    private val stockValues = mutableMapOf<Instant, StockLoadingResult>(
+    private val stockValues = mutableMapOf<Instant, Result<StockList, StockListLoadingError>>(
         sameDayAsLastModified to Success(loadedStockList)
     )
     private val priceList = mutableMapOf<Item, (Item) -> Price?>(
@@ -57,7 +57,7 @@ class PricedStockListLoaderTests {
     )
     private val analyticsEvents = mutableListOf<AnalyticsEvent>()
     private val loader = PricedStockListLoader(
-        { stockValues.getValue(it) },
+        { stockValues.getValue(it).bind() },
         pricing = { item -> priceList[item]?.invoke(item) },
         analytics = { event -> analyticsEvents.add(event) }
     )
@@ -65,22 +65,20 @@ class PricedStockListLoaderTests {
     context(IO)
     @Test
     fun `loads and prices items`() {
-        assertEquals(
-            Success(expectedPricedStockList),
+        assertSucceedsWith(expectedPricedStockList) {
             with(NoTX) { loader.load(sameDayAsLastModified) }
-        )
+        }
         assertTrue(analyticsEvents.isEmpty())
     }
 
     context(IO)
     @Test
     fun `passes on failures to load stock`() {
-        val loadingError = StockListLoadingError.IOError("deliberate")
+        val loadingError: StockListLoadingError = StockListLoadingError.IOError("deliberate")
         stockValues[sameDayAsLastModified] = Failure(loadingError)
-        assertEquals(
-            Failure(loadingError),
+        assertFailsWith(loadingError) {
             with(NoTX) { loader.load(sameDayAsLastModified) }
-        )
+        }
         assertTrue(analyticsEvents.isEmpty())
     }
 
@@ -89,16 +87,14 @@ class PricedStockListLoaderTests {
     fun `item price remembers pricing failures`() {
         val exception = Exception("deliberate")
         priceList[loadedStockList[2]] = { throw exception }
-        assertEquals(
-            Success(
-                expectedPricedStockList.copy(
-                    items = expectedPricedStockList.items.toMutableList().apply {
-                        set(2, get(2).copy(price = Failure(exception)))
-                    }
-                )
-            ),
+        assertSucceedsWith(
+            expectedPricedStockList.copy(
+                items = expectedPricedStockList.items.toMutableList().apply {
+                    set(2, get(2).copy(price = Failure(exception)))
+                }
+            )) {
             with(NoTX) { loader.load(sameDayAsLastModified) }
-        )
+        }
         with(analyticsEvents) {
             assertEquals(2, size) // one for the try and the retry
             assertTrue(all { it is UncaughtExceptionEvent })
@@ -112,10 +108,9 @@ class PricedStockListLoaderTests {
         priceList[loadedStockList[2]] = succeedAfter(1, raiseError = { throw exception }) {
             Price(999)
         }
-        assertEquals(
-            Success(expectedPricedStockList),
+        assertSucceedsWith(expectedPricedStockList) {
             with(NoTX) { loader.load(sameDayAsLastModified) }
-        )
+        }
         with(analyticsEvents) {
             assertEquals(1, size)
             assertTrue(all { it is UncaughtExceptionEvent })

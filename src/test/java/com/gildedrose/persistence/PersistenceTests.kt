@@ -2,12 +2,14 @@ package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
+import com.gildedrose.foundation.result4k
 import com.gildedrose.item
 import com.gildedrose.oct29
 import com.gildedrose.persistence.StockListLoadingError.*
 import com.gildedrose.testing.IOResolver
+import com.gildedrose.testing.assertSucceeds
+import com.gildedrose.testing.assertSucceedsWith
 import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -30,44 +32,43 @@ class PersistenceTests {
     fun `save and load`(@TempDir dir: File) {
         val file = File(dir, "stock.tsv")
         val stockList = StockList(now, items)
-        stockList.saveTo(file)
-        assertEquals(
-            Success(stockList),
+        assertSucceeds { stockList.saveTo(file) }
+        assertSucceedsWith(
+            stockList) {
             file.loadItems()
-        )
+        }
     }
 
     @Test
     fun `save and load empty stockList`() {
         val stockList = StockList(now, emptyList())
-        assertEquals(
-            Success(stockList),
+        assertSucceedsWith(stockList) {
             stockList.toLines().toStockList()
-        )
+        }
     }
 
     @Test
     fun `load from empty file`() {
-        assertEquals(
-            Success(StockList(Instant.EPOCH, emptyList())),
+        assertSucceedsWith(
+            StockList(Instant.EPOCH, emptyList())) {
             emptySequence<String>().toStockList()
-        )
+        }
     }
 
     @Test
     fun `load with no LastModified header`() {
         val lines = sequenceOf("# Banana")
-        assertEquals(
-            Success(StockList(Instant.EPOCH, emptyList())),
+        assertSucceedsWith(
+            StockList(Instant.EPOCH, emptyList())) {
             lines.toStockList()
-        )
+        }
     }
 
     @Test
     fun `fails load with blank LastModified header`() {
         assertEquals(
             Failure(CouldntParseLastModified("Could not parse LastModified header: Text '' could not be parsed at index 0")),
-            sequenceOf("# LastModified:").toStockList()
+            result4k { sequenceOf("# LastModified:").toStockList() }
         )
     }
 
@@ -75,7 +76,7 @@ class PersistenceTests {
     fun `fails to load with negative quality`() {
         assertEquals(
             Failure(CouldntParseQuality("id\tbanana\t2022-07-08\t-1")),
-            sequenceOf("id\tbanana\t2022-07-08\t-1").toStockList()
+            result4k { sequenceOf("id\tbanana\t2022-07-08\t-1").toStockList() }
         )
     }
 
@@ -83,7 +84,7 @@ class PersistenceTests {
     fun `fails to load with blank id`() {
         assertEquals(
             Failure(BlankID("\tbanana\t2022-07-08\t42")),
-            sequenceOf("\tbanana\t2022-07-08\t42").toStockList()
+            result4k { sequenceOf("\tbanana\t2022-07-08\t42").toStockList() }
         )
     }
 
@@ -91,7 +92,7 @@ class PersistenceTests {
     fun `fails to load with blank name`() {
         assertEquals(
             Failure(BlankName("id\t\t2022-07-08\t42")),
-            sequenceOf("id\t\t2022-07-08\t42").toStockList()
+            result4k { sequenceOf("id\t\t2022-07-08\t42").toStockList() }
         )
     }
 
@@ -99,7 +100,7 @@ class PersistenceTests {
     fun `fails to load with too few fields`() {
         assertEquals(
             Failure(NotEnoughFields("id\tbanana\t2022-07-08")),
-            sequenceOf("id\tbanana\t2022-07-08").toStockList()
+            result4k { sequenceOf("id\tbanana\t2022-07-08").toStockList() }
         )
     }
 
@@ -107,7 +108,7 @@ class PersistenceTests {
     fun `fails to load with no quality`() {
         assertEquals(
             Failure(CouldntParseQuality("id\tbanana\t2022-07-08\t")),
-            sequenceOf("id\tbanana\t2022-07-08\t").toStockList()
+            result4k { sequenceOf("id\tbanana\t2022-07-08\t").toStockList() }
         )
     }
 
@@ -115,7 +116,7 @@ class PersistenceTests {
     fun `fails to load with duff quality`() {
         assertEquals(
             Failure(CouldntParseQuality("id\tbanana\t2022-07-08\teh?")),
-            sequenceOf("id\tbanana\t2022-07-08\teh?").toStockList()
+            result4k { sequenceOf("id\tbanana\t2022-07-08\teh?").toStockList() }
         )
     }
 
@@ -123,7 +124,7 @@ class PersistenceTests {
     fun `fails to load with bad sell by`() {
         assertEquals(
             Failure(CouldntParseSellBy("id\tbanana\teh?\t42")),
-            sequenceOf("id\tbanana\teh?\t42").toStockList()
+            result4k { sequenceOf("id\tbanana\teh?\t42").toStockList() }
         )
     }
 }

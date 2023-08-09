@@ -1,8 +1,10 @@
 package com.gildedrose.persistence
 
+import arrow.core.raise.Raise
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.*
 import com.gildedrose.testing.IOResolver
+import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.BeforeEach
@@ -64,13 +66,12 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
 
     context(IO)
     @Test
-    fun `raises event if other items throws on load`() {
-        val exception = RuntimeException("Deliberate")
+    fun `raises event if other items raises on load`() {
+        val error = StockListLoadingError.IOError("Deliberate")
         val brokenOtherItems = object : DbItems(testDslContext) {
-            context(IO, DbTxContext)
-            override fun load():
-                Result<StockList, StockListLoadingError> {
-                throw exception
+            context(IO, DbTxContext, Raise<StockListLoadingError>)
+            override fun load(): StockList {
+                raise(error)
             }
         }
         val items = DualItems(
@@ -84,7 +85,10 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
             items.transactionally { load() }
         )
         assertEquals(
-            StockListLoadingExceptionCaught(exception),
+            stocklistLoadingMismatch(
+                Success(initialStockList),
+                Failure(error)
+            ),
             events.single()
         )
     }
@@ -110,11 +114,10 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
     @Test
     fun `raises event if other items disagrees on save`() {
         val brokenOtherItems = object : DbItems(testDslContext) {
-            context(IO, DbTxContext)
-            override fun save(stockList: StockList)
-                : Result<StockList, StockListLoadingError.IOError> {
+            context(IO, DbTxContext, Raise<StockListLoadingError.IOError>)
+            override fun save(stockList: StockList): StockList {
                 super.save(stockList)
-                return Success(nullStockist)
+                return nullStockist
             }
         }
         val items = DualItems(
@@ -137,13 +140,12 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
 
     context(IO)
     @Test
-    fun `raises event if other items throws on save`() {
-        val exception = RuntimeException("Deliberate")
+    fun `raises event if other items raises on save`() {
+        val error = StockListLoadingError.IOError("Deliberate")
         val brokenOtherItems = object : DbItems(testDslContext) {
-            context(IO, DbTxContext)
-            override fun save(stockList: StockList)
-                : Result<StockList, StockListLoadingError.IOError> {
-                throw exception
+            context(IO, DbTxContext, Raise<StockListLoadingError.IOError>)
+            override fun save(stockList: StockList): StockList {
+                raise(error)
             }
         }
         val items = DualItems(
@@ -156,16 +158,24 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
             items.transactionally { save(initialStockList) }
         )
         assertEquals(
-            StockListSavingExceptionCaught(exception),
+            stocklistSavingMismatch(
+                Success(initialStockList),
+                Failure(error)
+            ),
             events.single()
         )
     }
 }
 
-fun <R, TX : TXContext> Items<TX>.transactionally(f: context(TX) Items<TX>.() -> R): R =
+// Turns out, all usages of transactionally expect a Result from it,
+// mostly because Items only has save and load, and both can raise a StockListLoadingError
+fun <R, TX : TXContext> Items<TX>.transactionally(
+    f: context(TX, Raise<StockListLoadingError>) Items<TX>.() -> R
+): Result<R, StockListLoadingError> = result4k {
     inTransaction {
-        f(magic(), this)
+        f(magic(), magic<Raise<StockListLoadingError>>(), magic<Items<TX>>())
     }
+}
 
 
 

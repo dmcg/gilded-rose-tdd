@@ -1,13 +1,14 @@
 package com.gildedrose.persistence
 
+import arrow.core.raise.Raise
 import com.gildedrose.db.tables.Items.ITEMS
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.IO
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.Success
+import com.gildedrose.foundation.withException
 import org.jooq.Configuration
 import org.jooq.DSLContext
 import org.jooq.Record5
+import org.jooq.exception.DataAccessException
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.max
 import java.time.Instant
@@ -30,18 +31,11 @@ open class DbItems(
             block(txContext)
         }
 
-    context(IO, DbTxContext)
-    override fun save(
-        stockList: StockList
-    ): Result<StockList, StockListLoadingError.IOError> {
-        dslContext.save(stockList)
-        return Success(stockList)
-    }
+    context(IO, DbTxContext, Raise<StockListLoadingError.IOError>)
+    override fun save(stockList: StockList): StockList = stockList.also { dslContext.save(it) }
 
-    context(IO, DbTxContext)
-    override fun load(): Result<StockList, StockListLoadingError> {
-        return Success(dslContext.load())
-    }
+    context(IO, DbTxContext, Raise<StockListLoadingError>)
+    override fun load(): StockList = dslContext.load()
 }
 
 private val sentinelItem = Item(
@@ -51,7 +45,8 @@ private val sentinelItem = Item(
     quality = Quality(Int.MAX_VALUE)!!
 )
 
-fun DSLContext.save(stockList: StockList) {
+context(Raise<StockListLoadingError.IOError>)
+fun DSLContext.save(stockList: StockList) = withException(::IOErrorfromJooqException) {
     val toSave = when {
         stockList.items.isEmpty() -> listOf(sentinelItem)
         else -> stockList.items
@@ -69,7 +64,8 @@ fun DSLContext.save(stockList: StockList) {
     }
 }
 
-fun DSLContext.load(): StockList {
+context(Raise<StockListLoadingError>)
+fun DSLContext.load(): StockList = withException(::IOErrorfromJooqException) {
     with(ITEMS) {
         val records = select(ID, MODIFIED, NAME, QUALITY, SELLBYDATE)
             .from(ITEMS)
@@ -77,7 +73,7 @@ fun DSLContext.load(): StockList {
                 MODIFIED.eq(DSL.select(max(MODIFIED)).from(ITEMS))
             )
             .fetch()
-        return if (records.isEmpty())
+        if (records.isEmpty())
             StockList(Instant.EPOCH, emptyList())
         else {
             val lastModified: Instant = records.first()[MODIFIED]
@@ -99,3 +95,5 @@ private fun Record5<String, Instant, String, Int, LocalDate>.toItem() =
         quality = Quality(this[ITEMS.QUALITY]) ?: error("Invalid quality")
     )
 
+fun IOErrorfromJooqException(e: DataAccessException): StockListLoadingError.IOError =
+    StockListLoadingError.IOError(e.message ?: "Unknown Jooq error")

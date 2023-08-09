@@ -5,6 +5,8 @@ import com.gildedrose.foundation.IO
 import com.gildedrose.item
 import com.gildedrose.oct29
 import com.gildedrose.testing.IOResolver
+import com.gildedrose.testing.assertSucceeds
+import com.gildedrose.testing.assertSucceedsWith
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -37,53 +39,40 @@ abstract class ItemsContract<TX : TXContext> {
 
     @Test
     fun `returns empty stocklist before any save`() {
-        items.inTransaction {
-            assertEquals(
-                Success(nullStockist),
-                items.load()
-            )
-        }
+        assertEquals(
+            Success(nullStockist),
+            items.transactionally { load() }
+        )
     }
 
     @Test
     fun `returns last saved stocklist`() {
-        items.inTransaction {
-            items.save(initialStockList)
-            assertEquals(
-                Success(initialStockList),
-                items.load()
-            )
-
-            val modifiedStockList = initialStockList.copy(
-                lastModified = initialStockList.lastModified.plusSeconds(3600),
-                items = initialStockList.items.drop(1)
-            )
-            items.save(modifiedStockList)
-            assertEquals(
-                Success(modifiedStockList),
-                items.load()
-            )
-        }
+        val modifiedStockList = initialStockList.copy(
+            lastModified = initialStockList.lastModified.plusSeconds(3600),
+            items = initialStockList.items.drop(1)
+        )
+        checkStocklistSaving(initialStockList, modifiedStockList)
     }
 
     @Test
     fun `can save an empty stocklist`() {
-        items.inTransaction {
-            items.save(initialStockList)
-            assertEquals(
-                Success(initialStockList),
-                items.load()
-            )
+        val modifiedStockList = StockList(
+            lastModified = initialStockList.lastModified.plusSeconds(3600),
+            items = emptyList()
+        )
+        checkStocklistSaving(initialStockList, modifiedStockList)
+    }
 
-            val modifiedStockList = initialStockList.copy(
-                lastModified = initialStockList.lastModified.plusSeconds(3600),
-                items = emptyList()
-            )
-            items.save(modifiedStockList)
-            assertEquals(
-                Success(modifiedStockList),
+    private fun checkStocklistSaving(firstStockList: StockList, secondStockList: StockList) {
+        items.inTransaction {
+            assertSucceeds { items.save(firstStockList) }
+            assertSucceedsWith(firstStockList) {
                 items.load()
-            )
+            }
+            assertSucceeds { items.save(secondStockList) }
+            assertSucceedsWith(secondStockList) {
+                items.load()
+            }
         }
     }
 
@@ -104,16 +93,12 @@ abstract class ItemsContract<TX : TXContext> {
             val stockList = initialStockList.copy(lastModified = Instant.parse(candidate))
 
             TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
-            items.inTransaction {
-                items.save(stockList)
-            }
+            items.transactionally { save(stockList) }
             TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
-            items.inTransaction {
-                assertEquals(
-                    Success(stockList),
-                    items.load()
-                )
-            }
+            assertEquals(
+                Success(stockList),
+                items.transactionally { load() }
+            )
         } finally {
             TimeZone.setDefault(initialTimeZone)
         }
@@ -122,23 +107,19 @@ abstract class ItemsContract<TX : TXContext> {
     open fun transactions() {
         val cyclicBarrier = CyclicBarrier(2)
         val thread = thread {
-            items.inTransaction {
-                items.save(initialStockList)
+            items.transactionally {
+                save(initialStockList)
                 cyclicBarrier.await()
                 cyclicBarrier.await()
             }
         }
 
         cyclicBarrier.await()
-        items.inTransaction {
-            assertEquals(Success(nullStockist), items.load())
-        }
+        assertEquals(Success(nullStockist), items.transactionally { load() })
 
         cyclicBarrier.await()
         thread.join()
-        items.inTransaction {
-            assertEquals(Success(initialStockList), items.load())
-        }
+        assertEquals(Success(initialStockList), items.transactionally { load() })
     }
 
 }

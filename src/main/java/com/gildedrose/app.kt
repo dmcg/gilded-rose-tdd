@@ -4,15 +4,12 @@ import com.gildedrose.config.DbConfig
 import com.gildedrose.config.Features
 import com.gildedrose.config.toDslContext
 import com.gildedrose.domain.*
-import com.gildedrose.foundation.Analytics
-import com.gildedrose.foundation.IO
-import com.gildedrose.foundation.loggingAnalytics
+import com.gildedrose.foundation.*
 import com.gildedrose.persistence.*
 import com.gildedrose.pricing.PricedStockListLoader
 import com.gildedrose.pricing.valueElfClient
 import com.gildedrose.updating.Stock
 import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.map
 import java.io.File
 import java.net.URI
 import java.time.Instant
@@ -52,30 +49,28 @@ data class App(
     )
 
     context(IO)
-    fun loadStockList(now: Instant = clock()): Result<PricedStockList, StockListLoadingError> =
+    fun loadStockList(now: Instant = clock()): Result<PricedStockList, StockListLoadingError> = result4k {
         items.inTransaction {
             pricedLoader.load(now)
         }
+    }
 
     context(IO)
-    fun deleteItemsWithIds(itemIds: Set<ID<Item>>, now: Instant = clock()) {
+    fun deleteItemsWithIds(itemIds: Set<ID<Item>>, now: Instant = clock()): Unit = ignoreErrors {
         items.inTransaction {
-            stock.loadAndUpdateStockList(now).map { stockList ->
-                val newItems = stockList.items.filterNot { it.id in itemIds }
-                if (newItems != stockList.items) {
-                    items.save(StockList(now, newItems))
-                }
+            val stockList = stock.loadAndUpdateStockList(now)
+            val newItems = stockList.items.filterNot { it.id in itemIds }
+            if (newItems != stockList.items) {
+                items.save(StockList(now, newItems))
             }
         }
     }
 
     context(IO)
-    fun addItem(newItem: Item, now: Instant = clock()) {
+    fun addItem(newItem: Item, now: Instant = clock()): Unit = ignoreErrors {
         items.inTransaction {
-            stock.loadAndUpdateStockList(now).map { stockList ->
-                val newItems = stockList.items + newItem
-                items.save(StockList(now, newItems))
-            }
+            val newItems = stock.loadAndUpdateStockList(now).items + newItem
+            items.save(StockList(now, newItems))
         }
     }
 }
