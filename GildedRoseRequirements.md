@@ -90,11 +90,11 @@ We are currently reflecting (and updating the quality in) an Excel TSV file that
 
 I'd like a way to remove items from the stock list through the software.
 
-## ☐ Add Items to the Stock List
+## ✓ Add Items to the Stock List
 
 I'd like a way to add new items when they come into stock.
 
-## ☐ Prevent Accidental Item Deletion
+## ✓ Prevent Accidental Item Deletion
 
 I accidentally deleted an item the other day. Can we stop that from happening?
 
