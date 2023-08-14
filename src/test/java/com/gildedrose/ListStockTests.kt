@@ -1,8 +1,13 @@
 package com.gildedrose
 
-import com.gildedrose.domain.*
+import com.gildedrose.domain.Price
+import com.gildedrose.domain.PricedStockList
+import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.IO
-import com.gildedrose.persistence.*
+import com.gildedrose.persistence.Items
+import com.gildedrose.persistence.NoTX
+import com.gildedrose.persistence.StockListLoadingError
+import com.gildedrose.rendering.render
 import com.gildedrose.testing.IOResolver
 import com.gildedrose.testing.fake
 import com.natpryce.hamkrest.assertion.assertThat
@@ -14,25 +19,25 @@ import org.http4k.core.Request
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.OK
 import org.http4k.hamkrest.hasStatus
-import org.http4k.testing.ApprovalTest
-import org.http4k.testing.Approver
-import org.http4k.testing.assertApproved
+import org.http4k.strikt.bodyString
+import org.http4k.strikt.status
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 import java.time.Instant.parse as t
 import java.time.LocalDate.parse as localDate
 
 context(IO)
 @ExtendWith(IOResolver::class)
-@ExtendWith(ApprovalTest::class)
 class ListStockTests {
 
     private val lastModified = t("2022-02-09T12:00:00Z")
     private val sameDayAsLastModified = t("2022-02-09T23:59:59Z")
 
     @Test
-    fun `list stock`(approver: Approver) {
+    fun `list stock`() {
         val pricedStockList = PricedStockList(
             lastModified,
             listOf(
@@ -47,11 +52,18 @@ class ListStockTests {
             pricing = fixture::pricing,
             clock = { sameDayAsLastModified }
         )
+        val expectedPricedStocklist = Success(pricedStockList)
         assertEquals(
-            Success(pricedStockList),
+            expectedPricedStocklist,
             app.loadStockList()
         )
-        approver.assertApproved(app.routes(Request(GET, "/")), OK)
+        val response = app.routes(Request(GET, "/"))
+        expectThat(response) {
+            status.isEqualTo(OK)
+            bodyString.isEqualTo(
+                app.expectedRenderingFor(expectedPricedStocklist)
+            )
+        }
     }
 
     @Test
@@ -85,3 +97,9 @@ class ListStockTests {
         )
     }
 }
+
+fun App.expectedRenderingFor(
+    pricedStocklist: Success<PricedStockList>
+) = render(pricedStocklist, clock(), londonZoneId, features, justTable = false).bodyString()
+
+

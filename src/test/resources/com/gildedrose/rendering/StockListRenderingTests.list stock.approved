@@ -6,8 +6,8 @@
 </head>
 <body>
 <h1>29 October 2021</h1>
- <form method="post" action="/add-item" hx-post="/add-item" hx-target="table" id="new-item-form"></form> 
-<form method="post" action="/delete-items" hx-post="/delete-items" hx-target="table" hx-confirm="Are you sure you want to delete the items?">
+ <form method="post" action="/add-item" hx-post="/add-item" hx-target="table" hx-swap="outerHTML" id="new-item-form"></form> 
+<form method="post" action="/delete-items" hx-post="/delete-items" hx-target="table" hx-swap="outerHTML" hx-confirm="Are you sure you want to delete the items?">
     <input type="submit" value="Delete" aria-label="Delete selected items" >
 
     <table>
