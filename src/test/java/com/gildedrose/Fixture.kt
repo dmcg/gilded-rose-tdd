@@ -10,7 +10,10 @@ import com.gildedrose.persistence.InMemoryItems
 import com.gildedrose.persistence.Items
 import com.gildedrose.persistence.TXContext
 import com.gildedrose.persistence.transactionally
+import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.valueOrNull
+import java.time.Instant
+import kotlin.test.assertEquals
 
 data class Fixture(
     val pricedStockList: PricedStockList,
@@ -29,4 +32,11 @@ data class Fixture(
     fun pricing(item: Item): Price? =
         pricedStockList.find { it.withNoPrice() == item }?.price?.valueOrNull()
 
+    context(IO)
+    fun checkStocklistHas(lastModified: Instant, vararg items: Item) {
+        assertEquals(
+            Success(StockList(lastModified, items.toList())),
+            unpricedItems.transactionally { load() }
+        )
+    }
 }

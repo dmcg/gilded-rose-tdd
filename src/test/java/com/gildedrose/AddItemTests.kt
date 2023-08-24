@@ -1,22 +1,18 @@
 package com.gildedrose
 
 import com.gildedrose.config.Features
-import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
-import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.foundation.IO
 import com.gildedrose.http.ResponseErrors.attachedError
 import com.gildedrose.persistence.InMemoryItems
-import com.gildedrose.persistence.transactionally
 import com.gildedrose.testing.IOResolver
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.has
-import dev.forkhandles.result4k.Success
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -28,8 +24,6 @@ import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.time.Instant
-import kotlin.test.assertEquals
 import java.time.Instant.parse as t
 import java.time.LocalDate.parse as localDate
 
@@ -58,7 +52,7 @@ class AddItemTests {
     fun `add item`() {
         val newItem = item("new-id", "new name", localDate("2023-07-23"), 99)
         app.addItem(newItem)
-        checkStocklistHas(
+        fixture.checkStocklistHas(
             sameDayAsLastModified,
             fixture.stockList[0],
             newItem
@@ -78,7 +72,7 @@ class AddItemTests {
             response,
             hasStatus(Status.OK) and hasJustATableElementBody()
         )
-        checkStocklistHas(
+        fixture.checkStocklistHas(
             sameDayAsLastModified,
             fixture.stockList[0],
             item("new-id", "new name", localDate("2023-07-23"), 99)
@@ -97,7 +91,7 @@ class AddItemTests {
             response,
             hasStatus(Status.OK) and hasJustATableElementBody()
         )
-        checkStocklistHas(
+        fixture.checkStocklistHas(
             sameDayAsLastModified,
             fixture.stockList[0],
             item("new-id", "new name", null, 99)
@@ -117,7 +111,7 @@ class AddItemTests {
             response,
             hasStatus(Status.OK) and hasJustATableElementBody()
         )
-        checkStocklistHas(
+        fixture.checkStocklistHas(
             sameDayAsLastModified,
             fixture.stockList[0],
             item("new-id", "new name", null, 99)
@@ -137,7 +131,7 @@ class AddItemTests {
             response,
             hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
         )
-        checkStocklistHas(
+        fixture.checkStocklistHas(
             sameDayAsLastModified,
             fixture.stockList[0],
             item("new-id", "new name", localDate("2023-07-23"), 99)
@@ -201,12 +195,6 @@ class AddItemTests {
                 hasAttachedError(
                     NewItemFailedEvent("[formData 'new-itemId' is required, formData 'new-itemQuality' must be integer]")
                 )
-        )
-    }
-
-    private fun checkStocklistHas(lastModified: Instant, vararg items: Item) {
-        assertEquals(Success(StockList(lastModified, items.toList())),
-            fixture.unpricedItems.transactionally { load() }
         )
     }
 }

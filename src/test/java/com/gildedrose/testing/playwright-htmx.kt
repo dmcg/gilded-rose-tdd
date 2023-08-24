@@ -1,11 +1,8 @@
 package com.gildedrose.testing
 
 import com.gildedrose.http.serverFor
-import com.microsoft.playwright.BrowserType
+import com.microsoft.playwright.*
 import com.microsoft.playwright.BrowserType.LaunchOptions
-import com.microsoft.playwright.Dialog
-import com.microsoft.playwright.Page
-import com.microsoft.playwright.Playwright
 import org.http4k.core.HttpHandler
 import kotlin.test.assertEquals
 
@@ -29,6 +26,10 @@ fun runWithPlaywright(
     }
 }
 
+fun launchOptions(showRunning: Boolean) = if (showRunning)
+    LaunchOptions().setHeadless(false).setSlowMo(250.0)
+else null
+
 fun Page.checkReloadsTheSame() {
     val renderedPage = content()
     reload()
@@ -38,23 +39,31 @@ fun Page.checkReloadsTheSame() {
     )
 }
 
-private fun String.withNoEmptyClassAttributes() = replace(""" class=""""", "")
-private fun String.withNoEmptyLines(): String {
-    return this.lines().filter { it.isNotBlank() }.joinToString("\n")
-}
-
 fun Page.acceptNextDialog() {
-    onDialog { dialog: Dialog ->
-        dialog.accept()
-    }
+    onDialog(Dialog::accept)
 }
 
 fun Page.installHtmxSupport() {
-    evaluate("""window.htmxHasSettled = false; window.addEventListener('htmx:afterSettle', () => window.htmxHasSettled = true); """)
+    evaluate("window.htmxHasSettled = false; window.addEventListener('htmx:afterSettle', () => window.htmxHasSettled = true);")
 }
 
 fun Page.waitingForHtmx(action: Page.() -> Unit) {
     evaluate("window.dataLoadedFired == false")
     action()
     waitForFunction("window.htmxHasSettled === true")
+}
+
+fun Page.inputNamed(name: String): Locator =
+    locator("""input[name="$name"]""")
+
+fun Page.submitButtonNamed(name: String): Locator =
+    locator("""input[value="$name"][type="submit"]""")
+
+fun Page.checkBoxNamed(name: String): Locator =
+    locator("""input[name="$name"][type="checkbox"]""")
+
+
+private fun String.withNoEmptyClassAttributes() = replace(""" class=""""", "")
+private fun String.withNoEmptyLines(): String {
+    return this.lines().filter { it.isNotBlank() }.joinToString("\n")
 }
