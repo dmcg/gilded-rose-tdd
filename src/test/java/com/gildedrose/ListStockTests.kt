@@ -48,7 +48,7 @@ class ListStockTests {
         )
         val fixture = Fixture(pricedStockList).apply { init() }
         val app = App(
-            items = fixture.unpricedItems,
+            items = fixture.items,
             pricing = fixture::pricing,
             clock = { sameDayAsLastModified }
         )

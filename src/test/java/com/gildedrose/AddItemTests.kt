@@ -42,7 +42,7 @@ class AddItemTests {
     )
     val fixture = Fixture(pricedStockList, InMemoryItems()).apply { init() }
     val app = App(
-        items = fixture.unpricedItems,
+        items = fixture.items,
         pricing = fixture::pricing,
         clock = { sameDayAsLastModified },
         features = Features(newItemEnabled = true)
@@ -52,9 +52,9 @@ class AddItemTests {
     fun `add item`() {
         val newItem = item("new-id", "new name", localDate("2023-07-23"), 99)
         app.addItem(newItem)
-        fixture.checkStocklistHas(
+        fixture.checkStockListHas(
             sameDayAsLastModified,
-            fixture.stockList[0],
+            fixture.originalStockList[0],
             newItem
         )
     }
@@ -72,9 +72,9 @@ class AddItemTests {
             response,
             hasStatus(Status.OK) and hasJustATableElementBody()
         )
-        fixture.checkStocklistHas(
+        fixture.checkStockListHas(
             sameDayAsLastModified,
-            fixture.stockList[0],
+            fixture.originalStockList[0],
             item("new-id", "new name", localDate("2023-07-23"), 99)
         )
     }
@@ -91,9 +91,9 @@ class AddItemTests {
             response,
             hasStatus(Status.OK) and hasJustATableElementBody()
         )
-        fixture.checkStocklistHas(
+        fixture.checkStockListHas(
             sameDayAsLastModified,
-            fixture.stockList[0],
+            fixture.originalStockList[0],
             item("new-id", "new name", null, 99)
         )
     }
@@ -111,9 +111,9 @@ class AddItemTests {
             response,
             hasStatus(Status.OK) and hasJustATableElementBody()
         )
-        fixture.checkStocklistHas(
+        fixture.checkStockListHas(
             sameDayAsLastModified,
-            fixture.stockList[0],
+            fixture.originalStockList[0],
             item("new-id", "new name", null, 99)
         )
     }
@@ -131,9 +131,9 @@ class AddItemTests {
             response,
             hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
         )
-        fixture.checkStocklistHas(
+        fixture.checkStockListHas(
             sameDayAsLastModified,
-            fixture.stockList[0],
+            fixture.originalStockList[0],
             item("new-id", "new name", localDate("2023-07-23"), 99)
         )
     }

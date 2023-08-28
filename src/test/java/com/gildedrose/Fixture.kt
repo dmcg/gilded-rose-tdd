@@ -16,27 +16,32 @@ import java.time.Instant
 import kotlin.test.assertEquals
 
 data class Fixture(
-    val pricedStockList: PricedStockList,
-    val unpricedItems: Items<TXContext> = InMemoryItems()
+    val originalPricedStockList: PricedStockList,
+    val items: Items<TXContext> = InMemoryItems()
 ) {
-    val stockList = StockList(pricedStockList.lastModified,
-        items = pricedStockList.map { item -> item.withNoPrice() }
+    val originalStockList = StockList(originalPricedStockList.lastModified,
+        items = originalPricedStockList.map { item -> item.withNoPrice() }
     )
 
     fun init() {
         runIO {
-            unpricedItems.transactionally { save(stockList) }
+            items.transactionally { save(originalStockList) }
         }
     }
     context(IO)
     fun pricing(item: Item): Price? =
-        pricedStockList.find { it.withNoPrice() == item }?.price?.valueOrNull()
+        originalPricedStockList.find { it.withNoPrice() == item }?.price?.valueOrNull()
 
     context(IO)
-    fun checkStocklistHas(lastModified: Instant, vararg items: Item) {
+    fun checkStockListHas(lastModified: Instant, vararg items: Item) {
+        checkStockListIs(StockList(lastModified, items.toList()))
+    }
+
+    context(IO)
+    fun checkStockListIs(stockList: StockList) {
         assertEquals(
-            Success(StockList(lastModified, items.toList())),
-            unpricedItems.transactionally { load() }
+            Success(stockList),
+            this.items.transactionally { load() }
         )
     }
 }

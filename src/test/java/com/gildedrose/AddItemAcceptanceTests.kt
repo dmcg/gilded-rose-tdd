@@ -24,7 +24,7 @@ class AddItemAcceptanceTests {
     )
     private val fixture = Fixture(pricedStockList, InMemoryItems()).apply { init() }
     private val app = App(
-        items = fixture.unpricedItems,
+        items = fixture.items,
         pricing = fixture::pricing,
         clock = { sameDayAsLastModified }
     )
@@ -47,9 +47,9 @@ class AddItemAcceptanceTests {
             }
 
             checkReloadsTheSame()
-            fixture.checkStocklistHas(
+            fixture.checkStockListHas(
                 sameDayAsLastModified,
-                fixture.stockList[0],
+                fixture.originalStockList[0],
                 item("new-id", "new name", LocalDate.parse("2023-08-24"), 99)
             )
         }
