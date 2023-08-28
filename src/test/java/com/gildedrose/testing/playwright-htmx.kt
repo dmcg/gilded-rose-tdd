@@ -43,14 +43,16 @@ fun Page.acceptNextDialog() {
     onDialog(Dialog::accept)
 }
 
+private val htmxSettled = "htmxHasSettled"
+
 fun Page.installHtmxSupport() {
-    evaluate("window.htmxHasSettled = false; window.addEventListener('htmx:afterSettle', () => window.htmxHasSettled = true);")
+    evaluate("window.$htmxSettled = false; window.addEventListener('htmx:afterSettle', () => window.$htmxSettled = true);")
 }
 
 fun Page.waitingForHtmx(action: Page.() -> Unit) {
-    evaluate("window.dataLoadedFired == false")
+    evaluate("window.$htmxSettled = false")
     action()
-    waitForFunction("window.htmxHasSettled === true")
+    waitForFunction("window.$htmxSettled === true")
 }
 
 fun Page.inputNamed(name: String): Locator =
