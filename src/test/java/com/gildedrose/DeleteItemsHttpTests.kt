@@ -19,12 +19,6 @@ class DeleteItemsHttpTests : DeleteItemsAcceptanceContract(
     doDelete = ::deleteWithHttp
 )
 
-context(IO)
-@ExtendWith(IOResolver::class)
-class DeleteItemsHttpWithNoHtmxTests : DeleteItemsAcceptanceContract(
-    doDelete = ::deleteWithHttpNoHtmx
-)
-
 private fun deleteWithHttp(app: App, toDelete: Set<Item>) {
     val request = Request(Method.POST, "/delete-items")
         .header("HX-Request", "True")
@@ -35,6 +29,12 @@ private fun deleteWithHttp(app: App, toDelete: Set<Item>) {
         hasStatus(Status.OK) and hasJustATableElementBody()
     )
 }
+
+context(IO)
+@ExtendWith(IOResolver::class)
+class DeleteItemsHttpWithNoHtmxTests : DeleteItemsAcceptanceContract(
+    doDelete = ::deleteWithHttpNoHtmx
+)
 
 private fun deleteWithHttpNoHtmx(app: App, toDelete: Set<Item>) {
     val request = Request(Method.POST, "/delete-items")
