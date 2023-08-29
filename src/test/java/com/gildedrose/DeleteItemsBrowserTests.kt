@@ -7,7 +7,7 @@ import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import org.junit.jupiter.api.extension.ExtendWith
 
-private const val showRunning = false
+private const val showRunning = true
 
 context(IO)
 @ExtendWith(IOResolver::class)

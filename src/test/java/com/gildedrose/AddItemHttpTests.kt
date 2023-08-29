@@ -1,12 +1,10 @@
 package com.gildedrose
 
-import com.gildedrose.config.Features
-import com.gildedrose.domain.Price
-import com.gildedrose.domain.PricedStockList
+import com.gildedrose.domain.Item
+import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.foundation.IO
 import com.gildedrose.http.ResponseErrors.attachedError
-import com.gildedrose.persistence.InMemoryItems
 import com.gildedrose.testing.IOResolver
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.and
@@ -24,117 +22,24 @@ import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.time.Instant.parse as t
-import java.time.LocalDate.parse as localDate
+
+
+
 
 context(IO)
 @ExtendWith(IOResolver::class)
-class AddItemTests {
-
-    private val lastModified = t("2022-02-09T12:00:00Z")
-    private val sameDayAsLastModified = t("2022-02-09T23:59:59Z")
-
-    val pricedStockList = PricedStockList(
-        lastModified,
-        listOf(
-            item("banana", localDate("2022-02-08"), 42).withPriceResult(Price(666)),
-        )
-    )
-    val fixture = Fixture(pricedStockList, InMemoryItems()).apply { init() }
-    val app = App(
-        items = fixture.items,
-        pricing = fixture::pricing,
-        clock = { sameDayAsLastModified },
-        features = Features(newItemEnabled = true)
-    )
-
-    @Test
-    fun `add item`() {
-        val newItem = item("new-id", "new name", localDate("2023-07-23"), 99)
-        app.addItem(newItem)
-        fixture.checkStockListHas(
-            sameDayAsLastModified,
-            fixture.originalStockList[0],
-            newItem
-        )
-    }
-
-    @Test
-    fun `add item via http`() {
-        val response = app.routes(
-            postFormToAddItemsRoute()
-                .form("new-itemId", "new-id")
-                .form("new-itemName", "new name")
-                .form("new-itemSellBy", "2023-07-23")
-                .form("new-itemQuality", "99")
-        )
-        assertThat(
-            response,
-            hasStatus(Status.OK) and hasJustATableElementBody()
-        )
-        fixture.checkStockListHas(
-            sameDayAsLastModified,
-            fixture.originalStockList[0],
-            item("new-id", "new name", localDate("2023-07-23"), 99)
-        )
-    }
-
-    @Test
-    fun `add item with no date via http`() {
-        val response = app.routes(
-            postFormToAddItemsRoute()
-                .form("new-itemId", "new-id")
-                .form("new-itemName", "new name")
-                .form("new-itemQuality", "99")
-        )
-        assertThat(
-            response,
-            hasStatus(Status.OK) and hasJustATableElementBody()
-        )
-        fixture.checkStockListHas(
-            sameDayAsLastModified,
-            fixture.originalStockList[0],
-            item("new-id", "new name", null, 99)
-        )
-    }
-
+class AddItemHttpTests : AddItemAcceptanceContract(
+    doAdd = ::addItemWithHttp
+) {
     @Test
     fun `add item with blank date via http`() {
-        val response = app.routes(
-            postFormToAddItemsRoute()
-                .form("new-itemId", "new-id")
-                .form("new-itemName", "new name")
-                .form("new-itemSellBy", "")
-                .form("new-itemQuality", "99")
-        )
-        assertThat(
-            response,
-            hasStatus(Status.OK) and hasJustATableElementBody()
-        )
-        fixture.checkStockListHas(
-            sameDayAsLastModified,
-            fixture.originalStockList[0],
-            item("new-id", "new name", null, 99)
-        )
-    }
-
-    @Test
-    fun `add item via http with no htmx`() {
-        val response = app.routes(
-            postFormToAddItemsRoute(withHTMX = false)
-                .form("new-itemId", "new-id")
-                .form("new-itemName", "new name")
-                .form("new-itemSellBy", "2023-07-23")
-                .form("new-itemQuality", "99")
-        )
-        assertThat(
-            response,
-            hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
-        )
-        fixture.checkStockListHas(
-            sameDayAsLastModified,
-            fixture.originalStockList[0],
-            item("new-id", "new name", localDate("2023-07-23"), 99)
+        val newItem = item("new-id", "new name", null, 99)
+        addItemWithHttp(app, newItem)
+        fixture.checkStockListIs(
+            StockList(
+                sameDayAsLastModified,
+                fixture.originalStockList + newItem
+            )
         )
     }
 
@@ -199,6 +104,33 @@ class AddItemTests {
     }
 }
 
+private fun addItemWithHttp(app: App, newItem: Item) {
+    val response = app.routes(
+        postFormToAddItemsRoute().withFormFor(newItem)
+    )
+    assertThat(
+        response,
+        hasStatus(Status.OK) and hasJustATableElementBody()
+    )
+}
+
+context(IO)
+@ExtendWith(IOResolver::class)
+class AddItemHttpNoHtmxTests : AddItemAcceptanceContract(
+    doAdd = ::addItemWithHttpNoHtmx
+)
+
+private fun addItemWithHttpNoHtmx(app: App, newItem: Item) {
+    val response = app.routes(
+        postFormToAddItemsRoute(withHTMX = false)
+            .withFormFor(newItem)
+    )
+    assertThat(
+        response,
+        hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
+    )
+}
+
 private fun Request.formWithout(parameterName: String): Request =
     body(form().filter { it.first != parameterName }.toBody())
 
@@ -211,6 +143,13 @@ private fun hasAttachedError(event: AnalyticsEvent): Matcher<Response> =
         { response -> response.attachedError },
         equalTo(event)
     )
+
+private fun Request.withFormFor(newItem: Item): Request {
+    return form("new-itemId", newItem.id.toString())
+        .form("new-itemName", newItem.name.toString())
+        .form("new-itemSellBy", newItem.sellByDate?.toString() ?: "")
+        .form("new-itemQuality", newItem.quality.toString())
+}
 
 private fun postFormToAddItemsRoute(withHTMX: Boolean = true) =
     Request(Method.POST, "/add-item").header("Content-Type", "application/x-www-form-urlencoded").run {
