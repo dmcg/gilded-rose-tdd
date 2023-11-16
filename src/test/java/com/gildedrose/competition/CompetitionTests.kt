@@ -2,6 +2,8 @@ package com.gildedrose.competition
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.gildedrose.foundation.PropertySet
+import com.gildedrose.foundation.required
 import org.http4k.client.ApacheClient
 import org.http4k.core.Method
 import org.http4k.core.Request
@@ -29,37 +31,28 @@ class CompetitionTests {
         dataFile.writeText(response.bodyString())
     }
 
-
     @Test
     fun `process data`() {
-        val data: JsonObject = objectMapper.readValue(dataFile)
-
-        val places: List<JsonObject> = data.required("places")
-        places.forEach { place ->
-            val addressComponents = place.addressComponents
-            val countryComponent = addressComponents.find { component ->
-                component.types.contains("country")
-            }
-            println("${place.displayName} ${countryComponent?.shortText}")
+        val places = objectMapper.readValue<PropertySet>(dataFile)
+            .required<List<PropertySet>>("places")
+            .map(::Place)
+        places.forEach { place: Place ->
+            println("${place.displayName} ${place.countryCode}")
         }
     }
 }
 
-private val JsonObject.shortText get() = required<String>("shortText")
-private val JsonObject.types get() = required<List<String>>("types")
-private val JsonObject.addressComponents get() = required<List<JsonObject>>("addressComponents")
-private val JsonObject.displayName get() = required<String>("displayName", "text")
+data class Place(val properties: PropertySet) : PropertySet by properties {
+    val displayName = required<String>("displayName", "text")
+    val countryCode: String? = addressComponents.find { it.types.contains("country") }?.shortText
 
-inline fun <reified T : Any> JsonObject.required(key: String): T {
-    val value: Any = get(key) ?: error("Cannot find key <$key>")
-    return value as? T ?: error("Value for key <$key> is not a ${T::class}")
+    private val addressComponents get() = required<List<PropertySet>>("addressComponents").map(::AddressComponent)
 }
 
-inline fun <reified T : Any> JsonObject.required(key0: String, key1: String): T =
-    required<JsonObject>(key0).required<T>(key1)
-
-
-typealias JsonObject = Map<String, Any?>
+data class AddressComponent(val properties: PropertySet) : PropertySet by properties {
+    val shortText = required<String>("shortText")
+    val types = required<List<String>>("types")
+}
 
 private val objectMapper = jacksonObjectMapper()
 
