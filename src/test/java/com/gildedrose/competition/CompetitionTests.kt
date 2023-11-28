@@ -7,10 +7,15 @@ import com.gildedrose.foundation.required
 import org.http4k.client.ApacheClient
 import org.http4k.core.Method
 import org.http4k.core.Request
+import org.http4k.testing.ApprovalTest
+import org.http4k.testing.Approver
+import org.http4k.testing.assertApproved
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import java.io.File
 
+@ExtendWith(ApprovalTest::class)
 class CompetitionTests {
 
     val dataFile = File(
@@ -32,13 +37,11 @@ class CompetitionTests {
     }
 
     @Test
-    fun `process data`() {
-        val places = objectMapper.readValue<PropertySet>(dataFile)
+    fun `process data`(approver: Approver) {
+        val places: List<Place> = objectMapper.readValue<PropertySet>(dataFile)
             .required<List<PropertySet>>("places")
             .map(::Place)
-        places.forEach { place: Place ->
-            println("${place.displayName} ${place.countryCode}")
-        }
+        approver.assertApproved(places.joinToString("\n") { "${it.displayName} ${it.countryCode}" })
     }
 }
 
