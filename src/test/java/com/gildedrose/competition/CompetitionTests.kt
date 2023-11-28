@@ -43,20 +43,23 @@ class CompetitionTests {
             .map(::Place)
         approver.assertApproved(places.joinToString("\n") { "${it.displayName} ${it.countryCode}" })
     }
+
+    data class Place(val properties: PropertySet) : PropertySet by properties {
+        val displayName = required<String>("displayName", "text")
+        val countryCode: String? = addressComponents.find { it.types.contains("country") }?.shortText
+
+        private val addressComponents get() = required<List<PropertySet>>("addressComponents").map(::AddressComponent)
+    }
+
+    data class AddressComponent(val properties: PropertySet) : PropertySet by properties {
+        val shortText = required<String>("shortText")
+        val types = required<List<String>>("types")
+    }
+
+    private val objectMapper = jacksonObjectMapper()
 }
 
-data class Place(val properties: PropertySet) : PropertySet by properties {
-    val displayName = required<String>("displayName", "text")
-    val countryCode: String? = addressComponents.find { it.types.contains("country") }?.shortText
 
-    private val addressComponents get() = required<List<PropertySet>>("addressComponents").map(::AddressComponent)
-}
 
-data class AddressComponent(val properties: PropertySet) : PropertySet by properties {
-    val shortText = required<String>("shortText")
-    val types = required<List<String>>("types")
-}
-
-private val objectMapper = jacksonObjectMapper()
 
 private val GoogleApiKey: String = File("./google-api-key.txt").readText()
