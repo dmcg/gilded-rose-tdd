@@ -1,8 +1,9 @@
 package com.gildedrose.competition
 
-import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.gildedrose.competition.FetchData.Companion.dataFile
 import com.gildedrose.foundation.andThen
 import com.gildedrose.foundation.asLens
 import org.http4k.testing.ApprovalTest
@@ -12,34 +13,28 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
-import java.io.File
 
 
 @ExtendWith(ApprovalTest::class)
 class StrongCompetitionTests {
 
     private val objectMapper = jacksonObjectMapper().apply {
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
-    private val dataFile = File(
-        "src/test/resources/${this.javaClass.packageName.replace('.', '/')}",
-        "places-response.json"
-    )
-    private val places: List<Place> = objectMapper.readValue<Root>(dataFile).places
 
-    private val Place.countryCode: String?
-        get() = addressComponents.find { it.types.contains("country") }?.shortText
+    private val places: List<Place> = objectMapper.readValue<Root>(dataFile).places
 
     @Test
     fun `process data`(approver: Approver) {
         approver.assertApproved(
-            places.joinToString("\n") { "${it.displayName.text} ${it.countryCode}" }
+            places.joinToString("\n") {
+                "${it.displayName.text} ${it.countryCode}"
+            }
         )
     }
 
     @Test
     fun lenses() {
-
         val displayName = Place::displayName.asLens()
         val text = DisplayName::text.asLens()
         val displayNameText = displayName andThen text
@@ -70,6 +65,9 @@ class StrongCompetitionTests {
         expectThat(displayNameText.get(transformedWithLens)).isEqualTo("INTERNATIONAL MAGIC SHOP")
     }
 }
+
+private val Place.countryCode: String?
+    get() = addressComponents.find { it.types.contains("country") }?.shortText
 
 
 
