@@ -3,18 +3,23 @@ package com.gildedrose.competition
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.gildedrose.competition.FetchData.Companion.dataFile
+import com.gildedrose.foundation.LensObject
 import com.gildedrose.foundation.PropertySet
+import com.gildedrose.foundation.andThen
 import com.gildedrose.foundation.required
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
 import org.http4k.testing.assertApproved
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
 @ExtendWith(ApprovalTest::class)
 class CompetitionTests {
 
     private val objectMapper = jacksonObjectMapper()
+
     private val places = objectMapper.readValue<PropertySet>(dataFile)
         .required<List<PropertySet>>("places")
         .map(::Place)
@@ -28,11 +33,24 @@ class CompetitionTests {
         )
     }
 
-    data class Place(val properties: PropertySet) : PropertySet by properties {
-        val displayName = required<String>("displayName", "text")
-        val countryCode: String? = addressComponents.find { it.types.contains("country") }?.shortText
+    @Test
+    fun update() {
+        val aPlace: Place = places.first()
 
+        expectThat(aPlace.displayName).isEqualTo("International Magic Shop")
+        val updatedPlace = aPlace.withDisplayName("New value")
+        expectThat(aPlace.displayName).isEqualTo("International Magic Shop")
+        expectThat(updatedPlace.displayName).isEqualTo("New value")
+    }
+
+    data class Place(val properties: PropertySet) : PropertySet by properties {
+        private val displayNameTextLens = lensObject<PropertySet>("displayName") andThen lensObject<String>("text")
         private val addressComponents get() = required<List<PropertySet>>("addressComponents").map(::AddressComponent)
+
+        val displayName = displayNameTextLens.get(this)
+        fun withDisplayName(value: String) = Place(displayNameTextLens.inject(properties, value))
+
+        val countryCode: String? = addressComponents.find { it.types.contains("country") }?.shortText
     }
 
     data class AddressComponent(val properties: PropertySet) : PropertySet by properties {
@@ -40,5 +58,15 @@ class CompetitionTests {
         val types = required<List<String>>("types")
     }
 }
+
+inline fun <reified R: Any> lensObject(propertyName: String) = LensObject<PropertySet, R>(
+    getter = { it.required<R>(propertyName) },
+    injector = { subject, value ->
+        subject.toMutableMap().apply {
+            this[propertyName] = value
+        }
+    }
+)
+
 
 
