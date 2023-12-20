@@ -6,6 +6,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.gildedrose.competition.FetchData.Companion.dataFile
 import com.gildedrose.foundation.andThen
 import com.gildedrose.foundation.asLens
+import com.gildedrose.foundation.get
+import com.gildedrose.foundation.with
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
 import org.http4k.testing.assertApproved
@@ -51,8 +53,8 @@ class StrongCompetitionTests {
         )
         expectThat(editedPlace.displayName.text).isEqualTo("New name")
 
-        val editedWithLens = displayNameText.inject(aPlace, "New name")
-        expectThat(displayNameText.get(editedWithLens)).isEqualTo("New name")
+        val editedWithLens = aPlace.with(displayNameText, "New name")
+        expectThat(editedWithLens.get(displayNameText)).isEqualTo("New name")
 
         val transformedPlace = aPlace.copy(
             displayName = aPlace.displayName.copy(

@@ -23,11 +23,22 @@ inline fun <reified T : Any> PropertySet.required(
     }.required(keys.last())
 }
 
-inline fun <reified R: Any> lensObject(propertyName: String) = LensObject<PropertySet, R>(
-    getter = { it.required<R>(propertyName) },
-    injector = { subject, value ->
-        subject.toMutableMap().apply {
-            this[propertyName] = value
-        }
-    }
-)
+object PropertySets {
+    @JvmName("lensPropertySet")
+    fun lens(propertyName: String) = lens<PropertySet>(propertyName)
+    @JvmName("aslensPropertySet")
+    fun String.asLens() = lens(this)
+
+    inline fun <reified R : Any> String.asLens() = lens<R>(this)
+
+    inline fun <reified R : Any> lens(propertyName: String) =
+        LensObject<PropertySet, R>(
+            getter = { it.required<R>(propertyName) },
+            injector = { subject, value ->
+                subject.toMutableMap().apply {
+                    this[propertyName] = value
+                }
+            }
+        )
+}
+

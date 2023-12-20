@@ -4,10 +4,12 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.memberFunctions
 
-interface Lens<T, R> {
+interface Lens<T, R> : (T) -> R {
     fun get(subject: T): R
     fun inject(subject: T, value: R): T
     fun update(subject: T, f: (R) -> R): T = inject(subject, f(get(subject)))
+    override fun invoke(subject: T): R = get(subject)
+    operator fun invoke(subject: T, value: R): T = inject(subject, value)
 }
 
 infix fun <T1, T2, R> LensObject<T1, T2>.andThen(second: LensObject<T2, R>) = LensObject<T1, R>(
@@ -19,6 +21,9 @@ infix fun <T1, T2, R> LensObject<T1, T2>.andThen(second: LensObject<T2, R>) = Le
         )
     }
 )
+
+fun <T: Any, R> T.get(extractor: (T) -> R) = extractor(this)
+fun <T: Any, R> T.with(lens: Lens<T, R>, of: R) = lens.inject(this, of)
 
 data class LensObject<T, R>(
     val getter: (T) -> R,

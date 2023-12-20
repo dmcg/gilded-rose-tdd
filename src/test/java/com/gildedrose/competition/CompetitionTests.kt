@@ -3,10 +3,8 @@ package com.gildedrose.competition
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.gildedrose.competition.FetchData.Companion.dataFile
-import com.gildedrose.foundation.PropertySet
-import com.gildedrose.foundation.andThen
-import com.gildedrose.foundation.lensObject
-import com.gildedrose.foundation.required
+import com.gildedrose.foundation.*
+import com.gildedrose.foundation.PropertySets.asLens
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
 import org.http4k.testing.assertApproved
@@ -35,8 +33,11 @@ class CompetitionTests {
 
     @Test
     fun update() {
-        val aPlace: Place = places.first()
-
+        val aPlace = Place(
+            mapOf(
+                "displayName" to mapOf("text" to "International Magic Shop"),
+            )
+        )
         expectThat(aPlace.displayName).isEqualTo("International Magic Shop")
         val updatedPlace = aPlace.withDisplayName("New value")
         expectThat(aPlace.displayName).isEqualTo("International Magic Shop")
@@ -44,13 +45,14 @@ class CompetitionTests {
     }
 
     data class Place(val properties: PropertySet) : PropertySet by properties {
-        private val displayNameTextLens = lensObject<PropertySet>("displayName") andThen lensObject<String>("text")
+        private val displayNameTextLens = "displayName".asLens() andThen "text".asLens<String>()
         private val addressComponents get() = required<List<PropertySet>>("addressComponents").map(::AddressComponent)
 
-        val displayName = displayNameTextLens.get(this)
-        fun withDisplayName(value: String) = Place(displayNameTextLens.inject(properties, value))
+        val displayName = properties.get(displayNameTextLens)
+        fun withDisplayName(value: String) = Place(properties.with(displayNameTextLens, value))
 
-        val countryCode: String? = addressComponents.find { it.types.contains("country") }?.shortText
+        val countryCode: String?
+            get() = addressComponents.find { it.types.contains("country") }?.shortText
     }
 
     data class AddressComponent(val properties: PropertySet) : PropertySet by properties {
