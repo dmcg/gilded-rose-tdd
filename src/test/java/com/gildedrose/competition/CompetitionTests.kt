@@ -3,9 +3,9 @@ package com.gildedrose.competition
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.gildedrose.competition.FetchData.Companion.dataFile
-import com.gildedrose.foundation.LensObject
 import com.gildedrose.foundation.PropertySet
 import com.gildedrose.foundation.andThen
+import com.gildedrose.foundation.lensObject
 import com.gildedrose.foundation.required
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
@@ -58,15 +58,3 @@ class CompetitionTests {
         val types = required<List<String>>("types")
     }
 }
-
-inline fun <reified R: Any> lensObject(propertyName: String) = LensObject<PropertySet, R>(
-    getter = { it.required<R>(propertyName) },
-    injector = { subject, value ->
-        subject.toMutableMap().apply {
-            this[propertyName] = value
-        }
-    }
-)
-
-
-

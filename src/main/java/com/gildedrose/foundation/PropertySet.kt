@@ -22,3 +22,12 @@ inline fun <reified T : Any> PropertySet.required(
         acc.required<PropertySet>(key)
     }.required(keys.last())
 }
+
+inline fun <reified R: Any> lensObject(propertyName: String) = LensObject<PropertySet, R>(
+    getter = { it.required<R>(propertyName) },
+    injector = { subject, value ->
+        subject.toMutableMap().apply {
+            this[propertyName] = value
+        }
+    }
+)
