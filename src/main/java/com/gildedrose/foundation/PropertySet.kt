@@ -9,6 +9,15 @@ inline fun <reified T : Any> PropertySet.required(key: String): T {
         ?: error("Value for key <$key> is not a ${T::class}")
 }
 
+inline fun <reified T> PropertySet.valueOf(key: String): T {
+    val result: Any? = get(key)
+    return when {
+        result is T -> result
+        result == null && null !is T -> error("Value for key <$key> is null")
+        else -> error("Value for key <$key> is not a ${T::class}")
+    }
+}
+
 inline fun <reified T : Any> PropertySet.required(
     key0: String,
     vararg otherKeys: String,
@@ -29,11 +38,11 @@ object PropertySets {
     @JvmName("aslensPropertySet")
     fun String.asLens() = lens(this)
 
-    inline fun <reified R : Any> String.asLens() = lens<R>(this)
+    inline fun <reified R> String.asLens() = lens<R>(this)
 
-    inline fun <reified R : Any> lens(propertyName: String) =
+    inline fun <reified R> lens(propertyName: String) =
         LensObject<PropertySet, R>(
-            getter = { it.required<R>(propertyName) },
+            getter = { it.valueOf<R>(propertyName) },
             injector = { subject, value ->
                 subject.toMutableMap().apply {
                     this[propertyName] = value
