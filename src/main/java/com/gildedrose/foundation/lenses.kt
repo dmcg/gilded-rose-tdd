@@ -22,7 +22,7 @@ infix fun <T1, T2, R> LensObject<T1, T2>.andThen(second: LensObject<T2, R>) = Le
     }
 )
 
-fun <T: Any, R> T.get(extractor: (T) -> R) = extractor(this)
+operator fun <T: Any, R> T.get(extractor: (T) -> R) = extractor(this)
 fun <T: Any, R> T.with(lens: Lens<T, R>, of: R) = lens.inject(this, of)
 fun <T: Any, R> T.updatedWith(lens: Lens<T, R>, f: (R) -> R) = lens.update(this, f)
 

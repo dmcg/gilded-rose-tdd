@@ -4,57 +4,42 @@ import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.isEqualTo
+import strikt.assertions.isNull
 import strikt.assertions.message
 import strikt.assertions.size
 
 class PropertySetTests {
 
     @Test
-    fun `empty map has no keys`() {
-        val propertySet: PropertySet = emptyMap()
-        expectThrows<NoSuchElementException> {
-            propertySet.required("any")
-        }.message.isEqualTo(
-            "Key any is missing in the map."
-        )
-    }
-
-    @Test
-    fun `null key throws`() {
-        val propertySet: PropertySet = mapOf("key" to null)
-        expectThrows<IllegalStateException> {
-            propertySet.required("key")
-        }.message.isEqualTo(
-            "Key <key> is null"
-        )
-    }
-
-    @Test
     fun `string value`() {
         val propertySet: PropertySet = mapOf("key" to "value")
-        expectThat(propertySet.required<String>("key"))
+        expectThat(propertySet.valueOf<String>("key"))
+            .isEqualTo("value")
+        expectThat(propertySet.valueOf<String?>("key"))
             .isEqualTo("value")
     }
 
     @Test
     fun `int value`() {
         val propertySet: PropertySet = mapOf("key" to 42)
-        expectThat(propertySet.required<Int>("key"))
+        expectThat(propertySet.valueOf<Int>("key"))
+            .isEqualTo(42)
+        expectThat(propertySet.valueOf<Int?>("key"))
             .isEqualTo(42)
     }
 
     @Test
     fun `list value`() {
         val propertySet: PropertySet = mapOf("key" to listOf(42, 99))
-        expectThat(propertySet.required<List<Int>>("key"))
+        expectThat(propertySet.valueOf<List<Int>>("key"))
             .isEqualTo(listOf(42, 99))
     }
 
     @Test
     fun `wrong type throws`() {
         val propertySet: PropertySet = mapOf("key" to "value")
-        expectThrows<IllegalStateException> {
-            propertySet.required<Int>("key")
+        expectThrows<NoSuchElementException> {
+            propertySet.valueOf<Int>("key")
         }.message.isEqualTo(
             "Value for key <key> is not a class kotlin.Int"
         )
@@ -63,54 +48,39 @@ class PropertySetTests {
     @Test
     fun `wrong list type doesnt throw`() {
         val propertySet: PropertySet = mapOf("key" to listOf(42, 99))
-        expectThat(propertySet.required<List<String>>("key"))
+        expectThat(propertySet.valueOf<List<String>>("key"))
             .size.isEqualTo(2)
     }
 
     @Test
-    fun `path of two keys`() {
-        val propertySet: PropertySet = mapOf(
-            "key" to
-                mapOf("key2" to "value")
-        )
-        expectThat(propertySet.required<String>("key", "key2"))
-            .isEqualTo("value")
+    fun `no key returns null for nullable property`() {
+        val propertySet: PropertySet = emptyMap()
+        expectThat(propertySet.valueOf<String?>("key")).isNull()
+    }
 
+    @Test
+    fun `no key throws for non-null property`() {
+        val propertySet: PropertySet = emptyMap()
         expectThrows<NoSuchElementException> {
-            propertySet.required("no-such", "key2")
+            propertySet.valueOf<String>("any")
         }.message.isEqualTo(
-            "Key no-such is missing in the map."
-        )
-        expectThrows<NoSuchElementException> {
-            propertySet.required("key", "no-such")
-        }.message.isEqualTo(
-            "Key no-such is missing in the map."
+            "Key <any> is missing in the map"
         )
     }
 
     @Test
-    fun `path of three keys`() {
-        val propertySet: PropertySet = mapOf(
-            "key" to
-                mapOf(
-                    "key2" to mapOf("key3" to "value")
-                )
-        )
-        expectThat(propertySet.required<String>("key", "key2", "key3"))
-            .isEqualTo("value")
+    fun `null value returns null for nullable property`() {
+        val propertySet: PropertySet = mapOf("key" to null)
+        expectThat(propertySet.valueOf<String?>("key")).isNull()
     }
 
     @Test
-    fun `path of no keys`() {
-        val propertySet: PropertySet = mapOf(
-            "key" to
-                mapOf(
-                    "key2" to mapOf("key3" to "value")
-                )
+    fun `null value throws for non-null property`() {
+        val propertySet: PropertySet = mapOf("key" to null)
+        expectThrows<NoSuchElementException> {
+            propertySet.valueOf<String>("key")
+        }.message.isEqualTo(
+            "Value for key <key> is null"
         )
-        expectThrows<IllegalStateException> {
-            (propertySet.required<String>(emptyList()))
-        }.message.isEqualTo("no keys supplied")
     }
-
 }

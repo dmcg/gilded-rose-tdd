@@ -5,15 +5,15 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.gildedrose.competition.FetchData.Companion.dataFile
 import com.gildedrose.foundation.*
 import com.gildedrose.foundation.PropertySets.asLens
-import com.gildedrose.foundation.PropertySets.lens
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
 import org.http4k.testing.assertApproved
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import strikt.api.expectCatching
 import strikt.api.expectThat
-import strikt.assertions.*
+import strikt.api.expectThrows
+import strikt.assertions.isEqualTo
+import strikt.assertions.isNull
 
 @ExtendWith(ApprovalTest::class)
 class CompetitionTests {
@@ -47,43 +47,16 @@ class CompetitionTests {
     }
 
     @Test
-    fun `propertySet valueOf`() {
-        val aPropertySet = mapOf(
-            "key" to "value",
-            "null" to null
-        )
-
-        expectThat(aPropertySet.valueOf<String?>("no-such")).isNull()
-        expectCatching { aPropertySet.valueOf<String>("no-such") }
-            .isFailure()
-            .isA<IllegalStateException>()
-            .message.isEqualTo("Value for key <no-such> is null")
-
-        expectThat(aPropertySet.valueOf<String?>("key")).isEqualTo("value")
-        expectCatching { aPropertySet.valueOf<Int?>("key") }
-            .isFailure()
-            .isA<IllegalStateException>()
-            .message.isEqualTo("Value for key <key> is not a class kotlin.Int")
-
-        expectThat(aPropertySet.valueOf<String?>("null")).isNull()
-        expectCatching { aPropertySet.valueOf<String>("null") }
-            .isFailure()
-            .isA<IllegalStateException>()
-            .message.isEqualTo("Value for key <null> is null")
-
-    }
-
-    @Test
-    fun `nullable properties`() {
+    fun `nullable lenses`() {
         val aPropertySet = emptyMap<String, Any?>()
 
-        expectCatching {
+        expectThrows<NoSuchElementException> {
             val aLens = "propertyName".asLens<String>()
             aPropertySet.get(aLens)
-        }.isFailure().isA<IllegalStateException>()
+        }
 
         val aLens = "propertyName".asLens<String?>()
-        expectThat(aPropertySet.get(aLens)).isNull()
+        expectThat(aPropertySet[aLens]).isNull()
         val updated = aPropertySet.with(aLens, "a value")
         expectThat(updated).isEqualTo(mapOf("propertyName" to "a value"))
 
@@ -95,10 +68,10 @@ class CompetitionTests {
     }
 
     data class Place(val properties: PropertySet) : PropertySet by properties {
-        private val displayNameTextLens = lens("displayName") andThen "text".asLens<String>()
+        private val displayNameTextLens = "displayName".asLens() andThen "text".asLens<String>()
         private val addressComponents get() = valueOf<List<PropertySet>>("addressComponents").map(::AddressComponent)
 
-        val displayName = properties.get(displayNameTextLens)
+        val displayName = properties[displayNameTextLens]
         fun withDisplayName(value: String) = Place(properties.with(displayNameTextLens, value))
 
         val countryCode: String?
