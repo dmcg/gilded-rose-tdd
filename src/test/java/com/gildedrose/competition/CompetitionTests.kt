@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.gildedrose.competition.FetchData.Companion.dataFile
 import com.gildedrose.foundation.*
 import com.gildedrose.foundation.PropertySets.asLens
+import com.gildedrose.foundation.PropertySets.lens
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
 import org.http4k.testing.assertApproved
@@ -14,6 +15,7 @@ import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.isEqualTo
 import strikt.assertions.isNull
+import strikt.assertions.message
 
 @ExtendWith(ApprovalTest::class)
 class CompetitionTests {
@@ -67,6 +69,34 @@ class CompetitionTests {
         expectThat(reverted).isEqualTo(mapOf("propertyName" to null))
     }
 
+    @Test
+    fun `chaining nullable lenses`() {
+        val lens: Lens<PropertySet, String?> = lens<PropertySet?>("outer") andThen "inner".asLens<String>()
+
+        val populatedData = mapOf("outer" to mapOf("inner" to "value"))
+        expectThat(populatedData[lens]).isEqualTo("value")
+        expectThat(populatedData.with(lens, "new value")).isEqualTo(
+            mapOf("outer" to mapOf("inner" to "new value"))
+        )
+        expectThrows<IllegalStateException> { populatedData.with(lens, null) }
+            .message.isEqualTo("Cannot remove the parent to inject null")
+
+        val emptyData = mapOf<String, Any?>()
+        expectThat(emptyData[lens]).isNull()
+        expectThrows<IllegalStateException> { emptyData.with(lens, "value") }
+            .message.isEqualTo("No parent found to inject into")
+        expectThrows<IllegalStateException> { emptyData.with(lens, null) }
+            .message.isEqualTo("No parent found to inject into")
+
+        val outerButNoInner = mapOf("outer" to emptyData)
+        expectThrows<NoSuchElementException> { outerButNoInner[lens] }
+        expectThat(outerButNoInner.with(lens, "value")).isEqualTo(
+            mapOf("outer" to mapOf("inner" to "value"))
+        )
+        expectThrows<IllegalStateException> { outerButNoInner.with(lens, null) }
+            .message.isEqualTo("Cannot remove the parent to inject null")
+    }
+
     data class Place(val properties: PropertySet) : PropertySet by properties {
         private val displayNameTextLens = "displayName".asLens() andThen "text".asLens<String>()
         private val addressComponents get() = valueOf<List<PropertySet>>("addressComponents").map(::AddressComponent)
@@ -83,3 +113,5 @@ class CompetitionTests {
         val types = valueOf<List<String>>("types")
     }
 }
+
+

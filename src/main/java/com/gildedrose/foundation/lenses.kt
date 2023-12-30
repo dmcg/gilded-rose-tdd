@@ -12,12 +12,24 @@ interface Lens<T, R> : (T) -> R {
     operator fun invoke(subject: T, value: R): T = inject(subject, value)
 }
 
-infix fun <T1, T2, R> LensObject<T1, T2>.andThen(second: LensObject<T2, R>) = LensObject<T1, R>(
+infix fun <T1, T2, R> Lens<T1, T2>.andThen(second: Lens<T2, R>): Lens<T1, R> = LensObject(
     { second.get(get(it)) },
     { subject, value ->
         inject(
             subject,
             second.inject(get(subject), value)
+        )
+    }
+)
+
+@JvmName("andThenMaybe")
+infix fun <T1, T2, R> Lens<T1, T2?>.andThen(second: Lens<T2, R>): Lens<T1, R?> = LensObject(
+    getter = { get(it)?.let { outer -> second.get(outer) } },
+    injector = { subject, value ->
+        val outer = get(subject) ?: error("No parent found to inject into")
+        inject(
+            subject,
+            second.inject(outer, value ?: error("Cannot remove the parent to inject null"))
         )
     }
 )
@@ -34,7 +46,7 @@ data class LensObject<T, R>(
     override fun inject(subject: T, value: R) = injector(subject, value)
 }
 
-inline fun <reified T: Any, R> KProperty1<T, R>.asLens(): LensObject<T, R> = LensObject(
+inline fun <reified T: Any, R> KProperty1<T, R>.asLens(): Lens<T, R> = LensObject(
     ::get,
     reflectiveCopy(name)
 )

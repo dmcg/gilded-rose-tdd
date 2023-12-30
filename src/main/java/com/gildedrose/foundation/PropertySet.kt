@@ -17,15 +17,15 @@ inline fun <reified T> PropertySet.valueOf(key: String): T =
 
 object PropertySets {
     @JvmName("lensPropertySet")
-    fun lens(propertyName: String) = lens<PropertySet>(propertyName)
+    fun lens(propertyName: String): Lens<PropertySet, PropertySet> = lens<PropertySet>(propertyName)
 
     @JvmName("aslensPropertySet")
-    fun String.asLens() = lens(this)
+    fun String.asLens(): Lens<PropertySet, PropertySet> = lens(this)
 
-    inline fun <reified R> String.asLens() = lens<R>(this)
+    inline fun <reified R> String.asLens(): Lens<PropertySet, R> = lens<R>(this)
 
-    inline fun <reified R> lens(propertyName: String) =
-        LensObject<PropertySet, R>(
+    inline fun <reified R> lens(propertyName: String): Lens<PropertySet, R> =
+        LensObject(
             getter = { it.valueOf<R>(propertyName) },
             injector = { subject, value ->
                 subject.toMutableMap().apply {
