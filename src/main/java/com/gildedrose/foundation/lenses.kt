@@ -12,6 +12,11 @@ interface Lens<T, R> : (T) -> R {
     operator fun invoke(subject: T, value: R): T = inject(subject, value)
 }
 
+
+infix fun <T1, T2, R> ((T1) -> T2?).andThen(second: (T2) -> R): (T1) -> R? = {
+    this.invoke(it)?.let { outer -> second.invoke(outer) }
+}
+
 infix fun <T1, T2, R> Lens<T1, T2>.andThen(second: Lens<T2, R>): Lens<T1, R> = LensObject(
     { second.get(get(it)) },
     { subject, value ->
@@ -23,13 +28,13 @@ infix fun <T1, T2, R> Lens<T1, T2>.andThen(second: Lens<T2, R>): Lens<T1, R> = L
 )
 
 @JvmName("andThenMaybe")
-infix fun <T1, T2, R> Lens<T1, T2?>.andThen(second: Lens<T2, R>): Lens<T1, R?> = LensObject(
+infix fun <T1, T2, R> Lens<T1, T2?>.andThen(second: Lens<T2, R?>): Lens<T1, R?> = LensObject(
     getter = { get(it)?.let { outer -> second.get(outer) } },
     injector = { subject, value ->
         val outer = get(subject) ?: error("No parent found to inject into")
         inject(
             subject,
-            second.inject(outer, value ?: error("Cannot remove the parent to inject null"))
+            second.inject(outer, value)
         )
     }
 )

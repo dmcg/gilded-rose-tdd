@@ -70,16 +70,31 @@ class CompetitionTests {
     }
 
     @Test
+    fun `chaining nullable functions`() {
+        val lens: (PropertySet) -> String? = lens<PropertySet?>("outer") andThen "inner".asLens<String>()
+
+        val populatedData = mapOf("outer" to mapOf("inner" to "value"))
+        expectThat(populatedData[lens]).isEqualTo("value")
+
+        val emptyData = mapOf<String, Any?>()
+        expectThat(emptyData[lens]).isNull()
+
+        val outerButNoInner = mapOf("outer" to emptyData)
+        expectThrows<NoSuchElementException> { outerButNoInner[lens] }
+    }
+
+    @Test
     fun `chaining nullable lenses`() {
-        val lens: Lens<PropertySet, String?> = lens<PropertySet?>("outer") andThen "inner".asLens<String>()
+        val lens: Lens<PropertySet, String?> = lens<PropertySet?>("outer") andThen "inner".asLens<String?>()
 
         val populatedData = mapOf("outer" to mapOf("inner" to "value"))
         expectThat(populatedData[lens]).isEqualTo("value")
         expectThat(populatedData.with(lens, "new value")).isEqualTo(
             mapOf("outer" to mapOf("inner" to "new value"))
         )
-        expectThrows<IllegalStateException> { populatedData.with(lens, null) }
-            .message.isEqualTo("Cannot remove the parent to inject null")
+        expectThat(populatedData.with(lens, null)).isEqualTo(
+            mapOf("outer" to mapOf("inner" to null))
+        )
 
         val emptyData = mapOf<String, Any?>()
         expectThat(emptyData[lens]).isNull()
@@ -89,12 +104,13 @@ class CompetitionTests {
             .message.isEqualTo("No parent found to inject into")
 
         val outerButNoInner = mapOf("outer" to emptyData)
-        expectThrows<NoSuchElementException> { outerButNoInner[lens] }
+        expectThat(outerButNoInner[lens]).isEqualTo(null)
         expectThat(outerButNoInner.with(lens, "value")).isEqualTo(
             mapOf("outer" to mapOf("inner" to "value"))
         )
-        expectThrows<IllegalStateException> { outerButNoInner.with(lens, null) }
-            .message.isEqualTo("Cannot remove the parent to inject null")
+        expectThat(outerButNoInner.with(lens, null)).isEqualTo(
+            mapOf("outer" to mapOf("inner" to null))
+        )
     }
 
     data class Place(val properties: PropertySet) : PropertySet by properties {
