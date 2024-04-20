@@ -1,11 +1,13 @@
 package com.gildedrose.foundation
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
-import java.util.concurrent.*
+import java.util.concurrent.ForkJoinPool
 import kotlin.math.sqrt
 import kotlin.system.measureTimeMillis
 
@@ -13,7 +15,7 @@ const val repetitions = 100
 const val nonParallelRepetitions = 10
 
 @TestMethodOrder(MethodOrderer.MethodName::class)
-@EnabledIfSystemProperty(named = "run-slow-tests", matches = "true")
+@EnabledIfSystemProperty(named = "run-benchmark-tests", matches = "true")
 class ParallelMapTests {
 
     /* Note that this attempts to warm up HotSpot by running the non-parallel

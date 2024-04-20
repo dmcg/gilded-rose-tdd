@@ -3,6 +3,7 @@ package com.gildedrose
 import com.gildedrose.domain.Item
 import com.gildedrose.foundation.IO
 import com.gildedrose.testing.*
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.format.DateTimeFormatter
 
@@ -10,6 +11,7 @@ private const val showRunning = false
 
 context(IO)
 @ExtendWith(IOResolver::class)
+@EnabledIfSystemProperty(named = "run-browser-tests", matches = "true")
 class AddItemBrowserTests : AddItemAcceptanceContract(
     doAdd = ::addWithPlaywright
 )

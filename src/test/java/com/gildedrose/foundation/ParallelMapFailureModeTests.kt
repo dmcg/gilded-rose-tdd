@@ -1,15 +1,17 @@
 package com.gildedrose.foundation
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
-import java.util.concurrent.*
+import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
 
 
 @TestMethodOrder(MethodOrderer.MethodName::class)
-@EnabledIfSystemProperty(named = "run-slow-tests", matches = "true")
+@EnabledIfSystemProperty(named = "run-benchmark-tests", matches = "true")
 class ParallelMapFailureModeTests {
 
     private val listSize = 100

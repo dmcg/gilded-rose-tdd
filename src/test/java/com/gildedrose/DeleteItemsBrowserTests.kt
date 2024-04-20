@@ -5,12 +5,14 @@ import com.gildedrose.foundation.IO
 import com.gildedrose.testing.*
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import org.junit.jupiter.api.extension.ExtendWith
 
 private const val showRunning = true
 
 context(IO)
 @ExtendWith(IOResolver::class)
+@EnabledIfSystemProperty(named = "run-browser-tests", matches = "true")
 class DeleteItemsBrowserTests : DeleteItemsAcceptanceContract(
     doDelete = ::deleteWithPlaywright
 ) {

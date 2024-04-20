@@ -8,7 +8,8 @@ import com.gildedrose.http.serverFor
 import org.http4k.client.ApacheClient
 import org.http4k.core.Response
 import org.http4k.core.Status
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.net.URI
 
@@ -32,7 +33,7 @@ class FakeValueElfTests : ValueElfContract(
     })
 )
 
-@EnabledIfSystemProperty(named = "run-slow-tests", matches = "true")
+@EnabledIfSystemProperty(named = "run-external-tests", matches = "true")
 class FakeValueElfHttpTests : ValueElfContract(
     baseFixture.copy(handler = ApacheClient())
 ) {
