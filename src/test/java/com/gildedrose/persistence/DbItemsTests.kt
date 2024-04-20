@@ -1,7 +1,6 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.config.toDbConfig
-import com.gildedrose.config.toDslContext
+import com.gildedrose.config.DbConfig
 import com.gildedrose.db.tables.Items
 import com.gildedrose.foundation.IO
 import org.http4k.cloudnative.env.Environment
@@ -18,7 +17,7 @@ val testEnvironment: Environment = Environment.JVM_PROPERTIES overrides
         "db.password" to "rose"
     )
 
-val testDbConfig = testEnvironment.toDbConfig()
+val testDbConfig = DbConfig(testEnvironment)
 
 val testDslContext: DSLContext = testDbConfig.toDslContext()
 
