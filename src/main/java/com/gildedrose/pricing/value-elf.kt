@@ -78,7 +78,7 @@ val priceLens: BiDiBodyLens<Price?> = Body.nonEmptyString(ContentType.TEXT_PLAIN
 /**
  * See [com.gildedrose.ignoreme.🙈#main]
  */
-object SimulateExternalService : Filter {
+private object SimulateExternalService : Filter {
     override fun invoke(next: HttpHandler): HttpHandler = { request ->
         next(request.uri(request.uri.host("localhost")))
     }
