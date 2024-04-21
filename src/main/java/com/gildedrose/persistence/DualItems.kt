@@ -4,7 +4,6 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.AnalyticsEvent
-import com.gildedrose.foundation.IO
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
 import java.time.Instant
@@ -19,7 +18,7 @@ class DualItems(
         block: context(DbTxContext) () -> R
     ): R = otherItems.inTransaction(block)
 
-    context(IO, DbTxContext)
+    context(DbTxContext)
     override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError> =
@@ -36,7 +35,7 @@ class DualItems(
         }
 
 
-    context(IO, DbTxContext)
+    context(DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> =
         sourceOfTruth.inTransaction {
             sourceOfTruth.load()

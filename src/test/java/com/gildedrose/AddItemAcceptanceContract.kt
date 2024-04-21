@@ -5,16 +5,11 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.IO
 import com.gildedrose.persistence.InMemoryItems
-import com.gildedrose.testing.IOResolver
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
 import java.time.LocalDate
 
-context(IO)
-@ExtendWith(IOResolver::class)
 abstract class AddItemAcceptanceContract(
     private val doAdd: (App, Item) -> Unit
 ) {

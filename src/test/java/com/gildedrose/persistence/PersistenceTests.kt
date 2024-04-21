@@ -1,22 +1,18 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.IO
 import com.gildedrose.item
 import com.gildedrose.oct29
 import com.gildedrose.persistence.StockListLoadingError.*
-import com.gildedrose.testing.IOResolver
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import java.time.Instant
 
-@ExtendWith(IOResolver::class)
 class PersistenceTests {
 
     private val now = Instant.now()
@@ -26,7 +22,6 @@ class PersistenceTests {
         item("undated", null, 50)
     )
 
-    context(IO)
     @Test
     fun `save and load`(@TempDir dir: File) {
         val file = File(dir, "stock.tsv")

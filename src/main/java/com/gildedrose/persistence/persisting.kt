@@ -1,7 +1,9 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.domain.*
-import com.gildedrose.foundation.IO
+import com.gildedrose.domain.ID
+import com.gildedrose.domain.Item
+import com.gildedrose.domain.Quality
+import com.gildedrose.domain.StockList
 import com.gildedrose.persistence.StockListLoadingError.*
 import dev.forkhandles.result4k.*
 import java.io.File
@@ -12,7 +14,6 @@ import java.time.format.DateTimeParseException
 
 private const val lastModifiedHeader = "# LastModified:"
 
-context(IO)
 @kotlin.jvm.Throws(IOException::class)
 fun StockList.saveTo(file: File) {
     file.writer().buffered().use { writer ->
@@ -23,7 +24,6 @@ fun StockList.saveTo(file: File) {
 fun StockList.toLines(): Sequence<String> = sequenceOf("$lastModifiedHeader $lastModified") +
     items.map { it.toLine() }
 
-context(IO)
 fun File.loadItems(): Result4k<StockList, StockListLoadingError> =
     try {
         useLines { lines ->

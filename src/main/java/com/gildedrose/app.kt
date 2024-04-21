@@ -4,7 +4,6 @@ import com.gildedrose.config.DbConfig
 import com.gildedrose.config.Features
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.Analytics
-import com.gildedrose.foundation.IO
 import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.persistence.*
 import com.gildedrose.pricing.PricedStockListLoader
@@ -25,7 +24,7 @@ data class App(
     val features: Features = Features(),
     val clock: () -> Instant = Instant::now,
     val analytics: Analytics = stdOutAnalytics,
-    val pricing: context(IO) (Item) -> Price?
+    val pricing: (Item) -> Price?
 ) {
     constructor(
         stockFile: File = File("stock.tsv"),
@@ -50,13 +49,11 @@ data class App(
         analytics = analytics
     )
 
-    context(IO)
     fun loadStockList(now: Instant = clock()): Result<PricedStockList, StockListLoadingError> =
         items.inTransaction {
             pricedLoader.load(now)
         }
 
-    context(IO)
     fun deleteItemsWithIds(itemIds: Set<ID<Item>>, now: Instant = clock()) {
         items.inTransaction {
             stock.loadAndUpdateStockList(now).map { stockList ->
@@ -68,7 +65,6 @@ data class App(
         }
     }
 
-    context(IO)
     fun addItem(newItem: Item, now: Instant = clock()) {
         items.inTransaction {
             stock.loadAndUpdateStockList(now).map { stockList ->

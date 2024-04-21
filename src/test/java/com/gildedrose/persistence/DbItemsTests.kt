@@ -2,7 +2,6 @@ package com.gildedrose.persistence
 
 import com.gildedrose.config.DbConfig
 import com.gildedrose.db.tables.Items
-import com.gildedrose.foundation.IO
 import org.http4k.cloudnative.env.Environment
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
@@ -21,7 +20,6 @@ val testDbConfig = DbConfig(testEnvironment)
 
 val testDslContext: DSLContext = testDbConfig.toDslContext()
 
-context(IO)
 @ResourceLock("DATABASE")
 class DbItemsTests : ItemsContract<DbTxContext>() {
     override val items = DbItems(testDslContext)

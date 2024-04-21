@@ -1,8 +1,6 @@
 package com.gildedrose
 
 import com.gildedrose.domain.Item
-import com.gildedrose.foundation.IO
-import com.gildedrose.testing.IOResolver
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import org.http4k.core.Method
@@ -11,10 +9,7 @@ import org.http4k.core.Status
 import org.http4k.core.body.form
 import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
-import org.junit.jupiter.api.extension.ExtendWith
 
-context(IO)
-@ExtendWith(IOResolver::class)
 class DeleteItemsHttpTests : DeleteItemsAcceptanceContract(
     doDelete = ::deleteWithHttp
 )
@@ -30,8 +25,6 @@ private fun deleteWithHttp(app: App, toDelete: Set<Item>) {
     )
 }
 
-context(IO)
-@ExtendWith(IOResolver::class)
 class DeleteItemsHttpWithNoHtmxTests : DeleteItemsAcceptanceContract(
     doDelete = ::deleteWithHttpNoHtmx
 )

@@ -3,9 +3,7 @@ package com.gildedrose
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.AnalyticsEvent
-import com.gildedrose.foundation.IO
 import com.gildedrose.http.ResponseErrors.attachedError
-import com.gildedrose.testing.IOResolver
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
@@ -21,11 +19,8 @@ import org.http4k.hamkrest.hasBody
 import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 
 
-context(IO)
-@ExtendWith(IOResolver::class)
 class AddItemHttpTests : AddItemAcceptanceContract(
     doAdd = ::addItemWithHttp
 ) {
@@ -112,8 +107,6 @@ private fun addItemWithHttp(app: App, newItem: Item) {
     )
 }
 
-context(IO)
-@ExtendWith(IOResolver::class)
 class AddItemHttpNoHtmxTests : AddItemAcceptanceContract(
     doAdd = ::addItemWithHttpNoHtmx
 )

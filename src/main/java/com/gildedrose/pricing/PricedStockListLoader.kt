@@ -16,23 +16,22 @@ import java.util.concurrent.Executors
 typealias StockLoadingResult = Result<StockList, StockListLoadingError>
 
 class PricedStockListLoader(
-    private val loading: context(IO, TXContext) (Instant) -> StockLoadingResult,
-    pricing: context(IO) (Item) -> Price?,
+    private val loading: context(TXContext) (Instant) -> StockLoadingResult,
+    pricing: (Item) -> Price?,
     private val analytics: Analytics
 ) {
     private val threadPool = Executors.newFixedThreadPool(30)
-    private val retryingPricing: context(IO) (Item) -> Price? =
+    private val retryingPricing: (Item) -> Price? =
         pricing.wrappedWith(retry(1, reporter = ::reportException))
 
-    context(IO, TXContext)
+    context(TXContext)
     fun load(now: Instant): Result<PricedStockList, StockListLoadingError> =
-        loading(magic<IO>(), magic<TXContext>(),now).map {
+        loading(magic(),now).map {
             it.pricedBy(retryingPricing)
         }
 
-    context(IO)
     private fun StockList.pricedBy(
-        pricing: context(IO) (Item) -> Price?
+        pricing: (Item) -> Price?
     ): PricedStockList =
         runBlocking(threadPool.asCoroutineDispatcher()) {
             PricedStockList(
@@ -41,13 +40,12 @@ class PricedStockListLoader(
             )
         }
 
-    context(IO)
     private fun Item.pricedBy(
-        pricing: context(IO) (Item) -> Price?
+        pricing: (Item) -> Price?
     ) = PricedItem(
         this,
         price = resultFrom {
-            pricing(magic<IO>(), this)
+            pricing(this)
         }.peekFailure(::reportException)
     )
 

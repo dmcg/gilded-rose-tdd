@@ -1,8 +1,10 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.db.tables.Items.ITEMS
-import com.gildedrose.domain.*
-import com.gildedrose.foundation.IO
+import com.gildedrose.domain.ID
+import com.gildedrose.domain.Item
+import com.gildedrose.domain.Quality
+import com.gildedrose.domain.StockList
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jooq.Configuration
@@ -30,7 +32,7 @@ open class DbItems(
             block(txContext)
         }
 
-    context(IO, DbTxContext)
+    context(DbTxContext)
     override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError> {
@@ -38,7 +40,7 @@ open class DbItems(
         return Success(stockList)
     }
 
-    context(IO, DbTxContext)
+    context(DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> {
         return Success(dslContext.load())
     }
