@@ -22,7 +22,6 @@ open class DbItems(
 ) : Items<DbTxContext> {
 
     private val forInTransaction = object {
-        @Suppress("UnnecessaryVariable")
         val untransactionalDSLContext = dslContext
     }
 
@@ -63,7 +62,7 @@ fun DSLContext.save(stockList: StockList) {
             insertInto(ITEMS)
                 .set(ID, item.id.toString())
                 .set(MODIFIED, stockList.lastModified)
-                .set(NAME, item.name.toString())
+                .set(NAME, item.name)
                 .set(QUALITY, item.quality.valueInt)
                 .set(SELLBYDATE, item.sellByDate)
                 .execute()
