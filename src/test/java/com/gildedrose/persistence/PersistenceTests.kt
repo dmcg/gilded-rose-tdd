@@ -9,6 +9,7 @@ import com.gildedrose.testing.IOResolver
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.io.TempDir
@@ -87,6 +88,7 @@ class PersistenceTests {
         )
     }
 
+    @Disabled
     @Test
     fun `fails to load with blank name`() {
         assertEquals(

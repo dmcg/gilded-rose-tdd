@@ -5,14 +5,14 @@ import java.time.LocalDate
 
 data class Item(
     val id: ID<Item>,
-    val name: NonBlankString,
+    val name: String,
     val sellByDate: LocalDate?,
     val quality: Quality,
 )
 
 data class PricedItem(
     val id: ID<Item>,
-    val name: NonBlankString,
+    val name: String,
     val sellByDate: LocalDate?,
     val quality: Quality,
     val price: Result4k<Price?, Exception>,

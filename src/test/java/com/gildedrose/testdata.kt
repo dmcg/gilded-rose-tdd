@@ -19,7 +19,7 @@ fun item(
     quality: Int,
 ): Item = Item(
     ID(id)!!,
-    NonBlankString(name)!!,
+    name,
     sellByDate,
     Quality(quality)!!
 )

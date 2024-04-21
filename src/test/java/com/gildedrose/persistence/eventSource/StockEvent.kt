@@ -15,7 +15,7 @@ sealed class StockEvent
 data class StockAdded(
     val timestamp: Instant,
     val id: ID<Item>,
-    val name: NonBlankString,
+    val name: String,
     val sellByDate: LocalDate?,
     val quality: Quality,
 ) : StockEvent()

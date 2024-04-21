@@ -118,7 +118,7 @@ private fun stockAdded(timestamp: Instant, id: String, name: String, sellByDate:
     StockAdded(
         timestamp,
         ID(id)!!,
-        NonBlankString(name)!!,
+        name,
         sellByDate,
         Quality(quality)!!
     )

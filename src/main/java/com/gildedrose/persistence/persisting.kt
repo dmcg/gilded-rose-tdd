@@ -71,7 +71,7 @@ private fun String.toItem(): Result4k<Item, StockListLoadingError> {
 
 private fun String.itemWithIdFrom(parts: List<String>): Result<Item, StockListLoadingError> {
     val id = ID<Item>(parts[0]) ?: return Failure(BlankID(this))
-    val name = NonBlankString(parts[1]) ?: return Failure(BlankName(this))
+    val name = parts[1]
     val sellByDate = parts[2].toLocalDate(this).onFailure { return it }
     val quality = parts[3].toIntOrNull()?.let { Quality(it) } ?: return Failure(CouldntParseQuality(this))
     return Success(Item(id, name, sellByDate, quality))
