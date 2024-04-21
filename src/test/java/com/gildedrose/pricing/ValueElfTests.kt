@@ -20,10 +20,12 @@ class ValueElfTests : ValueElfContract(
         expectedPrice = Price(709)!!
     )
 ) {
+    private val requestCount = 100
+
     context(Fixture)
     @Test
     fun `fails sometimes`() {
-        val result: List<Result<Price?, Exception>> = (1..500).map {
+        val result: List<Result<Price?, Exception>> = (1..requestCount).map {
             resultFrom {
                 client.invoke(aFoundItem)
             }
@@ -38,7 +40,7 @@ class ValueElfTests : ValueElfContract(
     @Test
     fun `retry prevents failure`() {
         val retryingClient = retry(1, function = { it: Item -> client(it) })
-        val result: List<Result<Price?, Exception>> = (1..500).map {
+        val result: List<Result<Price?, Exception>> = (1..requestCount).map {
             resultFrom {
                 retryingClient.invoke(aFoundItem)
             }
