@@ -21,33 +21,34 @@ class DualItems(
     context(DbTxContext)
     override fun save(
         stockList: StockList
-    ): Result<StockList, StockListLoadingError.IOError> =
-        sourceOfTruth.inTransaction {
+    ): Result<StockList, StockListLoadingError.IOError> {
+        val truth = sourceOfTruth.inTransaction {
             sourceOfTruth.save(stockList)
-        }.also { result ->
-            try {
-                val otherResult = otherItems.save(stockList)
-                if (result != otherResult)
-                    analytics(stocklistSavingMismatch(result, otherResult))
-            } catch (throwable: Throwable) {
-                analytics(StockListSavingExceptionCaught(throwable))
-            }
         }
-
+        try {
+            val otherResult = otherItems.save(stockList)
+            if (truth != otherResult)
+                analytics(stocklistSavingMismatch(truth, otherResult))
+        } catch (throwable: Throwable) {
+            analytics(StockListSavingExceptionCaught(throwable))
+        }
+        return truth
+    }
 
     context(DbTxContext)
-    override fun load(): Result<StockList, StockListLoadingError> =
-        sourceOfTruth.inTransaction {
+    override fun load(): Result<StockList, StockListLoadingError> {
+        val truth = sourceOfTruth.inTransaction {
             sourceOfTruth.load()
-        }.also { result ->
-            try {
-                val otherResult = otherItems.load()
-                if (result != otherResult)
-                    analytics(stocklistLoadingMismatch(result, otherResult))
-            } catch (throwable: Throwable) {
-                analytics(StockListLoadingExceptionCaught(throwable))
-            }
         }
+        try {
+            val otherResult = otherItems.load()
+            if (truth != otherResult)
+                analytics(stocklistLoadingMismatch(truth, otherResult))
+        } catch (throwable: Throwable) {
+            analytics(StockListLoadingExceptionCaught(throwable))
+        }
+        return truth
+    }
 }
 
 private fun Result<StockList, StockListLoadingError>.toRenderable():
