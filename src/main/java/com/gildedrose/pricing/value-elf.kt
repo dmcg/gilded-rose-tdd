@@ -35,7 +35,7 @@ fun valueElfClient(
                 idLens of item.id,
                 qualityLens of item.quality
             )
-        val response = client.invoke(request)
+        val response = SimulateExternalService.then(client).invoke(request)
         when (response.status) {
             Status.NOT_FOUND -> null
             Status.OK -> priceLens(response)
@@ -75,4 +75,11 @@ val priceLens: BiDiBodyLens<Price?> = Body.nonEmptyString(ContentType.TEXT_PLAIN
     nextOut = { price -> price?.pence?.toString() ?: error("Unexpected null price") }
 ).toLens()
 
-
+/**
+ * See [com.gildedrose.ignoreme.🙈#main]
+ */
+object SimulateExternalService : Filter {
+    override fun invoke(next: HttpHandler): HttpHandler = { request ->
+        next(request.uri(request.uri.host("localhost")))
+    }
+}

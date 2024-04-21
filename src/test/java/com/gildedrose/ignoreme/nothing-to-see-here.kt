@@ -14,6 +14,7 @@ import org.http4k.routing.reverseProxy
  */
 fun main() {
     val routes = reverseProxy(
+        "localhost" to fakeValueElfRoutes(pricingWithMultiplier(1000)),
         "value-elf.com" to fakeValueElfRoutes(pricingWithMultiplier(1000)),
         "priceomatic.com" to fakeValueElfRoutes(pricingWithMultiplier(990)),
         "webuyanymagicalitem.com" to fakeValueElfRoutes(pricingWithMultiplier(1010)),
