@@ -1,7 +1,5 @@
 package com.gildedrose.updating
 
-import com.gildedrose.domain.add
-import com.gildedrose.domain.subtract
 import com.gildedrose.item
 import com.gildedrose.oct29
 import org.junit.jupiter.api.Assertions.assertEquals
