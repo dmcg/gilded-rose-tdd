@@ -24,8 +24,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 
-
-
 context(IO)
 @ExtendWith(IOResolver::class)
 class AddItemHttpTests : AddItemAcceptanceContract(
@@ -151,9 +149,12 @@ private fun Request.withFormFor(newItem: Item): Request {
         .form("new-itemQuality", newItem.quality.toString())
 }
 
-private fun postFormToAddItemsRoute(withHTMX: Boolean = true) =
-    Request(Method.POST, "/add-item").header("Content-Type", "application/x-www-form-urlencoded").run {
-        if (withHTMX) header("HX-Request", "true") else this
-    }
+private fun postFormToAddItemsRoute(withHTMX: Boolean = true): Request {
+    val base = Request(Method.POST, "/add-item").header("Content-Type", "application/x-www-form-urlencoded")
+    if (withHTMX)
+        return base.header("HX-Request", "true")
+    else
+        return base
+}
 
 fun hasJustATableElementBody() = hasBody(Regex("""\A\s*<table>.*</table>\s*\z""", RegexOption.DOT_MATCHES_ALL))
