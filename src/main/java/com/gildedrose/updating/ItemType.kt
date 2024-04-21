@@ -1,8 +1,9 @@
 package com.gildedrose.updating
 
 import com.gildedrose.domain.Item
-import com.gildedrose.domain.NonBlankString
 import com.gildedrose.domain.Quality
+import com.gildedrose.domain.add
+import com.gildedrose.domain.subtract
 import java.time.LocalDate
 
 fun interface ItemType {
@@ -24,8 +25,8 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType {
 
 fun conjured(baseType: ItemType) = typeFor("CONJURED $baseType") { item, on ->
     val updated = baseType.update(item, on)
-    val change = item.quality - updated.quality
-    item.copy(quality = item.quality - 2 * change)
+    val change = item.quality.value - updated.quality.value
+    item.copy(quality = subtract(item.quality, 2 * change))
 }
 
 val StandardType = typeFor("STANDARD") { item, on ->
@@ -34,7 +35,7 @@ val StandardType = typeFor("STANDARD") { item, on ->
         on.isAfter(item.sellByDate) -> 2
         else -> 1
     }
-    item.copy(quality = item.quality - degradation)
+    item.copy(quality = subtract(item.quality, degradation))
 }
 
 val UndatedType = typeFor("UNDATED") { item, _ -> item }
@@ -45,7 +46,7 @@ val BrieType = typeFor("BRIE") { item, on ->
         on.isAfter(item.sellByDate) -> 2
         else -> 1
     }
-    item.copy(quality = item.quality + improvement)
+    item.copy(quality = add(item.quality, improvement))
 }
 
 val PassType = typeFor("PASS") { item, on ->
@@ -59,7 +60,7 @@ val PassType = typeFor("PASS") { item, on ->
             daysUntilSellBy < 10 -> 2
             else -> 1
         }
-        item.copy(quality = item.quality + improvement)
+        item.copy(quality = add(item.quality, improvement))
     }
 }
 

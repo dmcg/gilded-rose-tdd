@@ -1,6 +1,7 @@
 package com.gildedrose.updating
 
-import com.gildedrose.domain.NonBlankString
+import com.gildedrose.domain.add
+import com.gildedrose.domain.subtract
 import com.gildedrose.item
 import com.gildedrose.oct29
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -13,7 +14,7 @@ class ItemTests {
         val testItem = item("banana", null, 50)
         assertEquals(
             item("banana", null, 50),
-            testItem.copy(quality = testItem.quality + 1)
+            testItem.copy(quality = add(testItem.quality, 1))
         )
     }
 
@@ -21,7 +22,7 @@ class ItemTests {
         val testItem = item("banana", null, 2)
         assertEquals(
             item("banana", null, 0),
-            testItem.copy(quality = testItem.quality - 3)
+            testItem.copy(quality = subtract(testItem.quality, 3))
         )
     }
 
@@ -29,12 +30,12 @@ class ItemTests {
         val testItem = item("banana", null, 55)
         assertEquals(
             item("banana", null, 54),
-            testItem.copy(quality = testItem.quality - 1)
+            testItem.copy(quality = subtract(testItem.quality, 1))
         )
         val testItem1 = item("banana", null, 55)
         assertEquals(
             item("banana", null, 55),
-            testItem1.copy(quality = testItem1.quality - -1)
+            testItem1.copy(quality = subtract(testItem1.quality, -1))
         )
     }
 

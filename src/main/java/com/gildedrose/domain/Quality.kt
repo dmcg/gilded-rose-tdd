@@ -2,7 +2,7 @@ package com.gildedrose.domain
 
 @JvmInline
 value class Quality(
-    private val value: NonNegativeInt
+    val value: NonNegativeInt
 ) {
     val valueInt get() = value.value
 
@@ -14,16 +14,13 @@ value class Quality(
     }
 
     override fun toString() = value.toString()
+}
 
-    operator fun minus(rhs: Quality): Int = this.value - rhs.value
-    operator fun unaryMinus(): Int = -this.value
+fun subtract(quality: Quality, rhs: Int): Quality =
+    add(quality, -rhs)
 
-    operator fun plus(rhs: Int): Quality {
-        val qualityCap = value.value.coerceAtLeast(50)
-        return Quality(
-            (value + rhs).coerceIn(0, qualityCap)
-        ) ?: error("tried to create a negative int")
-    }
-
-    operator fun minus(rhs: Int): Quality = this + -rhs
+fun add(quality: Quality, rhs: Int): Quality {
+    val qualityCap = quality.value.value.coerceAtLeast(50)
+    return Quality((quality.value + rhs).coerceIn(0, qualityCap))
+        ?: error("tried to create a negative int")
 }

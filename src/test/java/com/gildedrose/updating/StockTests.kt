@@ -1,6 +1,7 @@
 package com.gildedrose.updating
 
 import com.gildedrose.domain.StockList
+import com.gildedrose.domain.subtract
 import com.gildedrose.foundation.IO
 import com.gildedrose.item
 import com.gildedrose.oct29
@@ -31,7 +32,7 @@ class StockTests {
     private val stock = Stock(
         items,
         zoneId = ZoneId.of("Europe/London"),
-        itemUpdate = { days, _ -> this.copy(quality = this.quality - days) }
+        itemUpdate = { days, _ -> this.copy(quality = subtract(this.quality, days)) }
     )
 
     context(IO)
