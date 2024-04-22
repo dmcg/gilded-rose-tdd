@@ -14,7 +14,7 @@ repositories {
 
 ext.junitVersion = '5.9.1'
 ext.jacksonVersion = '2.14.1'
-ext.jdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:postgresql://localhost:5433/gilded-rose').get()
+ext.jdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:h2:~/gilded-rose-db').get()
 ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('gilded').get()
 ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('rose').get()
 
@@ -38,7 +38,8 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
 
-    implementation "org.postgresql:postgresql:42.5.3"
+//    implementation "org.postgresql:postgresql:42.5.3"
+    implementation 'com.h2database:h2:2.1.214'
     implementation "com.zaxxer:HikariCP:5.0.1"
 
     implementation "org.jooq:jooq:3.17.6"
@@ -56,7 +57,7 @@ dependencies {
     testImplementation "org.http4k:http4k-testing-hamkrest"
     testImplementation "org.http4k:http4k-testing-strikt"
 
-    jooqGenerator 'org.postgresql:postgresql:42.5.3'
+    jooqGenerator 'com.h2database:h2:2.1.214'
 }
 
 test {
@@ -95,7 +96,7 @@ jooq {
             generationTool {
                 logging = org.jooq.meta.jaxb.Logging.WARN
                 jdbc {
-                    driver = 'org.postgresql.Driver'
+                    driver = 'org.h2.Driver'
                     url = "$jdbcUrl"
                     user = "$databaseUsername"
                     password = "$databasePassword"
@@ -109,13 +110,13 @@ jooq {
                 generator {
                     name = 'org.jooq.codegen.DefaultGenerator'
                     database {
-                        name = 'org.jooq.meta.postgres.PostgresDatabase'
-                        inputSchema = 'public'
+                        name = 'org.jooq.meta.h2.H2Database'
+                        inputSchema = 'PUBLIC'
                         forcedTypes {
                             forcedType {
                                 name = 'instant'
                                 includeExpression = '.*'
-                                includeTypes = 'TIMESTAMPTZ'
+                                includeTypes = 'TIMESTAMP'
                             }
                         }
                     }

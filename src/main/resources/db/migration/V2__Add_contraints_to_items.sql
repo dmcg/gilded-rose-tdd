@@ -1,4 +1,4 @@
 
-alter table items add check(id <> '');
-alter table items add check(name <> '');
-alter table items add check(quality >= 0);
+ALTER table items add check(id <> '');
+ALTER table items add check(name <> '');
+ALTER table items add check(quality >= 0);
