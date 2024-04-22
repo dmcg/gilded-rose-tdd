@@ -24,6 +24,10 @@ db/start-db.sh
 ./gradlew clean test
 ```
 
+### Populate the database with test data
+
+Run src/test/populate-main.kt
+
 ## History
 
 You can see the development of this code on [YouTube](https://youtube.com/playlist?list=PL1ssMPpyqocg2D_8mgIbcnQGxCPI2_fpA)
