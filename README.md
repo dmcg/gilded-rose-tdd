@@ -2,17 +2,13 @@
 
 A TDD implementation of the Gilded Rose stock control system
 
+You can see the development of this code on [YouTube](https://youtube.com/playlist?list=PL1ssMPpyqocg2D_8mgIbcnQGxCPI2_fpA)
+
 ## Setup
 
 Requires Java 21 and Docker
 
-### Start Postgres in Docker
-
-```bash
-db/start-db.sh
-```
-
-### Initialise the database
+### Initialise the test database
 
 ```bash
 ./gradlew flywayMigrate
@@ -24,10 +20,16 @@ db/start-db.sh
 ./gradlew clean test
 ```
 
+### Initialise the local database
+
+```bash
+db/migrate-dev.sh
+```
+
 ### Populate the database with test data
 
-Run src/test/populate-main.kt
+Run src/test/java/populate-main.kt
 
-## History
+### Run the app
 
-You can see the development of this code on [YouTube](https://youtube.com/playlist?list=PL1ssMPpyqocg2D_8mgIbcnQGxCPI2_fpA)
+Run src/main/java/main.kt
