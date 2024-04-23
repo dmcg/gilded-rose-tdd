@@ -14,7 +14,7 @@ repositories {
 
 ext.junitVersion = '5.9.1'
 ext.jacksonVersion = '2.14.1'
-ext.jdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:postgresql://localhost:5433/gilded-rose').get()
+ext.testJdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:postgresql://localhost:5433/gilded-rose').get()
 ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('gilded').get()
 ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('rose').get()
 
@@ -79,7 +79,7 @@ compileTestKotlin {
 }
 
 flyway {
-    url = "$jdbcUrl"
+    url = "$testJdbcUrl"
     user = "$databaseUsername"
     password = "$databasePassword"
 }
@@ -95,7 +95,7 @@ jooq {
                 logging = org.jooq.meta.jaxb.Logging.WARN
                 jdbc {
                     driver = 'org.postgresql.Driver'
-                    url = "$jdbcUrl"
+                    url = "$testJdbcUrl"
                     user = "$databaseUsername"
                     password = "$databasePassword"
                     properties {
