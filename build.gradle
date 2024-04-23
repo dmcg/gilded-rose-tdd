@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.9.20'
-    id 'nu.studer.jooq' version '8.1'
+    id 'nu.studer.jooq' version '9.0'
     id "org.flywaydb.flyway" version "9.16.3"
 }
 
@@ -14,7 +14,7 @@ repositories {
 
 ext.junitVersion = '5.9.1'
 ext.jacksonVersion = '2.14.1'
-ext.jdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:h2:~/gilded-rose-db').get()
+ext.testJdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:h2:~/gilded-rose-db').get()
 ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('gilded').get()
 ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('rose').get()
 
@@ -38,11 +38,10 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
 
-//    implementation "org.postgresql:postgresql:42.5.3"
-    implementation 'com.h2database:h2:2.1.214'
+    implementation "org.postgresql:postgresql:42.5.3"
     implementation "com.zaxxer:HikariCP:5.0.1"
 
-    implementation "org.jooq:jooq:3.17.6"
+    implementation "org.jooq:jooq:3.19.1"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
@@ -80,13 +79,13 @@ compileTestKotlin {
 }
 
 flyway {
-    url = "$jdbcUrl"
+    url = "$testJdbcUrl"
     user = "$databaseUsername"
     password = "$databasePassword"
 }
 
 jooq {
-    version = '3.17.6'  // default (can be omitted)
+    version = '3.19.1'  // default (can be omitted)
     edition = nu.studer.gradle.jooq.JooqEdition.OSS  // default (can be omitted)
 
     configurations {
@@ -97,7 +96,7 @@ jooq {
                 logging = org.jooq.meta.jaxb.Logging.WARN
                 jdbc {
                     driver = 'org.h2.Driver'
-                    url = "$jdbcUrl"
+                    url = "$testJdbcUrl"
                     user = "$databaseUsername"
                     password = "$databasePassword"
                     properties {
