@@ -11,7 +11,7 @@ import org.junit.jupiter.api.parallel.ResourceLock
 val testEnvironment: Environment = Environment.JVM_PROPERTIES overrides
     Environment.ENV overrides
     Environment.from(
-        "jdbc.url" to "jdbc:h2:~/gilded-rose-db",
+        "jdbc.url" to "jdbc:h2:~/gilded-rose-test-db",
         "db.username" to "gilded",
         "db.password" to "rose"
     )
