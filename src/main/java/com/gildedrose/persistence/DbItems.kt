@@ -91,7 +91,7 @@ fun DSLContext.load(): StockList {
 private fun Record5<String, Instant, String, Int, LocalDate>.toItem() =
     Item(
         id = ID(this[ITEMS.ID]) ?: error("Invalid ID"),
-        name = this[ITEMS.NAME] ?: error("Invalid name"),
+        name = this[ITEMS.NAME],
         sellByDate = this[ITEMS.SELLBYDATE],
         quality = Quality(this[ITEMS.QUALITY]) ?: error("Invalid quality")
     )
