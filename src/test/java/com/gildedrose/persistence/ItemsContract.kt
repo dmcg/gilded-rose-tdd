@@ -44,21 +44,20 @@ abstract class ItemsContract<TX : TXContext> {
     fun `returns last saved stocklist`() {
         items.inTransaction {
             items.save(initialStockList)
-            assertEquals(
-                Success(initialStockList),
-                items.load()
-            )
-
-            val modifiedStockList = initialStockList.copy(
-                lastModified = initialStockList.lastModified.plusSeconds(3600),
-                items = initialStockList.items.drop(1)
-            )
-            items.save(modifiedStockList)
-            assertEquals(
-                Success(modifiedStockList),
-                items.load()
-            )
         }
+
+        assertEquals(Success(initialStockList), items.inTransaction(items::load))
+
+        val modifiedStockList = initialStockList.copy(
+            lastModified = initialStockList.lastModified.plusSeconds(3600),
+            items = initialStockList.items.drop(1)
+        )
+
+        items.inTransaction {
+            items.save(modifiedStockList)
+        }
+
+        assertEquals(Success(modifiedStockList), items.inTransaction(items::load))
     }
 
     @Test
@@ -74,6 +73,7 @@ abstract class ItemsContract<TX : TXContext> {
                 lastModified = initialStockList.lastModified.plusSeconds(3600),
                 items = emptyList()
             )
+
             items.save(modifiedStockList)
             assertEquals(
                 Success(modifiedStockList),

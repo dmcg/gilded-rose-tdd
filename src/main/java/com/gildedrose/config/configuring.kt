@@ -22,9 +22,13 @@ data class DbConfig(
     )
 
     fun toDslContext(): DSLContext {
+        return DSL.using(toDataSource(), SQLDialect.HSQLDB)
+    }
+
+    fun toDataSource(): HikariDataSource {
         val dataSource = hikariDataSourceFor(this)
         dataSource.validate()
-        return DSL.using(dataSource, SQLDialect.HSQLDB)
+        return dataSource
     }
 }
 

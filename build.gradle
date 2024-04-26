@@ -39,6 +39,8 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
 
     implementation 'org.hsqldb:hsqldb:2.7.2'
+    testImplementation("org.flywaydb:flyway-database-hsqldb:10.10.0")
+
     implementation "com.zaxxer:HikariCP:5.0.1"
 
     implementation "org.jooq:jooq:3.19.1"

@@ -45,7 +45,7 @@ open class DbItems(
     }
 }
 
-private val sentinelItem = Item(
+val sentinelItem = Item(
     id = ID("NO-ITEMS-SAVED")!!,
     name = "THIS IS NOT AN ITEM",
     sellByDate = null,
