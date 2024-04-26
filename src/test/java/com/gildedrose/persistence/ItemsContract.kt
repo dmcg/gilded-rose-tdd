@@ -93,16 +93,30 @@ abstract class ItemsContract<TX : TXContext> {
         ]
     )
     fun `can save stockLists with lots of lastModified in lots of timezones`(candidate: String) {
+        val saveAsTimezone = TimeZone.getTimeZone(TimeZone.getAvailableIDs().random())
+        println("saving with timezone $saveAsTimezone")
+
+        val readAsTimezone = TimeZone.getTimeZone(TimeZone.getAvailableIDs().random())
+        println("loading with timezone $readAsTimezone")
+
+        checkRoundTripWithDifferentTimezones(candidate, saveAsTimezone, readAsTimezone)
+    }
+
+    private fun checkRoundTripWithDifferentTimezones(
+        candidate: String,
+        saveAsTimezone: TimeZone?,
+        readAsTimezone: TimeZone?
+    ) {
         val initialTimeZone = TimeZone.getDefault()
         try {
             val stockList = initialStockList.copy(lastModified = Instant.parse(candidate))
 
-            TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
+            TimeZone.setDefault(saveAsTimezone)
             items.inTransaction {
                 items.save(stockList)
             }
 
-            TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
+            TimeZone.setDefault(readAsTimezone)
             items.inTransaction {
                 assertEquals(
                     Success(stockList),
@@ -112,6 +126,15 @@ abstract class ItemsContract<TX : TXContext> {
         } finally {
             TimeZone.setDefault(initialTimeZone)
         }
+    }
+
+    @Test
+    fun `reproduce failure`() {
+        checkRoundTripWithDifferentTimezones(
+            "2022-12-31T23:59:59Z",
+            TimeZone.getTimeZone("Turkey"),
+            TimeZone.getTimeZone("America/Sao_Paulo")
+        )
     }
 
     open fun transactions() {
