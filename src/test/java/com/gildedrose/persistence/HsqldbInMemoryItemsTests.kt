@@ -2,6 +2,7 @@ package com.gildedrose.persistence
 
 import org.flywaydb.core.Flyway
 import org.hsqldb.jdbc.JDBCDataSource
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -27,20 +28,40 @@ fun JDBCDataSource.clearTables() {
 
 @ResourceLock("DATABASE")
 class HsqldbItemsInMemoryTests : ItemsContract<ConnectionContext>() {
-    val dataSource = JDBCDataSource().apply {
+    val inMemoryDataSource = JDBCDataSource().apply {
         setURL("jdbc:hsqldb:mem:${UUID.randomUUID()}")
         user = "sa"
     }
 
     @BeforeEach
     fun migrateDatabase() {
-        dataSource.migrateSchema()
+        inMemoryDataSource.migrateSchema()
     }
 
-    override val items = HsqldbItems(dataSource)
-
-    @Test
-    override fun transactions() {
-        super.transactions()
-    }
+    override val items = HsqldbItems(inMemoryDataSource)
 }
+
+
+@ResourceLock("DATABASE")
+class HsqldbItemsClientTests : ItemsContract<ConnectionContext>() {
+    companion object {
+        val serverDataSource = JDBCDataSource().apply {
+            setURL("jdbc:hsqldb:hsql://localhost/gildedrose-test")
+            user = "sa"
+        }
+
+        @JvmStatic
+        @BeforeAll
+        fun createSchema() {
+            serverDataSource.migrateSchema()
+        }
+    }
+
+    @BeforeEach
+    fun migrateDatabase() {
+        serverDataSource.clearTables()
+    }
+
+    override val items = HsqldbItems(serverDataSource)
+}
+
