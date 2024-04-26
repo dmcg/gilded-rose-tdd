@@ -4,7 +4,6 @@ import org.flywaydb.core.Flyway
 import org.hsqldb.jdbc.JDBCDataSource
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
 import java.util.UUID
 
