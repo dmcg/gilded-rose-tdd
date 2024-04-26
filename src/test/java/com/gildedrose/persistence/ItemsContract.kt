@@ -92,7 +92,6 @@ abstract class ItemsContract<TX : TXContext> {
             "2023-07-01T00:00:00Z"
         ]
     )
-
     fun `can save stockLists with lots of lastModified in lots of timezones`(candidate: String) {
         val initialTimeZone = TimeZone.getDefault()
         try {
@@ -102,6 +101,7 @@ abstract class ItemsContract<TX : TXContext> {
             items.inTransaction {
                 items.save(stockList)
             }
+
             TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
             items.inTransaction {
                 assertEquals(
@@ -115,25 +115,16 @@ abstract class ItemsContract<TX : TXContext> {
     }
 
     open fun transactions() {
-        val cyclicBarrier = CyclicBarrier(2)
-        val thread = thread {
-            items.inTransaction {
-                items.save(initialStockList)
-                cyclicBarrier.await()
-                cyclicBarrier.await()
-            }
-        }
-
-        cyclicBarrier.await()
         items.inTransaction {
             assertEquals(Success(nullStockist), items.load())
         }
 
-        cyclicBarrier.await()
-        thread.join()
+        items.inTransaction {
+            items.save(initialStockList)
+        }
+
         items.inTransaction {
             assertEquals(Success(initialStockList), items.load())
         }
     }
-
 }

@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.9.20'
     id 'nu.studer.jooq' version '9.0'
-    id "org.flywaydb.flyway" version "9.16.3"
+    id 'org.flywaydb.flyway' version '9.16.3'
 }
 
 group = 'com.gildedrose'
@@ -14,9 +14,9 @@ repositories {
 
 ext.junitVersion = '5.9.1'
 ext.jacksonVersion = '2.14.1'
-ext.testJdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:h2:~/gilded-rose-test-db').get()
-ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('gilded').get()
-ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('rose').get()
+ext.testJdbcUrl = providers.environmentVariable('JDBC_URL').orElse("jdbc:hsqldb:hsql://localhost/gildedrose-test").get()
+ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('sa').get()
+ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('').get()
 
 
 dependencies {
@@ -38,7 +38,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
 
-    implementation 'com.h2database:h2:2.2.224'
+    implementation 'org.hsqldb:hsqldb:2.7.2'
     implementation "com.zaxxer:HikariCP:5.0.1"
 
     implementation "org.jooq:jooq:3.19.1"
@@ -56,7 +56,7 @@ dependencies {
     testImplementation "org.http4k:http4k-testing-hamkrest"
     testImplementation "org.http4k:http4k-testing-strikt"
 
-    jooqGenerator 'com.h2database:h2:2.2.224'
+    jooqGenerator 'org.hsqldb:hsqldb:2.7.2'
 }
 
 test {
@@ -95,7 +95,7 @@ jooq {
             generationTool {
                 logging = org.jooq.meta.jaxb.Logging.WARN
                 jdbc {
-                    driver = 'org.h2.Driver'
+                    driver = 'org.hsqldb.jdbc.JDBCDriver'
                     url = "$testJdbcUrl"
                     user = "$databaseUsername"
                     password = "$databasePassword"
@@ -109,7 +109,7 @@ jooq {
                 generator {
                     name = 'org.jooq.codegen.DefaultGenerator'
                     database {
-                        name = 'org.jooq.meta.h2.H2Database'
+                        name = 'org.jooq.meta.hsqldb.HSQLDBDatabase'
                         inputSchema = 'PUBLIC'
                         forcedTypes {
                             forcedType {
@@ -137,3 +137,19 @@ jooq {
 }
 
 tasks.named('generateJooq').configure { allInputsDeclared = true }
+
+tasks.register("runDatabaseServer", JavaExec) {
+    group = "database"
+    mainClass = "org.hsqldb.Server"
+    classpath = sourceSets["main"].compileClasspath
+    args = [
+        "--address", "localhost",
+        "--database.0", "mem:gildedrose",
+        "--dbname.0", "gildedrose",
+        "--database.1", "mem:gildedrose-test",
+        "--dbname.1", "gildedrose-test"
+    ]
+    systemProperties = [
+        "user.timezone": "UTC"
+    ]
+}
