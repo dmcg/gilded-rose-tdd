@@ -27,7 +27,7 @@ TODO - this isn't a good example. Just find a place that needs a little local sc
 - extract `with` into extension function
 
 ### Let
-#### [Quality](java/com/gildedrose/domain/Quality.kt)
+#### [Quality](src/main/java/com/gildedrose/domain/Quality.kt)
 - Introduce .let with if inside let
 - and then ?.let
 - Segue into chaining
