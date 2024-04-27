@@ -7,9 +7,9 @@
 
 ### Also
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
-- Refactor `toDslContext` to use `also`
-- Refactor `::DbConfig` to println url using `also(::println)`,
+- Refactor `::DbConfig` to println url using `also(::println)`
   using `printed()` (almost like postfix completion)
+- Refactor `toDslContext` to use `also`
 
 #### [DualItems](src/main/java/com/gildedrose/persistence/DualItems.kt)
 - Refactor `save` and `load` to use `also`
