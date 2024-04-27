@@ -41,7 +41,7 @@ dependencies {
     implementation 'com.h2database:h2:2.2.224'
     implementation "com.zaxxer:HikariCP:5.0.1"
 
-    implementation "org.jooq:jooq:3.19.1"
+    implementation "org.jooq:jooq:3.19.7"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
@@ -85,7 +85,7 @@ flyway {
 }
 
 jooq {
-    version = '3.19.1'  // default (can be omitted)
+    version = '3.19.7'  // default (can be omitted)
     edition = nu.studer.gradle.jooq.JooqEdition.OSS  // default (can be omitted)
 
     configurations {
