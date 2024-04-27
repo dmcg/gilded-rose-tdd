@@ -16,6 +16,7 @@
 
 ### Run
 #### [AddItemHttpTests](src/test/java/com/gildedrose/AddItemHttpTests.kt)
+TODO - this isn't a good example. Just find a place that needs a little local scope
 - Refactor `postFormToAddItemsRoute` to use `run`
   (note that `.header("HX-Request", null)` is basically `HX-Request: ` with empty value)
 
@@ -24,6 +25,17 @@
 - Refactor `DSLContext.save` and `DSLContext.load` to use `with`
 - multiple `with`
 - extract `with` into extension function
+
+### Let
+- Start with a simple example of converting a local variable into an expression
+- Quality invoke (decide if that is invoke or a top level function)
+- Add an example of ?.let
+- Segue into chaining
+
+## Extension Functions
+#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
+- Make some things into extensions
+- Can
 
 ### Coupling/cohesion
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
