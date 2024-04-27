@@ -19,14 +19,13 @@ data class DbConfig(
         username = EnvironmentKey.nonEmptyString().required("db.username")(environment),
         password = EnvironmentKey.nonEmptyString().required("db.password")(environment),
     )
-
-    fun toDslContext(): DSLContext {
-        val dataSource = hikariDataSourceFor(this)
-        dataSource.validate()
-        return DSL.using(dataSource, SQLDialect.POSTGRES)
-    }
 }
 
+fun dslContextFor(dbConfig: DbConfig): DSLContext {
+    val dataSource = hikariDataSourceFor(dbConfig)
+    dataSource.validate()
+    return DSL.using(dataSource, SQLDialect.POSTGRES)
+}
 
 fun hikariDataSourceFor(dbConfig: DbConfig): HikariDataSource {
     val result = HikariDataSource()

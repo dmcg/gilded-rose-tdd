@@ -1,6 +1,7 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.config.DbConfig
+import com.gildedrose.config.dslContextFor
 import com.gildedrose.db.tables.Items
 import org.http4k.cloudnative.env.Environment
 import org.jooq.DSLContext
@@ -18,7 +19,7 @@ val testEnvironment: Environment = Environment.JVM_PROPERTIES overrides
 
 val testDbConfig = DbConfig(testEnvironment)
 
-val testDslContext: DSLContext = testDbConfig.toDslContext()
+val testDslContext: DSLContext = dslContextFor(testDbConfig)
 
 @ResourceLock("DATABASE")
 class DbItemsTests : ItemsContract<DbTxContext>() {
