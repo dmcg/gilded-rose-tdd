@@ -8,7 +8,7 @@
 ### Also
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
 - Refactor `::DbConfig` to println url using `also(::println)`
-  using `printed()` (almost like postfix completion)
+- using `printed()` (almost like postfix completion)
 - Refactor `toDslContext` to use `also`
 
 #### [DualItems](src/main/java/com/gildedrose/persistence/DualItems.kt)
