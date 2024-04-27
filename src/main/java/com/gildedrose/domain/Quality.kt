@@ -9,8 +9,10 @@ value class Quality(
     companion object {
         val ZERO: Quality = Quality(0)!!
 
-        operator fun invoke(value: Int): Quality? =
-            NonNegativeInt(value)?.let { Quality(it) }
+        operator fun invoke(value: Int): Quality? {
+            val wrapped = NonNegativeInt(value)
+            return if (wrapped != null) Quality(wrapped) else null
+        }
     }
 
     override fun toString() = value.toString()

@@ -27,9 +27,9 @@ TODO - this isn't a good example. Just find a place that needs a little local sc
 - extract `with` into extension function
 
 ### Let
-- Start with a simple example of converting a local variable into an expression
-- Quality invoke (decide if that is invoke or a top level function)
-- Add an example of ?.let
+#### [Quality](java/com/gildedrose/domain/Quality.kt)
+- Introduce .let with if inside let
+- and then ?.let
 - Segue into chaining
 
 ## Extension Functions
