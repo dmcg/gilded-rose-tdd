@@ -1,6 +1,12 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package com.gildedrose.foundation
 
 import java.io.PrintStream
 
-fun <T> T.printed(to: PrintStream = System.out) =
-    this.also { to.println(it) }
+inline fun <T> T.printed(to: PrintStream = System.out) =
+    also { to.println(this) }
+
+inline fun <T> Iterable<T>.printed(to: PrintStream = System.out) =
+    also { to.println(this.joinToString("\n")) }
+
