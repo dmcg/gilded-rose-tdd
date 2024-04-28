@@ -34,7 +34,7 @@ data class App(
         clock: () -> Instant = Instant::now,
         analytics: Analytics = stdOutAnalytics
     ) : this(
-        DualItems(StockFileItems(stockFile), DbItems(dbConfig.toDslContext()), analytics),
+        DualItems(StockFileItems(stockFile), HsqldbItems(dbConfig.toDataSource()), analytics),
         features,
         clock,
         analytics,

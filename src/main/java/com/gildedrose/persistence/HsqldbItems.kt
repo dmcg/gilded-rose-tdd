@@ -14,7 +14,15 @@ import java.time.LocalDate
 import javax.sql.DataSource
 
 
+private val sentinelItem = Item(
+    id = ID("NO-ITEMS-SAVED")!!,
+    name = "THIS IS NOT AN ITEM",
+    sellByDate = null,
+    quality = Quality(Int.MAX_VALUE)!!
+)
+
 class ConnectionContext(val connection: Connection) : TXContext(), Connection by connection
+
 
 class HsqldbItems(private val dataSource: DataSource) : Items<ConnectionContext> {
     override fun <R> inTransaction(block: context(ConnectionContext) () -> R): R {

@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.9.20'
-    id 'nu.studer.jooq' version '9.0'
     id 'org.flywaydb.flyway' version '9.16.3'
 }
 
@@ -43,8 +42,6 @@ dependencies {
 
     implementation "com.zaxxer:HikariCP:5.0.1"
 
-    implementation "org.jooq:jooq:3.19.1"
-
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
@@ -57,8 +54,6 @@ dependencies {
     testImplementation "org.http4k:http4k-testing-approval"
     testImplementation "org.http4k:http4k-testing-hamkrest"
     testImplementation "org.http4k:http4k-testing-strikt"
-
-    jooqGenerator 'org.hsqldb:hsqldb:2.7.2'
 }
 
 test {
@@ -85,60 +80,6 @@ flyway {
     user = "$databaseUsername"
     password = "$databasePassword"
 }
-
-jooq {
-    version = '3.19.1'  // default (can be omitted)
-    edition = nu.studer.gradle.jooq.JooqEdition.OSS  // default (can be omitted)
-
-    configurations {
-        main {  // name of the jOOQ configuration
-            generateSchemaSourceOnCompilation = true  // default (can be omitted)
-
-            generationTool {
-                logging = org.jooq.meta.jaxb.Logging.WARN
-                jdbc {
-                    driver = 'org.hsqldb.jdbc.JDBCDriver'
-                    url = "$testJdbcUrl"
-                    user = "$databaseUsername"
-                    password = "$databasePassword"
-                    properties {
-                        property {
-                            key = 'ssl'
-                            value = 'false'
-                        }
-                    }
-                }
-                generator {
-                    name = 'org.jooq.codegen.DefaultGenerator'
-                    database {
-                        name = 'org.jooq.meta.hsqldb.HSQLDBDatabase'
-                        inputSchema = 'PUBLIC'
-                        forcedTypes {
-                            forcedType {
-                                name = 'instant'
-                                includeExpression = '.*'
-                                includeTypes = 'TIMESTAMP\\ WITH\\ TIME\\ ZONE'
-                            }
-                        }
-                    }
-                    generate {
-                        deprecated = false
-                        records = true
-                        immutablePojos = true
-                        fluentSetters = true
-                    }
-                    target {
-                        packageName = 'com.gildedrose.db'
-                        directory = 'build/generated-src/jooq/main'  // default (can be omitted)
-                    }
-                    strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
-                }
-            }
-        }
-    }
-}
-
-tasks.named('generateJooq').configure { allInputsDeclared = true }
 
 tasks.register("runDatabaseServer", JavaExec) {
     group = "database"

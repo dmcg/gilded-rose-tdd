@@ -5,9 +5,6 @@ import org.http4k.cloudnative.env.Environment
 import org.http4k.cloudnative.env.EnvironmentKey
 import org.http4k.lens.nonEmptyString
 import org.http4k.lens.string
-import org.jooq.DSLContext
-import org.jooq.SQLDialect
-import org.jooq.impl.DSL
 import java.net.URI
 
 data class DbConfig(
@@ -20,10 +17,6 @@ data class DbConfig(
         username = EnvironmentKey.nonEmptyString().required("db.username")(environment),
         password = EnvironmentKey.string().required("db.password")(environment),
     )
-
-    fun toDslContext(): DSLContext {
-        return DSL.using(toDataSource(), SQLDialect.HSQLDB)
-    }
 
     fun toDataSource(): HikariDataSource {
         val dataSource = hikariDataSourceFor(this)

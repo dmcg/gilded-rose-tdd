@@ -8,17 +8,17 @@ import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
 import java.time.Instant
 
-class DualItems(
+class DualItems<TXCTX: TXContext>(
     private val sourceOfTruth: Items<NoTX>,
-    private val otherItems: DbItems,
+    private val otherItems: Items<TXCTX>,
     private val analytics: Analytics
-) : Items<DbTxContext> {
+) : Items<TXCTX> {
 
     override fun <R> inTransaction(
-        block: context(DbTxContext) () -> R
+        block: context(TXCTX) () -> R
     ): R = otherItems.inTransaction(block)
 
-    context(DbTxContext)
+    context(TXCTX)
     override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError> {
@@ -35,7 +35,7 @@ class DualItems(
         return truth
     }
 
-    context(DbTxContext)
+    context(TXCTX)
     override fun load(): Result<StockList, StockListLoadingError> {
         val truth = sourceOfTruth.inTransaction {
             sourceOfTruth.load()
