@@ -23,11 +23,6 @@
 - talk about receiver
 - probably shouldn't do this here, but useful when we want a temporary single expression
 
-#### [AddItemHttpTests](src/test/java/com/gildedrose/AddItemHttpTests.kt)
-TODO - this isn't a good example. Just find a place that needs a little local scope
-- Refactor `postFormToAddItemsRoute` to use `run`
-  (note that `.header("HX-Request", null)` is basically `HX-Request: ` with empty value)
-
 ### With
 #### [DbItems](src/main/java/com/gildedrose/persistence/DbItems.kt)
 - Refactor `DSLContext.save` and `DSLContext.load` to use `with`
