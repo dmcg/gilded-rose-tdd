@@ -6,18 +6,12 @@ You can see the development of this code on [YouTube](https://youtube.com/playli
 
 ## Setup
 
-Requires Java 21 and Docker
+Requires Java 21
 
-### Initialise the test database
-
-```bash
-./gradlew flywayMigrate
-```
-
-### Run (most of) the Tests
+### Initialise the test database, build and test
 
 ```bash
-./gradlew clean test
+./gradlew flywayMigrate clean test
 ```
 
 ### Initialise the local database
