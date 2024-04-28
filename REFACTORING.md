@@ -17,9 +17,11 @@
 - Refactor `save` and `load` to use `also`
 
 ### Run
-#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
-- We can use run to make dslContextFor into a single expression
-- but probably shouldn't
+#### [app.kt](src/main/java/com/gildedrose/app.kt)
+- itemsFor could use run to make a single expression
+- then we can inline that into the ctor
+- talk about receiver
+- probably shouldn't do this here, but useful when we want a temporary single expression
 
 #### [AddItemHttpTests](src/test/java/com/gildedrose/AddItemHttpTests.kt)
 TODO - this isn't a good example. Just find a place that needs a little local scope
