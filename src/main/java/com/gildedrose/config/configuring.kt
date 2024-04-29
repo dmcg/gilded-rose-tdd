@@ -15,10 +15,16 @@ data class DbConfig(
     val password: String
 ) {
     constructor(environment: Environment) : this(
-        jdbcUrl = EnvironmentKey.map(URI::create).required("jdbc.url")(environment),
+        jdbcUrl = uri(environment),
         username = EnvironmentKey.nonEmptyString().required("db.username")(environment),
         password = EnvironmentKey.nonEmptyString().required("db.password")(environment),
     )
+}
+
+private fun uri(environment: Environment): URI {
+    val uri = EnvironmentKey.map(URI::create).required("jdbc.url")(environment)
+    println(uri)
+    return uri
 }
 
 fun dslContextFor(dbConfig: DbConfig): DSLContext {
