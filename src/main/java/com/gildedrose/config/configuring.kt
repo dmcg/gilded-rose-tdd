@@ -22,10 +22,11 @@ data class DbConfig(
     )
 }
 
-fun dslContextFor(dbConfig: DbConfig): DSLContext {
-    val dataSource = hikariDataSourceFor(dbConfig).also { it.validate() }
-    return DSL.using(dataSource, SQLDialect.POSTGRES)
-}
+fun dslContextFor(dbConfig: DbConfig): DSLContext =
+    DSL.using(
+        hikariDataSourceFor(dbConfig).also { it.validate() },
+        SQLDialect.POSTGRES
+    )
 
 fun hikariDataSourceFor(dbConfig: DbConfig) =
     HikariDataSource().apply {
