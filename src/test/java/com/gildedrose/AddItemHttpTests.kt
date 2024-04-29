@@ -9,17 +9,19 @@ import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.has
-import org.http4k.core.Method
+import org.http4k.core.Method.POST
 import org.http4k.core.Request
 import org.http4k.core.Response
-import org.http4k.core.Status
+import org.http4k.core.Status.Companion.BAD_REQUEST
+import org.http4k.core.Status.Companion.OK
+import org.http4k.core.Status.Companion.SEE_OTHER
 import org.http4k.core.body.form
 import org.http4k.core.body.toBody
 import org.http4k.hamkrest.hasBody
 import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Test
-
+import kotlin.text.RegexOption.DOT_MATCHES_ALL
 
 class AddItemHttpTests : AddItemAcceptanceContract(
     doAdd = ::addItemWithHttp
@@ -45,39 +47,39 @@ class AddItemHttpTests : AddItemAcceptanceContract(
             .form("new-itemQuality", "99")
         assertThat(
             app.routes(goodPost.formWithout("new-itemId")),
-            hasStatus(Status.BAD_REQUEST)
+            hasStatus(BAD_REQUEST)
         )
         assertThat(
             app.routes(goodPost.replacingForm("new-itemId", "")),
-            hasStatus(Status.BAD_REQUEST)
+            hasStatus(BAD_REQUEST)
         )
         assertThat(
             app.routes(goodPost.formWithout("new-itemName")),
-            hasStatus(Status.BAD_REQUEST)
+            hasStatus(BAD_REQUEST)
         )
         assertThat(
             app.routes(goodPost.replacingForm("new-itemName", "")),
-            hasStatus(Status.BAD_REQUEST)
+            hasStatus(BAD_REQUEST)
         )
         assertThat(
             app.routes(goodPost.replacingForm("new-itemSellBy", "2023-00-99")),
-            hasStatus(Status.BAD_REQUEST)
+            hasStatus(BAD_REQUEST)
         )
         assertThat(
             app.routes(goodPost.formWithout("new-itemQuality")),
-            hasStatus(Status.BAD_REQUEST)
+            hasStatus(BAD_REQUEST)
         )
         assertThat(
             app.routes(goodPost.replacingForm("new-itemQuality", "")),
-            hasStatus(Status.BAD_REQUEST)
+            hasStatus(BAD_REQUEST)
         )
         assertThat(
             app.routes(goodPost.replacingForm("new-itemQuality", "-1")),
-            hasStatus(Status.BAD_REQUEST)
+            hasStatus(BAD_REQUEST)
         )
         assertThat(
             app.routes(goodPost.replacingForm("new-itemQuality", "1.0")),
-            hasStatus(Status.BAD_REQUEST)
+            hasStatus(BAD_REQUEST)
         )
     }
 
@@ -89,7 +91,7 @@ class AddItemHttpTests : AddItemAcceptanceContract(
             .form("new-itemQuality", "1.0")
         assertThat(
             app.addHandler(postWithTwoMissingFields),
-            hasStatus(Status.BAD_REQUEST) and
+            hasStatus(BAD_REQUEST) and
                 hasAttachedError(
                     NewItemFailedEvent("[formData 'new-itemId' is required, formData 'new-itemQuality' must be integer]")
                 )
@@ -103,7 +105,7 @@ private fun addItemWithHttp(app: App, newItem: Item) {
     )
     assertThat(
         response,
-        hasStatus(Status.OK) and hasJustATableElementBody()
+        hasStatus(OK) and hasJustATableElementBody()
     )
 }
 
@@ -118,7 +120,7 @@ private fun addItemWithHttpNoHtmx(app: App, newItem: Item) {
     )
     assertThat(
         response,
-        hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
+        hasStatus(SEE_OTHER) and hasHeader("Location", "/")
     )
 }
 
@@ -143,11 +145,11 @@ private fun Request.withFormFor(newItem: Item): Request {
 }
 
 private fun postFormToAddItemsRoute(withHTMX: Boolean = true): Request {
-    val base = Request(Method.POST, "/add-item").header("Content-Type", "application/x-www-form-urlencoded")
+    val base = Request(POST, "/add-item").header("Content-Type", "application/x-www-form-urlencoded")
     if (withHTMX)
         return base.header("HX-Request", "true")
     else
         return base
 }
 
-fun hasJustATableElementBody() = hasBody(Regex("""\A\s*<table>.*</table>\s*\z""", RegexOption.DOT_MATCHES_ALL))
+fun hasJustATableElementBody() = hasBody(Regex("""\A\s*<table>.*</table>\s*\z""", DOT_MATCHES_ALL))
