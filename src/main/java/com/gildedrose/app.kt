@@ -81,9 +81,9 @@ private fun itemsFor(
     stockFile: File,
     dbConfig: DbConfig,
     analytics: Analytics
-): Items<TXContext> {
+): Items<TXContext> = run {
     println(features)
-    return when {
+    when {
         features.stopUsingFile -> DbItems(dslContextFor(dbConfig))
         else -> DualItems(StockFileItems(stockFile), DbItems(dslContextFor(dbConfig)), analytics)
     }
