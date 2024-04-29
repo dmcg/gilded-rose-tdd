@@ -6,6 +6,7 @@ import com.gildedrose.config.dslContextFor
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.loggingAnalytics
+import com.gildedrose.foundation.printed
 import com.gildedrose.persistence.*
 import com.gildedrose.pricing.PricedStockListLoader
 import com.gildedrose.pricing.valueElfClient
@@ -35,12 +36,9 @@ data class App(
         clock: () -> Instant = Instant::now,
         analytics: Analytics = stdOutAnalytics
     ) : this(
-        Unit.run {
-            println(features)
-            when {
-                features.stopUsingFile -> DbItems(dslContextFor(dbConfig))
-                else -> DualItems(StockFileItems(stockFile), DbItems(dslContextFor(dbConfig)), analytics)
-            }
+        when {
+            features.printed().stopUsingFile -> DbItems(dslContextFor(dbConfig))
+            else -> DualItems(StockFileItems(stockFile), DbItems(dslContextFor(dbConfig)), analytics)
         },
         features,
         clock,
