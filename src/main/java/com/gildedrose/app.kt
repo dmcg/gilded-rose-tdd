@@ -35,7 +35,7 @@ data class App(
         clock: () -> Instant = Instant::now,
         analytics: Analytics = stdOutAnalytics
     ) : this(
-        run<Items<DbTxContext>> {
+        Unit.run {
             println(features)
             when {
                 features.stopUsingFile -> DbItems(dslContextFor(dbConfig))
