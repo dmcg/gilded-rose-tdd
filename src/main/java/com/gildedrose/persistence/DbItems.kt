@@ -58,13 +58,15 @@ fun DSLContext.save(stockList: StockList) {
         else -> stockList.items
     }
     toSave.forEach { item ->
-        insertInto(ITEMS)
-            .set(ITEMS.ID, item.id.toString())
-            .set(ITEMS.MODIFIED, stockList.lastModified)
-            .set(ITEMS.NAME, item.name)
-            .set(ITEMS.QUALITY, item.quality.valueInt)
-            .set(ITEMS.SELLBYDATE, item.sellByDate)
-            .execute()
+        with(ITEMS) {
+            insertInto(this)
+                .set(ID, item.id.toString())
+                .set(MODIFIED, stockList.lastModified)
+                .set(NAME, item.name)
+                .set(QUALITY, item.quality.valueInt)
+                .set(SELLBYDATE, item.sellByDate)
+                .execute()
+        }
     }
 }
 
