@@ -1,5 +1,6 @@
 package com.gildedrose.config
 
+import com.gildedrose.foundation.printed
 import com.zaxxer.hikari.HikariDataSource
 import org.http4k.cloudnative.env.Environment
 import org.http4k.cloudnative.env.EnvironmentKey
@@ -15,7 +16,7 @@ data class DbConfig(
     val password: String
 ) {
     constructor(environment: Environment) : this(
-        jdbcUrl = EnvironmentKey.map(URI::create).required("jdbc.url")(environment).also(::println),
+        jdbcUrl = EnvironmentKey.map(URI::create).required("jdbc.url")(environment).printed(),
         username = EnvironmentKey.nonEmptyString().required("db.username")(environment),
         password = EnvironmentKey.nonEmptyString().required("db.password")(environment),
     )
