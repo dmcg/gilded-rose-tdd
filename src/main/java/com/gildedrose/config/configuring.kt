@@ -21,11 +21,9 @@ data class DbConfig(
     )
 }
 
-private fun uri(environment: Environment): URI {
-    val uri = EnvironmentKey.map(URI::create).required("jdbc.url")(environment)
-    println(uri)
-    return uri
-}
+private fun uri(environment: Environment): URI =
+    EnvironmentKey.map(URI::create).required("jdbc.url")(environment)
+        .also(::println)
 
 fun dslContextFor(dbConfig: DbConfig): DSLContext {
     val dataSource = hikariDataSourceFor(dbConfig)
