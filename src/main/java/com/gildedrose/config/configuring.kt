@@ -27,10 +27,9 @@ fun dslContextFor(dbConfig: DbConfig): DSLContext {
     return DSL.using(dataSource, SQLDialect.POSTGRES)
 }
 
-fun hikariDataSourceFor(dbConfig: DbConfig): HikariDataSource {
-    val result = HikariDataSource()
-    result.jdbcUrl = dbConfig.jdbcUrl.toString()
-    result.username = dbConfig.username
-    result.password = dbConfig.password
-    return result
-}
+fun hikariDataSourceFor(dbConfig: DbConfig) =
+    HikariDataSource().apply {
+        jdbcUrl = dbConfig.jdbcUrl.toString()
+        username = dbConfig.username
+        password = dbConfig.password
+    }
