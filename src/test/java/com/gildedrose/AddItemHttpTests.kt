@@ -144,12 +144,9 @@ private fun Request.withFormFor(newItem: Item): Request {
         .form("new-itemQuality", newItem.quality.toString())
 }
 
-private fun postFormToAddItemsRoute(withHTMX: Boolean = true): Request {
-    val base = Request(POST, "/add-item").header("Content-Type", "application/x-www-form-urlencoded")
-    if (withHTMX)
-        return base.header("HX-Request", "true")
-    else
-        return base
-}
+private fun postFormToAddItemsRoute(withHTMX: Boolean = true) =
+    Request(POST, "/add-item")
+        .header("Content-Type", "application/x-www-form-urlencoded")
+        .run { if (withHTMX) header("HX-Request", "true") else this }
 
 fun hasJustATableElementBody() = hasBody(Regex("""\A\s*<table>.*</table>\s*\z""", DOT_MATCHES_ALL))
