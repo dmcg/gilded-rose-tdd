@@ -35,7 +35,13 @@ data class App(
         clock: () -> Instant = Instant::now,
         analytics: Analytics = stdOutAnalytics
     ) : this(
-        itemsFor(features, stockFile, dbConfig, analytics),
+        run<Items<DbTxContext>> {
+            println(features)
+            when {
+                features.stopUsingFile -> DbItems(dslContextFor(dbConfig))
+                else -> DualItems(StockFileItems(stockFile), DbItems(dslContextFor(dbConfig)), analytics)
+            }
+        },
         features,
         clock,
         analytics,
@@ -73,19 +79,6 @@ data class App(
                 items.save(StockList(now, newItems))
             }
         }
-    }
-}
-
-private fun itemsFor(
-    features: Features,
-    stockFile: File,
-    dbConfig: DbConfig,
-    analytics: Analytics
-): Items<TXContext> = run {
-    println(features)
-    when {
-        features.stopUsingFile -> DbItems(dslContextFor(dbConfig))
-        else -> DualItems(StockFileItems(stockFile), DbItems(dslContextFor(dbConfig)), analytics)
     }
 }
 
