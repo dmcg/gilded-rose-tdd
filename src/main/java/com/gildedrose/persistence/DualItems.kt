@@ -20,32 +20,32 @@ class DualItems(
 
     context(DbTxContext)
     override fun save(stockList: StockList): Result<StockList, IOError> {
-        val truth = sourceOfTruth.inTransaction {
+        val result = sourceOfTruth.inTransaction {
             sourceOfTruth.save(stockList)
         }
         try {
             val otherResult = otherItems.save(stockList)
-            if (truth != otherResult)
-                analytics(stocklistSavingMismatch(truth, otherResult))
+            if (result != otherResult)
+                analytics(stocklistSavingMismatch(result, otherResult))
         } catch (throwable: Throwable) {
             analytics(StockListSavingExceptionCaught(throwable))
         }
-        return truth
+        return result
     }
 
     context(DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> {
-        val truth = sourceOfTruth.inTransaction {
+        val result = sourceOfTruth.inTransaction {
             sourceOfTruth.load()
         }
         try {
             val otherResult = otherItems.load()
-            if (truth != otherResult)
-                analytics(stocklistLoadingMismatch(truth, otherResult))
+            if (result != otherResult)
+                analytics(stocklistLoadingMismatch(result, otherResult))
         } catch (throwable: Throwable) {
             analytics(StockListLoadingExceptionCaught(throwable))
         }
-        return truth
+        return result
     }
 }
 
