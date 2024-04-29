@@ -11,7 +11,10 @@ value class Quality(
 
         operator fun invoke(value: Int): Quality? {
             val wrapped = NonNegativeInt(value)
-            return if (wrapped != null) Quality(wrapped) else null
+                .let { wrapped ->
+                    if (wrapped != null) Quality(wrapped) else null
+                }
+            return wrapped
         }
     }
 
