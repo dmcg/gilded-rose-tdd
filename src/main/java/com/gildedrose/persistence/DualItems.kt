@@ -33,19 +33,18 @@ class DualItems(
         }
 
     context(DbTxContext)
-    override fun load(): Result<StockList, StockListLoadingError> {
-        val result = sourceOfTruth.inTransaction {
+    override fun load(): Result<StockList, StockListLoadingError> =
+        sourceOfTruth.inTransaction {
             sourceOfTruth.load()
+        }.also { result ->
+            try {
+                val otherResult = otherItems.load()
+                if (result != otherResult)
+                    analytics(stocklistLoadingMismatch(result, otherResult))
+            } catch (throwable: Throwable) {
+                analytics(StockListLoadingExceptionCaught(throwable))
+            }
         }
-        try {
-            val otherResult = otherItems.load()
-            if (result != otherResult)
-                analytics(stocklistLoadingMismatch(result, otherResult))
-        } catch (throwable: Throwable) {
-            analytics(StockListLoadingExceptionCaught(throwable))
-        }
-        return result
-    }
 }
 
 private fun Result<StockList, StockListLoadingError>.toRenderable():
