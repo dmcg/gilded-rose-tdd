@@ -8,19 +8,19 @@ data class Item(
     val name: String,
     val sellByDate: LocalDate?,
     val quality: Quality,
-) {
-    constructor(
-        id: ID<Item>,
-        name: NonBlankString,
-        sellByDate: LocalDate?,
-        quality: Quality,
-    ): this(
-        id,
-        name.value,
-        sellByDate,
-        quality
-    )
-}
+)
+
+fun Item(
+    id: ID<Item>,
+    name: NonBlankString,
+    sellByDate: LocalDate?,
+    quality: Quality,
+) = Item(
+    id,
+    name.value,
+    sellByDate,
+    quality
+)
 
 data class PricedItem(
     val id: ID<Item>,
