@@ -25,10 +25,10 @@ fun dslContextFor(dbConfig: DbConfig) =
     dbConfig.hikariDataSourceFor().also { it.validate() }.toDslContext()
 
 fun DbConfig.hikariDataSourceFor() =
-    HikariDataSource().apply {
-        jdbcUrl = this@hikariDataSourceFor.jdbcUrl.toString()
-        username = this@hikariDataSourceFor.username
-        password = this@hikariDataSourceFor.password
+    HikariDataSource().also {
+        it.jdbcUrl = jdbcUrl.toString()
+        it.username = username
+        it.password = password
     }
 
 private fun HikariDataSource.toDslContext() =
