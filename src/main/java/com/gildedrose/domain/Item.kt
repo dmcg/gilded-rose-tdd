@@ -8,8 +8,19 @@ data class Item(
     val name: String,
     val sellByDate: LocalDate?,
     val quality: Quality,
-    val name2: NonBlankString = NonBlankString(name)!!,
-)
+) {
+    constructor(
+        id: ID<Item>,
+        name: NonBlankString,
+        sellByDate: LocalDate?,
+        quality: Quality,
+    ): this(
+        id,
+        name.value,
+        sellByDate,
+        quality
+    )
+}
 
 data class PricedItem(
     val id: ID<Item>,
