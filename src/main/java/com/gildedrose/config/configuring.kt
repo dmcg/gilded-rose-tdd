@@ -22,11 +22,7 @@ data class DbConfig(
 }
 
 fun dslContextFor(dbConfig: DbConfig) =
-    hikariDataSourceFor(dbConfig).also { it.validate() }
-        .let { it.toDslContext() }
-
-private fun HikariDataSource.toDslContext() =
-    DSL.using(this, SQLDialect.POSTGRES)
+    hikariDataSourceFor(dbConfig).also { it.validate() }.toDslContext()
 
 fun hikariDataSourceFor(dbConfig: DbConfig) =
     HikariDataSource().apply {
@@ -34,3 +30,6 @@ fun hikariDataSourceFor(dbConfig: DbConfig) =
         username = dbConfig.username
         password = dbConfig.password
     }
+
+private fun HikariDataSource.toDslContext() =
+    DSL.using(this, SQLDialect.POSTGRES)
