@@ -5,9 +5,10 @@ import java.time.LocalDate
 
 data class Item(
     val id: ID<Item>,
-    val name: NonBlankString,
+    val name: String,
     val sellByDate: LocalDate?,
     val quality: Quality,
+    val name2: NonBlankString = NonBlankString(name)!!,
 )
 
 data class PricedItem(
@@ -18,6 +19,6 @@ data class PricedItem(
     val price: Result4k<Price?, Exception>,
 ) {
     constructor(item: Item, price: Result4k<Price?, Exception>) :
-        this(item.id, item.name.value, item.sellByDate, item.quality, price)
+        this(item.id, item.name, item.sellByDate, item.quality, price)
 }
 
