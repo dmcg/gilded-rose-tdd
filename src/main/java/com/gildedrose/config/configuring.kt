@@ -22,13 +22,14 @@ data class DbConfig(
 }
 
 fun DbConfig.toDslContext() =
-    hikariDataSourceFor().also { it.validate() }.toDslContext()
+    toHikariDataSource().toDslContext()
 
-fun DbConfig.hikariDataSourceFor() =
+fun DbConfig.toHikariDataSource() =
     HikariDataSource().also {
         it.jdbcUrl = jdbcUrl.toString()
         it.username = username
         it.password = password
+        it.validate()
     }
 
 private fun HikariDataSource.toDslContext() =
