@@ -7,7 +7,7 @@ value class Quality(val value: NonNegativeInt) {
     companion object {
         val ZERO: Quality = Quality(0)!!
 
-        operator fun invoke(value: Int) =
+        operator fun invoke(value: Int): Quality? =
             NonNegativeInt(value)?.let(::Quality)
     }
 
@@ -15,8 +15,8 @@ value class Quality(val value: NonNegativeInt) {
         plus(-value)
 
     operator fun plus(value: Int): Quality {
-        val qualityCap = this.value.value.coerceAtLeast(50)
-        return Quality((this.value + value).coerceIn(0, qualityCap))
+        val qualityCap = valueInt.coerceAtLeast(50)
+        return Quality((valueInt + value).coerceIn(0, qualityCap))
             ?: error("tried to create a negative int")
     }
 
