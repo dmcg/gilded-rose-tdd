@@ -1,9 +1,7 @@
 package com.gildedrose.domain
 
 @JvmInline
-value class Quality(
-    val value: NonNegativeInt
-) {
+value class Quality(val value: NonNegativeInt) {
     val valueInt get() = value.value
 
     companion object {

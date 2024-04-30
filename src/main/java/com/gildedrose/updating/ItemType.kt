@@ -24,7 +24,7 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType {
 fun conjured(baseType: ItemType) = typeFor("CONJURED $baseType") { item, on ->
     val updated = baseType.update(item, on)
     val change = item.quality.value - updated.quality.value
-    item.copy(quality = subtract(item.quality, 2 * change))
+    item.copy(quality = item.quality - 2 * change)
 }
 
 val StandardType = typeFor("STANDARD") { item, on ->
@@ -33,7 +33,7 @@ val StandardType = typeFor("STANDARD") { item, on ->
         on.isAfter(item.sellByDate) -> 2
         else -> 1
     }
-    item.copy(quality = subtract(item.quality, degradation))
+    item.copy(quality = item.quality - degradation)
 }
 
 val UndatedType = typeFor("UNDATED") { item, _ -> item }
@@ -44,7 +44,7 @@ val BrieType = typeFor("BRIE") { item, on ->
         on.isAfter(item.sellByDate) -> 2
         else -> 1
     }
-    item.copy(quality = add(item.quality, improvement))
+    item.copy(quality = item.quality + improvement)
 }
 
 val PassType = typeFor("PASS") { item, on ->
@@ -58,7 +58,7 @@ val PassType = typeFor("PASS") { item, on ->
             daysUntilSellBy < 10 -> 2
             else -> 1
         }
-        item.copy(quality = add(item.quality, improvement))
+        item.copy(quality = item.quality + improvement)
     }
 }
 
@@ -71,11 +71,11 @@ private fun typeFor(name: String, updater: ItemType) =
         }
     }
 
-fun subtract(quality1: Quality, value: Int): Quality =
-    add(quality1, -value)
+operator fun Quality.minus(value: Int): Quality =
+    plus(-value)
 
-fun add(quality: Quality, value: Int): Quality {
-    val qualityCap = quality.value.value.coerceAtLeast(50)
-    return Quality((quality.value + value).coerceIn(0, qualityCap))
+operator fun Quality.plus(value: Int): Quality {
+    val qualityCap = this.value.value.coerceAtLeast(50)
+    return Quality((this.value + value).coerceIn(0, qualityCap))
         ?: error("tried to create a negative int")
 }

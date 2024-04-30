@@ -27,7 +27,7 @@ class StockTests {
     private val stock = Stock(
         items,
         zoneId = ZoneId.of("Europe/London"),
-        itemUpdate = { days, _ -> this.copy(quality = subtract(this.quality, days)) }
+        itemUpdate = { days, _ -> this.copy(quality = quality.minus(days)) }
     )
 
     @Test

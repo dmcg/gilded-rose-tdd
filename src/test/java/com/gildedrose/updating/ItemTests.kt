@@ -12,7 +12,7 @@ class ItemTests {
         val testItem = item("banana", null, 50)
         assertEquals(
             item("banana", null, 50),
-            testItem.copy(quality = add(testItem.quality, 1))
+            testItem.copy(quality = testItem.quality.plus(1))
         )
     }
 
@@ -20,7 +20,7 @@ class ItemTests {
         val testItem = item("banana", null, 2)
         assertEquals(
             item("banana", null, 0),
-            testItem.copy(quality = subtract(testItem.quality, 3))
+            testItem.copy(quality = testItem.quality.minus(3))
         )
     }
 
@@ -28,12 +28,12 @@ class ItemTests {
         val testItem = item("banana", null, 55)
         assertEquals(
             item("banana", null, 54),
-            testItem.copy(quality = subtract(testItem.quality, 1))
+            testItem.copy(quality = testItem.quality.minus(1))
         )
         val testItem1 = item("banana", null, 55)
         assertEquals(
             item("banana", null, 55),
-            testItem1.copy(quality = subtract(testItem1.quality, -1))
+            testItem1.copy(quality = testItem1.quality.minus(-1))
         )
     }
 
