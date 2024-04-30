@@ -2,6 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.config.DbConfig
 import com.gildedrose.config.Features
+import com.gildedrose.config.toDslContext
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.loggingAnalytics

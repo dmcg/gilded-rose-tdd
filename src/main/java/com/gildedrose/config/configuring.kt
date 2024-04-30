@@ -19,15 +19,15 @@ data class DbConfig(
         username = EnvironmentKey.nonEmptyString().required("db.username")(environment),
         password = EnvironmentKey.nonEmptyString().required("db.password")(environment),
     )
-
-    fun toDslContext() =
-        HikariDataSource().also {
-            it.jdbcUrl = jdbcUrl.toString()
-            it.username = username
-            it.password = password
-            it.validate()
-        }.toDslContext()
 }
+
+fun DbConfig.toDslContext() =
+    HikariDataSource().also {
+        it.jdbcUrl = jdbcUrl.toString()
+        it.username = username
+        it.password = password
+        it.validate()
+    }.toDslContext()
 
 private fun HikariDataSource.toDslContext() =
     DSL.using(this, SQLDialect.POSTGRES)
