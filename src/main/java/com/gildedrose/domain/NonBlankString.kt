@@ -1,7 +1,12 @@
 package com.gildedrose.domain
 
 @JvmInline
-value class NonBlankString(val value: String) : CharSequence by value {
+value class NonBlankString private constructor(val value: String) : CharSequence by value {
+    companion object {
+        operator fun invoke(value: String): NonBlankString? =
+            if (value.isNotBlank()) NonBlankString(value)
+            else null
+    }
 
     init {
         require(value.isNotBlank())
@@ -9,7 +14,3 @@ value class NonBlankString(val value: String) : CharSequence by value {
 
     override fun toString() = value
 }
-
-fun NonBlankString(value: String): NonBlankString? =
-    if (value.isNotBlank()) NonBlankString(value)
-    else null
