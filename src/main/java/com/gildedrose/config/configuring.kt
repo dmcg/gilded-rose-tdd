@@ -22,15 +22,12 @@ data class DbConfig(
 }
 
 fun DbConfig.toDslContext() =
-    toHikariDataSource().toDslContext()
-
-fun DbConfig.toHikariDataSource() =
     HikariDataSource().also {
         it.jdbcUrl = jdbcUrl.toString()
         it.username = username
         it.password = password
         it.validate()
-    }
+    }.toDslContext()
 
 private fun HikariDataSource.toDslContext() =
     DSL.using(this, SQLDialect.POSTGRES)
