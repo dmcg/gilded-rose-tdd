@@ -5,19 +5,19 @@ import java.time.LocalDate
 
 data class Item(
     val id: ID<Item>,
-    val name: String,
+    val name: NonBlankString,
     val sellByDate: LocalDate?,
     val quality: Quality,
 )
 
 fun Item(
     id: ID<Item>,
-    name: NonBlankString,
+    name: String,
     sellByDate: LocalDate?,
     quality: Quality,
 ) = Item(
     id,
-    name.value,
+    NonBlankString(name)!!,
     sellByDate,
     quality
 )
