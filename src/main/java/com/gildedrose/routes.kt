@@ -33,7 +33,7 @@ val App.routes: HttpHandler
 
 internal fun App.addHandler(request: Request): Response {
     val idLens = FormField.nonBlankString().map { ID<Item>(it) }.required("new-itemId")
-    val nameLens = FormField.string().required("new-itemName")
+    val nameLens = FormField.nonBlankString().required("new-itemName")
     val sellByLens = FormField.localDate().optional("new-itemSellBy")
     val qualityLens = FormField.nonNegativeInt().map { Quality(it) }.required("new-itemQuality")
     val formBody = Body.webForm(Validator.Feedback, idLens, nameLens, sellByLens, qualityLens).toLens()

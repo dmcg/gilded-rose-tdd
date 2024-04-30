@@ -3,21 +3,21 @@ package com.gildedrose.domain
 import dev.forkhandles.result4k.Result4k
 import java.time.LocalDate
 
-data class Item(
+data class Item @Deprecated("ooo🙈") constructor(
     val id: ID<Item>,
-    val name: NonBlankString,
+    val name: String,
     val sellByDate: LocalDate?,
     val quality: Quality,
 )
 
 fun Item(
     id: ID<Item>,
-    name: String,
+    name: NonBlankString,
     sellByDate: LocalDate?,
     quality: Quality,
 ) = Item(
     id,
-    NonBlankString(name)!!,
+    name.value,
     sellByDate,
     quality
 )
