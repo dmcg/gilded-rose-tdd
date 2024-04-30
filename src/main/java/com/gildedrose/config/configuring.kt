@@ -21,8 +21,8 @@ data class DbConfig(
     )
 }
 
-fun dslContextFor(dbConfig: DbConfig) =
-    dbConfig.hikariDataSourceFor().also { it.validate() }.toDslContext()
+fun DbConfig.toDslContext() =
+    hikariDataSourceFor().also { it.validate() }.toDslContext()
 
 fun DbConfig.hikariDataSourceFor() =
     HikariDataSource().also {
