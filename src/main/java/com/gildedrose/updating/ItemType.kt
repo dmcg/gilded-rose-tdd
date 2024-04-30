@@ -2,6 +2,8 @@ package com.gildedrose.updating
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
+import com.gildedrose.domain.minus
+import com.gildedrose.domain.plus
 import java.time.LocalDate
 
 fun interface ItemType {
@@ -70,12 +72,3 @@ private fun typeFor(name: String, updater: ItemType) =
             return this.toString() == other.toString()
         }
     }
-
-operator fun Quality.minus(value: Int): Quality =
-    plus(-value)
-
-operator fun Quality.plus(value: Int): Quality {
-    val qualityCap = this.value.value.coerceAtLeast(50)
-    return Quality((this.value + value).coerceIn(0, qualityCap))
-        ?: error("tried to create a negative int")
-}
