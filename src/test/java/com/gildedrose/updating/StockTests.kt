@@ -1,7 +1,6 @@
 package com.gildedrose.updating
 
 import com.gildedrose.domain.StockList
-import com.gildedrose.domain.minus
 import com.gildedrose.item
 import com.gildedrose.oct29
 import com.gildedrose.persistence.InMemoryItems
