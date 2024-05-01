@@ -18,7 +18,7 @@ import java.time.Instant
 import java.time.ZoneId
 
 val stdOutAnalytics = loggingAnalytics(::println)
-val londonZoneId = ZoneId.of("Europe/London")
+val londonZoneId: ZoneId = ZoneId.of("Europe/London")
 
 data class App(
     val items: Items<TXContext>,
