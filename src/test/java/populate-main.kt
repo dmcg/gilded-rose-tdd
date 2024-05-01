@@ -2,6 +2,7 @@ import com.gildedrose.App
 import com.gildedrose.config.Features
 import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
+import com.gildedrose.domain.NonBlankString
 import com.gildedrose.domain.Quality
 import dev.forkhandles.result4k.map
 import java.io.File
@@ -24,7 +25,7 @@ fun main() {
             addItem(
                 Item(
                     ID(id)!!,
-                    name,
+                    NonBlankString(name)!!,
                     now.plusDays(sellByDaysFor(random, id)),
                     qualityFor(random, id)
                 )

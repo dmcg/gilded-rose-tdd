@@ -1,9 +1,6 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.domain.ID
-import com.gildedrose.domain.Item
-import com.gildedrose.domain.Quality
-import com.gildedrose.domain.StockList
+import com.gildedrose.domain.*
 import com.gildedrose.persistence.StockListLoadingError.*
 import dev.forkhandles.result4k.*
 import java.io.File
@@ -71,7 +68,7 @@ private fun String.toItem(): Result4k<Item, StockListLoadingError> {
 
 private fun String.itemWithIdFrom(parts: List<String>): Result<Item, StockListLoadingError> {
     val id = ID<Item>(parts[0]) ?: return Failure(BlankID(this))
-    val name = parts[1]
+    val name = NonBlankString(parts[1]) ?: return Failure(BlankName(this))
     val sellByDate = parts[2].toLocalDate(this).onFailure { return it }
     val quality = parts[3].toIntOrNull()?.let { Quality(it) } ?: return Failure(CouldntParseQuality(this))
     return Success(Item(id, name, sellByDate, quality))

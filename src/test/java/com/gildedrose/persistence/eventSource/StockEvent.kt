@@ -39,4 +39,4 @@ fun Iterable<StockEvent>.toItems(now: ZonedDateTime): List<Item> {
     return result
 }
 
-private fun StockAdded.toItem() = Item(id, name, sellByDate, quality)
+private fun StockAdded.toItem() = Item(id, NonBlankString(name)!!, sellByDate, quality)

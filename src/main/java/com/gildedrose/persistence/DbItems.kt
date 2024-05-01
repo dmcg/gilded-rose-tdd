@@ -1,10 +1,7 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.db.tables.Items.ITEMS
-import com.gildedrose.domain.ID
-import com.gildedrose.domain.Item
-import com.gildedrose.domain.Quality
-import com.gildedrose.domain.StockList
+import com.gildedrose.domain.*
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jooq.Configuration
@@ -47,7 +44,7 @@ open class DbItems(
 
 private val sentinelItem = Item(
     id = ID("NO-ITEMS-SAVED")!!,
-    name = "THIS IS NOT AN ITEM",
+    name = NonBlankString("THIS IS NOT AN ITEM")!!,
     sellByDate = null,
     quality = Quality(Int.MAX_VALUE)!!
 )
@@ -62,7 +59,7 @@ fun DSLContext.save(stockList: StockList) {
             insertInto(ITEMS)
                 .set(ID, item.id.toString())
                 .set(MODIFIED, stockList.lastModified)
-                .set(NAME, item.name)
+                .set(NAME, item.name.value)
                 .set(QUALITY, item.quality.valueInt)
                 .set(SELLBYDATE, item.sellByDate)
                 .execute()
@@ -91,7 +88,7 @@ fun DSLContext.load(): StockList = with(ITEMS) {
 private fun Record5<String, Instant, String, Int, LocalDate>.toItem() =
     Item(
         id = ID(this[ITEMS.ID]) ?: error("Invalid ID"),
-        name = this[ITEMS.NAME],
+        name = NonBlankString(this[ITEMS.NAME]) ?: error("Invalid NAME"),
         sellByDate = this[ITEMS.SELLBYDATE],
         quality = Quality(this[ITEMS.QUALITY]) ?: error("Invalid quality")
     )

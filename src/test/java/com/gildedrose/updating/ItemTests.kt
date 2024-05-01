@@ -1,5 +1,6 @@
 package com.gildedrose.updating
 
+import com.gildedrose.domain.NonBlankString
 import com.gildedrose.item
 import com.gildedrose.oct29
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -40,7 +41,7 @@ class ItemTests {
     @Test fun `item types for equality`() {
         assertNotEquals(
             item("Conjured banana", oct29, 50),
-            item("Conjured Aged Brie", oct29, 50).copy(name = "Conjured banana")
+            item("Conjured Aged Brie", oct29, 50).copy(name = NonBlankString("Conjured banana")!!)
         )
     }
 }
