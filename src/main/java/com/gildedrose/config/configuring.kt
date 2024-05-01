@@ -14,13 +14,13 @@ data class DbConfig(
     val jdbcUrl: URI,
     val username: String,
     val password: String
-) {
-    constructor(environment: Environment) : this(
-        jdbcUrl = EnvironmentKey.map(URI::create).required("jdbc.url")(environment),
-        username = EnvironmentKey.nonEmptyString().required("db.username")(environment),
-        password = EnvironmentKey.nonEmptyString().required("db.password")(environment),
-    )
-}
+)
+
+fun DbConfig(environment: Environment) = DbConfig(
+    jdbcUrl = EnvironmentKey.map(URI::create).required("jdbc.url")(environment),
+    username = EnvironmentKey.nonEmptyString().required("db.username")(environment),
+    password = EnvironmentKey.nonEmptyString().required("db.password")(environment),
+)
 
 fun DbConfig.toDslContext(): DSLContext =
     HikariDataSource()
