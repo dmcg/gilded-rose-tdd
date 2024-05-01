@@ -1,6 +1,9 @@
 package com.gildedrose
 
-import com.gildedrose.domain.*
+import com.gildedrose.domain.Item
+import com.gildedrose.domain.Price
+import com.gildedrose.domain.PricedItem
+import com.gildedrose.domain.Quality
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import java.time.LocalDate
@@ -18,7 +21,7 @@ fun item(
     sellByDate: LocalDate?,
     quality: Int,
 ): Item = Item(
-    ID(id)!!,
+    id,
     name,
     sellByDate,
     Quality(quality)!!

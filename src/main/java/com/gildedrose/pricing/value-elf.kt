@@ -1,7 +1,7 @@
 package com.gildedrose.pricing
 
-import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
+import com.gildedrose.domain.ItemID
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.Quality
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
@@ -44,7 +44,7 @@ fun valueElfClient(
     }
 }
 
-fun fakeValueElfRoutes(pricing: (ID<Item>, Quality) -> Price?) =
+fun fakeValueElfRoutes(pricing: (ItemID, Quality) -> Price?) =
     routes(
         "/prices" bind Method.GET to { request ->
             try {
@@ -60,10 +60,7 @@ fun fakeValueElfRoutes(pricing: (ID<Item>, Quality) -> Price?) =
         }
     )
 
-val idLens: BiDiLens<Request, ID<Item>> = Query.nonEmptyString().map(
-    nextIn = { string -> ID<Item>(string) ?: error("Unexpected failure to create id from $string") },
-    nextOut = { id -> id.toString() }
-).required("id")
+val idLens: BiDiLens<Request, ItemID> = Query.nonEmptyString().required("id")
 
 val qualityLens: BiDiLens<Request, Quality> = Query.int().map(
     nextIn = { int -> Quality(int) ?: error("Failure to create id from $int") },

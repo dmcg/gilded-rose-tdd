@@ -1,6 +1,6 @@
+
 import com.gildedrose.App
 import com.gildedrose.config.Features
-import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
 import dev.forkhandles.result4k.map
@@ -23,7 +23,7 @@ fun main() {
         itemData.forEach { (id, name) ->
             addItem(
                 Item(
-                    ID(id)!!,
+                    id,
                     name,
                     now.plusDays(sellByDaysFor(random, id)),
                     qualityFor(random, id)
@@ -38,7 +38,7 @@ private fun qualityFor(random: Random, id: String) = when {
     else -> Quality(random.nextInt(50))
 }!!
 
-private fun sellByDaysFor(random: Random, id: String) = random.nextLong(101)
+private fun sellByDaysFor(random: Random, @Suppress("UNUSED_PARAMETER") id: String) = random.nextLong(101)
 
 private val itemData = listOf(
     "AB1" to "Aged Brie",

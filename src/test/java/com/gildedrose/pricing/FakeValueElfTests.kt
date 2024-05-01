@@ -1,7 +1,6 @@
 package com.gildedrose.pricing
 
-import com.gildedrose.domain.ID
-import com.gildedrose.domain.Item
+import com.gildedrose.domain.ItemID
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.Quality
 import org.http4k.core.Response
@@ -14,7 +13,7 @@ private val baseFixture = ValueElfContract.Fixture(
     expectedPrice = Price(609)!!
 )
 
-private val priceLookup: Map<Pair<ID<Item>, Quality>, Price?> =
+private val priceLookup: Map<Pair<ItemID, Quality>, Price?> =
     with(baseFixture) {
         mapOf(
             (aFoundItem.id to aFoundItem.quality) to expectedPrice,

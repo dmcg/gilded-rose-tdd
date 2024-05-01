@@ -1,6 +1,8 @@
 package com.gildedrose
 
-import com.gildedrose.domain.*
+import com.gildedrose.domain.Item
+import com.gildedrose.domain.NonNegativeInt
+import com.gildedrose.domain.Quality
 import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.http.ResponseErrors
 import com.gildedrose.http.ResponseErrors.withError
@@ -32,7 +34,7 @@ val App.routes: HttpHandler
         )
 
 internal fun App.addHandler(request: Request): Response {
-    val idLens = FormField.nonBlankString().map { ID<Item>(it) }.required("new-itemId")
+    val idLens = FormField.nonBlankString().required("new-itemId")
     val nameLens = FormField.string().required("new-itemName")
     val sellByLens = FormField.localDate().optional("new-itemSellBy")
     val qualityLens = FormField.nonNegativeInt().map { Quality(it) }.required("new-itemQuality")
@@ -59,10 +61,10 @@ fun FormField.nonNegativeInt() =
         ), IntegerParam
     )
 
-fun FormField.nonBlankString(): BiDiLensSpec<WebForm, NonBlankString> =
-    map(BiDiMapping<String, NonBlankString>({ s: String ->
-        NonBlankString(s) ?: throw IllegalArgumentException("String cannot be blank")
-    }, { it.toString() }))
+//fun FormField.nonBlankString(): BiDiLensSpec<WebForm, NonBlankString> =
+//    map(BiDiMapping<String, NonBlankString>({ s: String ->
+//        NonBlankString(s) ?: throw IllegalArgumentException("String cannot be blank")
+//    }, { it.toString() }))
 
 private fun App.listHandler(
     request: Request
@@ -75,7 +77,7 @@ private fun App.listHandler(
 private fun App.deleteHandler(
     request: Request
 ): Response {
-    val itemIds = request.form().map { it.first }.mapNotNull<String, ID<Item>> { ID(it) }.toSet()
+    val itemIds = request.form().map { it.first }.toSet()
     this.deleteItemsWithIds(itemIds)
     return when {
         request.isHtmx -> this.listHandler(request)

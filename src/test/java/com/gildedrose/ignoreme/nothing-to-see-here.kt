@@ -1,8 +1,7 @@
 @file:JvmName("🙈")
 package com.gildedrose.ignoreme
 
-import com.gildedrose.domain.ID
-import com.gildedrose.domain.Item
+import com.gildedrose.domain.ItemID
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.Quality
 import com.gildedrose.http.serverFor
@@ -23,11 +22,11 @@ fun main() {
     serverFor(8080, routes).start()
 }
 
-private fun pricingWithMultiplier(multiplier: Int): (ID<Item>, Quality) -> Price? = { id, quality ->
+private fun pricingWithMultiplier(multiplier: Int): (ItemID, Quality) -> Price? = { id, quality ->
     Thread.sleep(100)
     when {
-        id.value.value == "banana" -> Price(709)!!
-        id.toString() == "no-such" -> null
-        else -> Price((id.value.length + 1 + quality.valueInt) * multiplier.toLong())!!
+        id == "banana" -> Price(709)!!
+        id == "no-such" -> null
+        else -> Price((id.length + 1 + quality.valueInt) * multiplier.toLong())!!
     }
 }

@@ -1,6 +1,5 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
 import com.gildedrose.domain.StockList
@@ -70,7 +69,7 @@ private fun String.toItem(): Result4k<Item, StockListLoadingError> {
 }
 
 private fun String.itemWithIdFrom(parts: List<String>): Result<Item, StockListLoadingError> {
-    val id = ID<Item>(parts[0]) ?: return Failure(BlankID(this))
+    val id = parts[0].ifBlank { return Failure(BlankID(this)) }
     val name = parts[1]
     val sellByDate = parts[2].toLocalDate(this).onFailure { return it }
     val quality = parts[3].toIntOrNull()?.let { Quality(it) } ?: return Failure(CouldntParseQuality(this))

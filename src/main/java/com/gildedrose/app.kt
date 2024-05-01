@@ -55,7 +55,7 @@ data class App(
             pricedLoader.load(now)
         }
 
-    fun deleteItemsWithIds(itemIds: Set<ID<Item>>, now: Instant = clock()) {
+    fun deleteItemsWithIds(itemIds: Set<ItemID>, now: Instant = clock()) {
         items.inTransaction {
             stock.loadAndUpdateStockList(now).map { stockList ->
                 val newItems = stockList.items.filterNot { it.id in itemIds }
