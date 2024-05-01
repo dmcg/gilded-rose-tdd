@@ -57,28 +57,28 @@ fun DSLContext.save(stockList: StockList) {
         stockList.items.isEmpty() -> listOf(sentinelItem)
         else -> stockList.items
     }
-    toSave.forEach { item ->
-        insertInto(ITEMS)
-            .set(ITEMS.ID, item.id.toString())
-            .set(ITEMS.MODIFIED, stockList.lastModified)
-            .set(ITEMS.NAME, item.name)
-            .set(ITEMS.QUALITY, item.quality.valueInt)
-            .set(ITEMS.SELLBYDATE, item.sellByDate)
-            .execute()
+    with(ITEMS) {
+        toSave.forEach { item ->
+            insertInto(ITEMS)
+                .set(ID, item.id.toString())
+                .set(MODIFIED, stockList.lastModified)
+                .set(NAME, item.name)
+                .set(QUALITY, item.quality.valueInt)
+                .set(SELLBYDATE, item.sellByDate)
+                .execute()
+        }
     }
 }
 
-fun DSLContext.load(): StockList {
-    val records = select(ITEMS.ID, ITEMS.MODIFIED, ITEMS.NAME, ITEMS.QUALITY, ITEMS.SELLBYDATE)
-        .from(ITEMS)
-        .where(
-            ITEMS.MODIFIED.eq(DSL.select(max(ITEMS.MODIFIED)).from(ITEMS))
-        )
+fun DSLContext.load(): StockList = with(ITEMS) {
+    val records = select(ID, MODIFIED, NAME, QUALITY, SELLBYDATE)
+        .from(this)
+        .where(MODIFIED.eq(DSL.select(max(MODIFIED)).from(this)))
         .fetch()
     return if (records.isEmpty())
         StockList(Instant.EPOCH, emptyList())
     else {
-        val lastModified: Instant = records.first()[ITEMS.MODIFIED]
+        val lastModified: Instant = records.first()[MODIFIED]
         val items: List<Item> = records.map { it.toItem() }
         val isEmpty = (items.singleOrNull() == sentinelItem)
         StockList(
