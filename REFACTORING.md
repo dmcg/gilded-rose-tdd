@@ -3,7 +3,8 @@
 ## Scope Functions
 
 ### Apply
-- Refactor `hikariDataSourceFor()` in  to use `apply` (in [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt))
+#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
+- Refactor `hikariDataSourceFor()` in  to use `apply`
 -
 
 ### Also
