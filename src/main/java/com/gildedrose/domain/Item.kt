@@ -8,7 +8,11 @@ data class Item(
     val name: String,
     val sellByDate: LocalDate?,
     val quality: Quality,
-)
+) {
+    init {
+        require(name.isNotBlank()) { "Name must not be blank" }
+    }
+}
 
 data class PricedItem(
     val id: ID<Item>,
@@ -19,5 +23,9 @@ data class PricedItem(
 ) {
     constructor(item: Item, price: Result4k<Price?, Exception>) :
         this(item.id, item.name, item.sellByDate, item.quality, price)
+
+    init {
+        require(name.isNotBlank()) { "Name must not be blank" }
+    }
 }
 
