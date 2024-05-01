@@ -19,19 +19,18 @@ class DualItems(
         otherItems.inTransaction(block)
 
     context(DbTxContext)
-    override fun save(stockList: StockList): Result<StockList, IOError> {
-        val truth = sourceOfTruth.inTransaction {
+    override fun save(stockList: StockList): Result<StockList, IOError> =
+        sourceOfTruth.inTransaction {
             sourceOfTruth.save(stockList)
+        }.also { result ->
+            try {
+                val otherResult = otherItems.save(stockList)
+                if (result != otherResult)
+                    analytics(stocklistSavingMismatch(result, otherResult))
+            } catch (throwable: Throwable) {
+                analytics(StockListSavingExceptionCaught(throwable))
+            }
         }
-        try {
-            val otherResult = otherItems.save(stockList)
-            if (truth != otherResult)
-                analytics(stocklistSavingMismatch(truth, otherResult))
-        } catch (throwable: Throwable) {
-            analytics(StockListSavingExceptionCaught(throwable))
-        }
-        return truth
-    }
 
     context(DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> {
