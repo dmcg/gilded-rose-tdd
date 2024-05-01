@@ -1,11 +1,26 @@
 # Refactoring Steps
 
+## Introduce the app
+- Stock control for Gilded Rose Inc
+- It's currently being migrated from the machine under Alison's desk to The Cloud
+- And hence is using both a flat file and a database for storage
+- Show the app (it looks great when we use the proper CSS file, but that is under NDA)
+- Run the tests
+
+## Introduce the code
+- We have some places where we haven't yet gotten around to applying our new-found expressive Kotlin knowledge
+- We have a little list, so let's go on a tour and see what we can make better
+-
 ## Scope Functions
 
 ### Apply
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
 - Refactor `hikariDataSourceFor()` in  to use `apply`
--
+
+### Run
+#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
+- if we want to see the env value we can introduce a var in a run
+- talk about receiver
 
 ### Also
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
@@ -17,23 +32,20 @@
 #### [DualItems](src/main/java/com/gildedrose/persistence/DualItems.kt)
 - Refactor `save` and `load` to use `also`
 
-### Run
-#### [app.kt](src/main/java/com/gildedrose/app.kt)
-- itemsFor could use run to make a single expression
-- then we can inline that into the ctor
-- talk about receiver
-- probably shouldn't do this here, but useful when we want a temporary single expression
-
 ### With
 #### [DbItems](src/main/java/com/gildedrose/persistence/DbItems.kt)
 - Refactor `DSLContext.save` and `DSLContext.load` to use `with`
-- multiple `with`
-- extract `with` into extension function
+- with is like an import from a variable
+- multiple `with` - bad idea generally
 
 ### Let
 #### [Quality](src/main/java/com/gildedrose/domain/Quality.kt)
 - Introduce .let with if inside let
+- rename wrapper to it
 - and then ?.let
+- talk about ?:
+- undo and show that IJ will do it for us
+-
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
 - Use let to convert dslContextFor into a nice chain
 
@@ -59,3 +71,7 @@
 
 #### [Quality](src/main/java/com/gildedrose/domain/Quality.kt)
 - (Quality.invoke() could be standalone function but is it more expressive? 🤔)
+
+### Actions
+
+### DSLs
