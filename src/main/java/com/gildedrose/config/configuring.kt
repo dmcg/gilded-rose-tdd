@@ -8,6 +8,7 @@ import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import java.net.URI
+import javax.sql.DataSource
 
 data class DbConfig(
     val jdbcUrl: URI,
@@ -34,5 +35,5 @@ private fun HikariDataSource.configureFrom(dbConfig: DbConfig): HikariDataSource
     return this
 }
 
-private fun HikariDataSource.toDslContext() =
+private fun DataSource.toDslContext() =
     DSL.using(this, SQLDialect.POSTGRES)
