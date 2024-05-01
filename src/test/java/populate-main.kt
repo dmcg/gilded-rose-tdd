@@ -1,19 +1,21 @@
-
 import com.gildedrose.App
 import com.gildedrose.config.Features
 import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
 import dev.forkhandles.result4k.map
+import java.io.File
 import java.time.LocalDate
 import java.util.*
 
 fun main() {
+    val stockFile = File("stock.tsv")
     App(
         dbConfig = dbConfig,
         features = Features(newItemEnabled = true)
     ).apply {
         val random = Random()
+        stockFile.createNewFile()
         loadStockList().map { pricedStockList ->
             deleteItemsWithIds(pricedStockList.map { it.id }.toSet())
         }
