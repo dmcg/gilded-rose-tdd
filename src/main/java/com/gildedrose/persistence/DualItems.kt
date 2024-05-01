@@ -4,6 +4,7 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.AnalyticsEvent
+import com.gildedrose.persistence.StockListLoadingError.IOError
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
 import java.time.Instant
@@ -14,14 +15,11 @@ class DualItems(
     private val analytics: Analytics
 ) : Items<DbTxContext> {
 
-    override fun <R> inTransaction(
-        block: context(DbTxContext) () -> R
-    ): R = otherItems.inTransaction(block)
+    override fun <R> inTransaction(block: context(DbTxContext) () -> R): R =
+        otherItems.inTransaction(block)
 
     context(DbTxContext)
-    override fun save(
-        stockList: StockList
-    ): Result<StockList, StockListLoadingError.IOError> {
+    override fun save(stockList: StockList): Result<StockList, IOError> {
         val truth = sourceOfTruth.inTransaction {
             sourceOfTruth.save(stockList)
         }
@@ -56,8 +54,8 @@ private fun Result<StockList, StockListLoadingError>.toRenderable():
     this.map { stockList -> JacksonRenderableStockList(stockList.lastModified, stockList.items) }
 
 internal fun stocklistSavingMismatch(
-    result: Result<StockList, StockListLoadingError.IOError>,
-    otherResult: Result<StockList, StockListLoadingError.IOError>
+    result: Result<StockList, IOError>,
+    otherResult: Result<StockList, IOError>
 ) = StocklistSavingMismatch(result.toRenderable(), otherResult.toRenderable())
 
 data class StocklistLoadingMismatch(
