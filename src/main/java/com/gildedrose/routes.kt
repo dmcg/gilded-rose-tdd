@@ -36,7 +36,7 @@ val App.routes: HttpHandler
 
 internal fun App.addHandler(request: Request): Response {
     val idLens = FormField.nonBlankString().required("new-itemId")
-    val nameLens = FormField.string().required("new-itemName")
+    val nameLens = FormField.nonBlankString().required("new-itemName")
     val sellByLens = FormField.localDate().optional("new-itemSellBy")
     val qualityLens = FormField.nonNegativeInt().map { Quality(it) }.required("new-itemQuality")
     val formBody = Body.webForm(Validator.Feedback, idLens, nameLens, sellByLens, qualityLens).toLens()
@@ -44,7 +44,7 @@ internal fun App.addHandler(request: Request): Response {
     if (form.errors.isNotEmpty())
         return Response(Status.BAD_REQUEST).withError(NewItemFailedEvent(form.errors.toString()))
 
-    val item = Item(idLens(form), ItemName(nameLens(form)), sellByLens(form), qualityLens(form))
+    val item = Item(idLens(form), ItemName(nameLens(form))!!, sellByLens(form), qualityLens(form))
     addItem(newItem = item)
     return when {
         request.isHtmx -> listHandler(request)

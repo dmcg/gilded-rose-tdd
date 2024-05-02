@@ -6,10 +6,17 @@ import java.time.LocalDate
 typealias ItemID = String
 
 @JvmInline
-value class ItemName(val value: String) : CharSequence by value {
+value class ItemName private constructor(val value: String) : CharSequence by value {
     init {
         require(value.isNotBlank()) { "Name must not be blank" }
     }
+
+    companion object {
+        operator fun invoke(name: String): ItemName? =
+            if (name.isBlank()) null
+            else ItemName(name)
+    }
+
     override fun toString() = value
 }
 

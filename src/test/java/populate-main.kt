@@ -25,7 +25,7 @@ fun main() {
             addItem(
                 Item(
                     id,
-                    ItemName(name),
+                    ItemName(name)!!,
                     now.plusDays(sellByDaysFor(random, id)),
                     qualityFor(random, id)
                 )

@@ -71,10 +71,10 @@ private fun String.toItem(): Result4k<Item, StockListLoadingError> {
 
 private fun String.itemWithIdFrom(parts: List<String>): Result<Item, StockListLoadingError> {
     val id = parts[0].ifBlank { return Failure(BlankID(this)) }
-    val name = parts[1]
+    val name = ItemName(parts[1]) ?: return Failure(BlankName(this))
     val sellByDate = parts[2].toLocalDate(this).onFailure { return it }
     val quality = parts[3].toIntOrNull()?.let { Quality(it) } ?: return Failure(CouldntParseQuality(this))
-    return Success(Item(id, ItemName(name), sellByDate, quality))
+    return Success(Item(id, name, sellByDate, quality))
 }
 
 private fun String.toLocalDate(line: String): Result<LocalDate?, CouldntParseSellBy> =
