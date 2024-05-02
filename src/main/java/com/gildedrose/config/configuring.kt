@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariDataSource
 import org.http4k.cloudnative.env.Environment
 import org.http4k.cloudnative.env.EnvironmentKey
 import org.http4k.lens.nonEmptyString
-import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import java.net.URI
@@ -21,11 +20,11 @@ data class DbConfig(
     )
 }
 
-fun dslContextFor(dbConfig: DbConfig): DSLContext {
-    val dataSource = hikariDataSourceFor(dbConfig)
-    dataSource.validate()
-    return DSL.using(dataSource, SQLDialect.POSTGRES)
-}
+fun dslContextFor(dbConfig: DbConfig) =
+    DSL.using(
+        hikariDataSourceFor(dbConfig).also { it.validate() },
+        SQLDialect.POSTGRES
+    )
 
 fun hikariDataSourceFor(dbConfig: DbConfig) =
     HikariDataSource().apply {
