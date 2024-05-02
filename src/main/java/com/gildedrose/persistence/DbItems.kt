@@ -2,6 +2,7 @@ package com.gildedrose.persistence
 
 import com.gildedrose.db.tables.Items.ITEMS
 import com.gildedrose.domain.Item
+import com.gildedrose.domain.ItemName
 import com.gildedrose.domain.Quality
 import com.gildedrose.domain.StockList
 import dev.forkhandles.result4k.Result
@@ -46,7 +47,7 @@ open class DbItems(
 
 private val sentinelItem = Item(
     id = "NO-ITEMS-SAVED",
-    name = "THIS IS NOT AN ITEM",
+    name = ItemName("THIS IS NOT AN ITEM"),
     sellByDate = null,
     quality = Quality(Int.MAX_VALUE)!!
 )
@@ -61,7 +62,7 @@ fun DSLContext.save(stockList: StockList) {
             insertInto(this)
                 .set(ID, item.id)
                 .set(MODIFIED, stockList.lastModified)
-                .set(NAME, item.name)
+                .set(NAME, item.name.value)
                 .set(QUALITY, item.quality.valueInt)
                 .set(SELLBYDATE, item.sellByDate)
                 .execute()
@@ -92,7 +93,7 @@ fun DSLContext.load(): StockList {
 private fun Record5<String, Instant, String, Int, LocalDate>.toItem() =
     Item(
         id = this[ITEMS.ID].ifBlank { error("Invalid ID") },
-        name = this[ITEMS.NAME],
+        name = ItemName(this[ITEMS.NAME]),
         sellByDate = this[ITEMS.SELLBYDATE],
         quality = Quality(this[ITEMS.QUALITY]) ?: error("Invalid quality")
     )

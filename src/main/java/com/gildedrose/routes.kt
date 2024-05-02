@@ -1,6 +1,7 @@
 package com.gildedrose
 
 import com.gildedrose.domain.Item
+import com.gildedrose.domain.ItemName
 import com.gildedrose.domain.NonNegativeInt
 import com.gildedrose.domain.Quality
 import com.gildedrose.foundation.AnalyticsEvent
@@ -43,7 +44,7 @@ internal fun App.addHandler(request: Request): Response {
     if (form.errors.isNotEmpty())
         return Response(Status.BAD_REQUEST).withError(NewItemFailedEvent(form.errors.toString()))
 
-    val item = Item(idLens(form), nameLens(form), sellByLens(form), qualityLens(form))
+    val item = Item(idLens(form), ItemName(nameLens(form)), sellByLens(form), qualityLens(form))
     addItem(newItem = item)
     return when {
         request.isHtmx -> listHandler(request)

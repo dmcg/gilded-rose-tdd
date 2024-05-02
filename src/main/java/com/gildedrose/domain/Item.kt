@@ -3,24 +3,30 @@ package com.gildedrose.domain
 import dev.forkhandles.result4k.Result4k
 import java.time.LocalDate
 
-
 typealias ItemID = String
+
+@JvmInline
+value class ItemName(val value: String) : CharSequence by value {
+    init {
+        require(value.isNotBlank()) { "Name must not be blank" }
+    }
+    override fun toString() = value
+}
 
 data class Item(
     val id: ItemID,
-    val name: String,
+    val name: ItemName,
     val sellByDate: LocalDate?,
     val quality: Quality,
 ) {
     init {
         require(id.isNotBlank()) { "id must not be blank" }
-        require(name.isNotBlank()) { "Name must not be blank" }
     }
 }
 
 data class PricedItem(
     val id: ItemID,
-    val name: String,
+    val name: ItemName,
     val sellByDate: LocalDate?,
     val quality: Quality,
     val price: Result4k<Price?, Exception>,
@@ -30,7 +36,6 @@ data class PricedItem(
 
     init {
         require(id.isNotBlank()) { "id must not be blank" }
-        require(name.isNotBlank()) { "Name must not be blank" }
     }
 }
 
