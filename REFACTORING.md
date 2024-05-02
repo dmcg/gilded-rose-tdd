@@ -66,8 +66,17 @@
 
 
 ### Tiny types
-#### [Item and PricedItem](src/main/java/com/gildedrose/domain/Item.kt) using NonBlankString
-- (NonBlankString can't be a standalone function because it uses private constructor with the same signature)
+#### [Item and PricedItem](src/main/java/com/gildedrose/domain/Item.kt)
+- Note that both id and name are effectively String, despite the typealias
+- This can cause issues like the ones we had with the wrong variable binding
+- and Item has preconditions that are not communicated to its clients
+- add a typeAlias for ItemName
+- and use it in the data flow paths to name
+- add a constructor fun ItemName(s: String) = s and call it in the places where we map from strings
+- Now create a value class ItemName
+- we have add some .values to compile
+- but when we're done we can move the require from Item and PricedItem into ItemName
+
 
 #### [Quality](src/main/java/com/gildedrose/domain/Quality.kt)
 - (Quality.invoke() could be standalone function but is it more expressive? 🤔)
