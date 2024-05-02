@@ -19,8 +19,7 @@
 
 ### Run
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
-- if we want to see the env value we can introduce a var in a run
-- talk about receiver
+- In hikariDataSourceFor if we want to see the jdbcUrl we can introduce a var in a run
 
 ### Also
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
@@ -30,13 +29,14 @@
 - Point out that `apply` would also do
 
 #### [DualItems](src/main/java/com/gildedrose/persistence/DualItems.kt)
-- Refactor `save` and `load` to use `also`
+- MAYBE Refactor `save` and `load` to use `also`
 
 ### With
 #### [DbItems](src/main/java/com/gildedrose/persistence/DbItems.kt)
 - Refactor `DSLContext.save` and `DSLContext.load` to use `with`
+- load can now be a single expression
 - with is like an import from a variable
-- multiple `with` - bad idea generally
+- we could use multiple `with` in save for item - bad idea generally
 
 ### Let
 #### [Quality](src/main/java/com/gildedrose/domain/Quality.kt)
@@ -44,7 +44,7 @@
 - rename wrapper to it
 - and then ?.let
 - talk about ?:
-- undo and show that IJ will do it for us
+- undo and show that IJ will do it for us (replace with safe access)
 -
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
 - Use let to convert dslContextFor into a nice chain
@@ -54,7 +54,7 @@
 - Extract extension fun DataSource.toDslContext from DSL.using(it, SQLDialect.POSTGRES)
 - Now the let can go
 - Now hikariDataSourceFor can be an extension and we have a straight through chain
-- but we have an issue with this@toHikariDataSource - .also, or back out, or inline
+- but we have an issue with this@toHikariDataSource - .also, or back out, - try inline - things go badly wrong, fix with .also
 - Make dslContextFor an extension as well and look at where it is called
 
 ### Coupling/cohesion
@@ -76,6 +76,9 @@
 - Now create a value class ItemName
 - we have add some .values to compile
 - but when we're done we can move the require from Item and PricedItem into ItemName
+- and then create a companion object ctor that return Item?
+- and fix up the callers
+- so that we have moved the check to the edge
 
 
 #### [Quality](src/main/java/com/gildedrose/domain/Quality.kt)
