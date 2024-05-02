@@ -2,7 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.config.DbConfig
 import com.gildedrose.config.Features
-import com.gildedrose.config.dslContextFor
+import com.gildedrose.config.toDslContext
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.loggingAnalytics
@@ -82,7 +82,7 @@ private fun itemsFor(
     dbConfig: DbConfig,
     analytics: Analytics
 ): Items<TXContext> = when {
-    features.stopUsingFile -> DbItems(dslContextFor(dbConfig))
-    else -> DualItems(StockFileItems(stockFile), DbItems(dslContextFor(dbConfig)), analytics)
+    features.stopUsingFile -> DbItems(dbConfig.toDslContext())
+    else -> DualItems(StockFileItems(stockFile), DbItems(dbConfig.toDslContext()), analytics)
 }
 
