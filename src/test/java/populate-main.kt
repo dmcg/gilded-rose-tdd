@@ -31,6 +31,7 @@ fun main() {
             )
         }
     }
+    Runtime.getRuntime().exit(0)
 }
 
 private fun qualityFor(random: Random, id: String) = when {
