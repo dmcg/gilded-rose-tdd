@@ -14,7 +14,7 @@ data class ItemName(val value: String) : CharSequence by value {
 
 data class Item(
     val id: ItemID,
-    val _name: ItemName,
+    val name: ItemName,
     val sellByDate: LocalDate?,
     val quality: Quality,
 ) {
@@ -22,18 +22,18 @@ data class Item(
         require(id.isNotBlank()) { "id must not be blank" }
     }
 
-    fun copy(name: String): Item = this.copy(_name = ItemName(name))
+    fun copy(name: String): Item = this.copy(name = ItemName(name))
 }
 
 data class PricedItem(
     val id: ItemID,
-    val _name: ItemName,
+    val name: ItemName,
     val sellByDate: LocalDate?,
     val quality: Quality,
     val price: Result4k<Price?, Exception>,
 ) {
     constructor(item: Item, price: Result4k<Price?, Exception>) :
-        this(item.id, item._name, item.sellByDate, item.quality, price)
+        this(item.id, item.name, item.sellByDate, item.quality, price)
 
     init {
         require(id.isNotBlank()) { "id must not be blank" }

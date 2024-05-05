@@ -48,7 +48,7 @@ open class DbItems(
 private val sentinelItem =
     Item(
         id = "NO-ITEMS-SAVED",
-        _name = ItemName("THIS IS NOT AN ITEM"),
+        name = ItemName("THIS IS NOT AN ITEM"),
         sellByDate = null,
         quality = Quality(Int.MAX_VALUE)!!
     )
@@ -62,7 +62,7 @@ fun DSLContext.save(stockList: StockList) {
         insertInto(ITEMS)
             .set(ITEMS.ID, item.id)
             .set(ITEMS.MODIFIED, stockList.lastModified)
-            .set(ITEMS.NAME, item._name.value)
+            .set(ITEMS.NAME, item.name.value)
             .set(ITEMS.QUALITY, item.quality.valueInt)
             .set(ITEMS.SELLBYDATE, item.sellByDate)
             .execute()
@@ -92,7 +92,7 @@ fun DSLContext.load(): StockList {
 private fun Record5<String, Instant, String, Int, LocalDate>.toItem() =
     Item(
         id = this[ITEMS.ID].ifBlank { error("Invalid ID") },
-        _name = ItemName(this[ITEMS.NAME]),
+        name = ItemName(this[ITEMS.NAME]),
         sellByDate = this[ITEMS.SELLBYDATE],
         quality = Quality(this[ITEMS.QUALITY]) ?: error("Invalid quality")
     )

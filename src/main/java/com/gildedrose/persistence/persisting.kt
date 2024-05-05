@@ -44,7 +44,7 @@ fun Sequence<String>.toStockList(): Result4k<StockList, StockListLoadingError> {
     }
 }
 
-private fun Item.toLine() = "$id\t${_name.value}\t${sellByDate ?: ""}\t$quality"
+private fun Item.toLine() = "$id\t${name.value}\t${sellByDate ?: ""}\t$quality"
 
 private fun lastModifiedFrom(
     header: List<String>

@@ -25,7 +25,7 @@ fun item(
 
 fun initialsFrom(name: String) = name.split(" ").map { it[0] }.joinToString("").uppercase()
 
-fun PricedItem.withNoPrice() = Item(id, ItemName(_name.value), sellByDate, quality)
+fun PricedItem.withNoPrice() = Item(id, ItemName(name.value), sellByDate, quality)
 fun Item.withPriceResult(price: Price?) = this.withPriceResult(Success(price))
 fun Item.withPriceResult(price: Result<Price?, Exception>) = PricedItem(this, price = price)
 
