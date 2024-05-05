@@ -70,6 +70,19 @@
 - Note that both id and name are effectively String, despite the typealias
 - This can cause issues like the ones we had with the wrong variable binding
 - and Item has preconditions that are not communicated to its clients
+- We're going to expand-contract refactor
+- Add a data class ItemName, with init require
+- Change the type of the two names to ItemName - the callers and references all break. Undo
+- Add an Item constructor taking string
+- rename the val to _name locally
+- add a computed val name
+- fix up the one .copy issue
+- That required only one client change
+- Make the Item constructor a factory
+- Add a factory for ItemName re
+
+
+
 - add a typeAlias for ItemName
 - and use it in the data flow paths to name
 - add a constructor fun ItemName(s: String) = s and call it in the places where we map from strings
