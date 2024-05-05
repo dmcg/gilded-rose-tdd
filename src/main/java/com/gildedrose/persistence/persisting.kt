@@ -1,6 +1,7 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.Item
+import com.gildedrose.domain.ItemName
 import com.gildedrose.domain.Quality
 import com.gildedrose.domain.StockList
 import com.gildedrose.persistence.StockListLoadingError.*
@@ -43,7 +44,7 @@ fun Sequence<String>.toStockList(): Result4k<StockList, StockListLoadingError> {
     }
 }
 
-private fun Item.toLine() = "$id\t$name\t${sellByDate ?: ""}\t$quality"
+private fun Item.toLine() = "$id\t${_name.value}\t${sellByDate ?: ""}\t$quality"
 
 private fun lastModifiedFrom(
     header: List<String>
@@ -73,7 +74,7 @@ private fun String.itemWithIdFrom(parts: List<String>): Result<Item, StockListLo
     val name = parts[1]
     val sellByDate = parts[2].toLocalDate(this).onFailure { return it }
     val quality = parts[3].toIntOrNull()?.let { Quality(it) } ?: return Failure(CouldntParseQuality(this))
-    return Success(Item(id, name, sellByDate, quality))
+    return Success(Item(id, ItemName(name), sellByDate, quality))
 }
 
 private fun String.toLocalDate(line: String): Result<LocalDate?, CouldntParseSellBy> =

@@ -1,9 +1,6 @@
 package com.gildedrose
 
-import com.gildedrose.domain.Item
-import com.gildedrose.domain.Price
-import com.gildedrose.domain.PricedItem
-import com.gildedrose.domain.Quality
+import com.gildedrose.domain.*
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import java.time.LocalDate
@@ -22,14 +19,13 @@ fun item(
     quality: Int,
 ): Item = Item(
     id,
-    name,
-    sellByDate,
+    ItemName(name), sellByDate,
     Quality(quality)!!
 )
 
 fun initialsFrom(name: String) = name.split(" ").map { it[0] }.joinToString("").uppercase()
 
-fun PricedItem.withNoPrice() = Item(id, name, sellByDate, quality)
+fun PricedItem.withNoPrice() = Item(id, ItemName(_name.value), sellByDate, quality)
 fun Item.withPriceResult(price: Price?) = this.withPriceResult(Success(price))
 fun Item.withPriceResult(price: Result<Price?, Exception>) = PricedItem(this, price = price)
 

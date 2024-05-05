@@ -62,7 +62,7 @@ private data class StockListViewModel(
 
 private fun PricedItem.toMap(now: LocalDate, priceString: String): Map<String, String> = mapOf(
     "id" to id.toString(),
-    "name" to name,
+    "name" to _name.value,
     "sellByDate" to if (sellByDate == null) "" else dateFormat.format(sellByDate),
     "sellByDays" to this.daysUntilSellBy(now).toString(),
     "quality" to this.quality.toString(),
