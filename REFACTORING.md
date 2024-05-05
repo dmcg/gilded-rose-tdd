@@ -13,28 +13,28 @@
 -
 ## Scope Functions
 
+### Also
+#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
+- Show our standard refactoring on `dslContextFor` `dataSource.validate()`
+- Intention on second `dataSource` will also do it
+
 ### Apply
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
-- Refactor `hikariDataSourceFor()` in  to use `apply`
+- Refactor `hikariDataSourceFor()` to use `apply`
+- Keep it simple
 
 ### Run
 #### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
-- In hikariDataSourceFor if we want to see the jdbcUrl we can introduce a var in a run
-
-### Also
-#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
-- Refactor `::DbConfig` to println url using `also(::println)`
-- using `printed()` (almost like postfix completion)
-- Refactor `dslContextFor` to use `also`
-- Point out that `apply` would also do
-
-#### [DualItems](src/main/java/com/gildedrose/persistence/DualItems.kt)
-- MAYBE Refactor `save` and `load` to use `also`
+- Surround `dbConfig.jdbcUrl.toString()` with run
+- Add in a println("here")
+- run converts an expression into a scope
+- show also instead
+- and apply
+- and then printed
 
 ### With
 #### [DbItems](src/main/java/com/gildedrose/persistence/DbItems.kt)
-- Refactor `DSLContext.save` and `DSLContext.load` to use `with`
-- load can now be a single expression
+- Refactor `DSLContext.save` to use `with`
 - with is like an import from a variable
 - we could use multiple `with` in save for item - bad idea generally
 
@@ -54,7 +54,7 @@
 - Extract extension fun DataSource.toDslContext from DSL.using(it, SQLDialect.POSTGRES)
 - Now the let can go
 - Now hikariDataSourceFor can be an extension and we have a straight through chain
-- but we have an issue with this@toHikariDataSource - .also, or back out, - try inline - things go badly wrong, fix with .also
+- but we have an issue with this@toHikariDataSource - revert and show that the for works at the beginning of a chain
 - Make dslContextFor an extension as well and look at where it is called
 
 ### Coupling/cohesion
