@@ -70,19 +70,30 @@
 - Note that both id and name are effectively String, despite the typealias
 - This can cause issues like the ones we had with the wrong variable binding
 - and Item has preconditions that are not communicated to its clients
-- add a typeAlias for ItemName
-- and use it in the data flow paths to name
-- add a constructor fun ItemName(s: String) = s and call it in the places where we map from strings
-- Now create a value class ItemName
-- we have add some .values to compile
-- but when we're done we can move the require from Item and PricedItem into ItemName
-- and then create a companion object ctor that return Item?
-- and fix up the callers
-- so that we have moved the check to the edge
+- We're going to expand-contract refactor
+- Add a data class ItemName, with init require
+- Change the type of the two names to ItemName - the callers and references all break.
+- Add an Item constructor taking string
+- rename the val to _name locally (and PricedItem)
+- add a computed val name (and PricedItem)
+- add a .copy(name: String)
+- That required no client changes - check in
+- Inline the `val name get`s
+- rename _names to name
+- inline the .copy
+- Make the Item secondary constructor a factory
+- and inline it
+- That fixed up our clients - check in
+- Move the require isNotBlank into ItemName init
+- Move ItemName ctor to companion
+- Add ItemName? companion - can't compile
+- add dummy: Boolean = false to the ItemName? one
+- and make the ItemName call it with ?: error("Name must not be blank")
+- Now inline the ItemName one
+- and delete the dummy
+- Now go through the callers and do the right things
+- Finally we can look at the name.value and elide some of those - note typeFor where CharSequence
 
-
-#### [Quality](src/main/java/com/gildedrose/domain/Quality.kt)
-- (Quality.invoke() could be standalone function but is it more expressive? 🤔)
 
 ### Actions
 
