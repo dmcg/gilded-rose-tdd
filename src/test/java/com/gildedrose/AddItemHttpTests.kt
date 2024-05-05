@@ -136,7 +136,7 @@ private fun hasAttachedError(event: AnalyticsEvent): Matcher<Response> =
     )
 
 private fun Request.withFormFor(newItem: Item): Request {
-    return form("new-itemId", newItem.id.toString())
+    return form("new-itemId", newItem.id)
         .form("new-itemName", newItem.name)
         .form("new-itemSellBy", newItem.sellByDate?.toString() ?: "")
         .form("new-itemQuality", newItem.quality.toString())
