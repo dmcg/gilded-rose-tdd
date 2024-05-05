@@ -25,7 +25,7 @@ fun main() {
             addItem(
                 Item(
                     id,
-                    ItemName(name), now.plusDays(sellByDaysFor(random, id)),
+                    ItemName(name) ?: error("Name must not be blank"), now.plusDays(sellByDaysFor(random, id)),
                     qualityFor(random, id)
                 )
             )

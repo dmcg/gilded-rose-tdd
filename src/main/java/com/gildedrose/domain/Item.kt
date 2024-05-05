@@ -6,9 +6,13 @@ import java.time.LocalDate
 
 typealias ItemID = String
 
-data class ItemName(val value: String) : CharSequence by value {
+@JvmInline
+value class ItemName private constructor(val value: String) : CharSequence by value {
     init {
         require(value.isNotBlank()) { "Name must not be blank" }
+    }
+    companion object {
+        operator fun invoke(value: String): ItemName? = if (value.isBlank()) null else ItemName(value)
     }
 }
 
@@ -21,8 +25,6 @@ data class Item(
     init {
         require(id.isNotBlank()) { "id must not be blank" }
     }
-
-    fun copy(name: String): Item = this.copy(name = ItemName(name))
 }
 
 data class PricedItem(
