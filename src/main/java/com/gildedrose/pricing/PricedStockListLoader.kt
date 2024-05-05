@@ -26,7 +26,7 @@ class PricedStockListLoader(
 
     context(TXContext)
     fun load(now: Instant): Result<PricedStockList, StockListLoadingError> =
-        loading(magic(),now).map {
+        loading(magic(), now).map {
             it.pricedBy(retryingPricing)
         }
 
