@@ -1,6 +1,7 @@
 package com.gildedrose.updating
 
 import com.gildedrose.domain.Item
+import com.gildedrose.domain.ItemName
 import com.gildedrose.domain.Quality
 import java.time.LocalDate
 
@@ -8,7 +9,7 @@ fun interface ItemType {
     fun update(item: Item, on: LocalDate): Item
 }
 
-fun typeFor(sellByDate: LocalDate?, name: String): ItemType {
+fun typeFor(sellByDate: LocalDate?, name: ItemName): ItemType {
     val baseType = when {
         sellByDate == null -> UndatedType
         name.contains("Aged Brie", ignoreCase = true) -> BrieType
