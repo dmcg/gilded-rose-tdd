@@ -6,9 +6,9 @@ import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.then
 import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.*
 import java.time.Duration
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ReportHttpTransactionsTests {
 
@@ -22,15 +22,12 @@ class ReportHttpTransactionsTests {
         filter.then {
             Response(OK)
         }.invoke(Request(GET, "/"))
-        expectThat(events)
-            .hasSize(1)
-            .withFirst {
-                isA<HttpEvent>().and {
-                    get(HttpEvent::uri).isEqualTo("/")
-                    get(HttpEvent::method).isEqualTo(GET.toString())
-                    get(HttpEvent::status).isEqualTo(OK.code)
-                }
-            }
+
+        val event = events.single()
+        assertTrue(event is HttpEvent)
+        assertEquals("/", event.uri)
+        assertEquals(GET.toString(), event.method)
+        assertEquals(OK.code, event.status)
     }
 
     @Test
@@ -39,21 +36,17 @@ class ReportHttpTransactionsTests {
             Thread.sleep(25)
             Response(OK)
         }.invoke(Request(GET, "/"))
-        expectThat(events)
-            .hasSize(2)
-            .withFirst {
-                isA<HttpEvent>().and {
-                    get(HttpEvent::uri).isEqualTo("/")
-                    get(HttpEvent::method).isEqualTo(GET.toString())
-                    get(HttpEvent::status).isEqualTo(OK.code)
-                }
-            }
-            .withElementAt(1) {
-                isA<SlowHttpEvent>().and {
-                    get(SlowHttpEvent::uri).isEqualTo("/")
-                    get(SlowHttpEvent::method).isEqualTo(GET.toString())
-                    get(SlowHttpEvent::status).isEqualTo(OK.code)
-                }
-            }
+
+        val event0 = events.first()
+        assertTrue(event0 is HttpEvent)
+        assertEquals("/", event0.uri)
+        assertEquals(GET.toString(), event0.method)
+        assertEquals(OK.code, event0.status)
+
+        val event1 = events[1]
+        assertTrue(event1 is SlowHttpEvent)
+        assertEquals("/", event1.uri)
+        assertEquals(GET.toString(), event1.method)
+        assertEquals(OK.code, event1.status)
     }
 }
