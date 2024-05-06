@@ -14,17 +14,18 @@
 ## Scope Functions
 
 ### Also
-#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
+#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
 - Show our standard refactoring on `dslContextFor` `dataSource.validate()`
 - Intention on second `dataSource` will also do it
 
 ### Apply
-#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
+#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
 - Refactor `hikariDataSourceFor()` to use `apply`
 - Keep it simple
+- Maybe apply should have been called with?
 
 ### Run
-#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
+#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
 - Surround `dbConfig.jdbcUrl.toString()` with run
 - Add in a println("here")
 - run converts an expression into a scope
@@ -46,11 +47,11 @@
 - talk about ?:
 - undo and show that IJ will do it for us (replace with safe access)
 -
-#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
+#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
 - Use let to convert dslContextFor into a nice chain
 
 ## Extension Functions
-#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
+#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
 - Extract extension fun DataSource.toDslContext from DSL.using(it, SQLDialect.POSTGRES)
 - Now the let can go
 - Now hikariDataSourceFor can be an extension and we have a straight through chain
@@ -58,7 +59,7 @@
 - Make dslContextFor an extension as well and look at where it is called
 
 ### Coupling/cohesion
-#### [configuring.kt](src/main/java/com/gildedrose/config/configuring.kt)
+#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
 - Note that we couldn't move DataSource.toDslContext to a method, as we don't own DataSource
 - We could move DbConfig.toDslContext to a method. But if we did we couple the DbConfig to Hikari and DSLContext. So we couldn't remove it from this module.
 - DbConfig is coupled to Environment by the constructor - fix that with a top-level function DbConfig
