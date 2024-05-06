@@ -10,19 +10,28 @@
 ## Introduce the code
 - We have some places where we haven't yet gotten around to applying our new-found expressive Kotlin knowledge
 - We have a little list, so let's go on a tour and see what we can make better
--
+
+## [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
+- `fun dslContext` could be communicating better, rename to `toDslContext`
+- Now it's doing several things, the first is creating a DataSource
+- Extract a `hikariDataSourceFor`
+- Is there any reason for it DbConfig to be coupled to HikariDataSource? No
+- Move `hikariDataSourceFor` it to the top level
+- Now we would like to use `apply`
+
 ## Scope Functions
+
+### Apply
+#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
+- Refactor `hikariDataSourceFor()` to use `apply` via `val dataSource = this`
+- Maybe apply should have been called with?
+
 
 ### Also
 #### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
 - Show our standard refactoring on `dslContextFor` `dataSource.validate()`
 - Intention on second `dataSource` will also do it
 
-### Apply
-#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
-- Refactor `hikariDataSourceFor()` to use `apply`
-- Keep it simple
-- Maybe apply should have been called with?
 
 ### Run
 #### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
