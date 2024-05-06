@@ -13,66 +13,36 @@
 
 ## [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
 - `fun dslContext` could be communicating better, rename to `toDslContext`
+- Now `hikariDataSource` could be `hikariDataSourceFor`
 - Now it's doing several things, the first is creating a DataSource
-- Extract a `hikariDataSourceFor`
-- Is there any reason for it DbConfig to be coupled to HikariDataSource? No
-- Move `hikariDataSourceFor` it to the top level
-- Now we would like to use `apply`
-
-## Scope Functions
-
-### Apply
-#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
 - Refactor `hikariDataSourceFor()` to use `apply` via `val dataSource = this`
-- Maybe apply should have been called with?
-
-
-### Also
-#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
-- Show our standard refactoring on `dslContextFor` `dataSource.validate()`
-- Intention on second `dataSource` will also do it
-
-
-### Run
-#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
-- Surround `dbConfig.jdbcUrl.toString()` with run
-- Add in a println("here")
-- run converts an expression into a scope
-- show also instead
-- and apply
-- and then printed
+- `apply` is like a conjunction in English - `with`. It joins two clauses.
+- Now that we've created our dataSource, we also want to validate it
+- introduce `.also`
+- Now we've changed from 'do this' to 'I want a'
+- Inline and make a single expresssion - again making more 'I want a'
+- Should we include the return type? Again an opportunity to express something. In this case the single expression is complicated enough to include it.
+- Now `toDslContext` is also saying 'do this' - assign to a var, use it - Two statements.
+- We can remove one by inlining `dataSource`
+- But now the ordering is wrong, we have to know that `hikariDataSourceFor` is evaluated first
+- Introduce `let` - execution now follows reading order
+- Extract dslContextFor(DataSource)
+- This isn't using anything from DbConfig, so move it to the top level
+- Make an extension
+- Rename to `toDslContext`
+- Now the `.let` is redundant - both extensions and let pipe
+- Inline `hikariDataSourceFor` - note that it breaks - even IJ gets confused with too many this's
+- Fix with this@DbConfig, but at this point we are talking to the compiler, not a human.
+- Undo
+- Now `toDslContext` makes DbConfig depend on Hikari and jOOQ
+- We want the name, but not the coupling, so convert to extension
+- We can do the same with the environment ctor, `Environment.toDbContext()`
 
 ### With
 #### [DbItems](src/main/java/com/gildedrose/persistence/DbItems.kt)
 - Refactor `DSLContext.save` to use `with`
 - with is like an import from a variable
 - we could use multiple `with` in save for item - bad idea generally
-
-### Let
-#### [Quality](src/main/java/com/gildedrose/domain/Quality.kt)
-- Introduce .let with if inside let
-- rename wrapper to it
-- and then ?.let
-- talk about ?:
-- undo and show that IJ will do it for us (replace with safe access)
--
-#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
-- Use let to convert dslContextFor into a nice chain
-
-## Extension Functions
-#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
-- Extract extension fun DataSource.toDslContext from DSL.using(it, SQLDialect.POSTGRES)
-- Now the let can go
-- Now hikariDataSourceFor can be an extension and we have a straight through chain
-- but we have an issue with this@toHikariDataSource - revert and show that the for works at the beginning of a chain
-- Make dslContextFor an extension as well and look at where it is called
-
-### Coupling/cohesion
-#### [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
-- Note that we couldn't move DataSource.toDslContext to a method, as we don't own DataSource
-- We could move DbConfig.toDslContext to a method. But if we did we couple the DbConfig to Hikari and DSLContext. So we couldn't remove it from this module.
-- DbConfig is coupled to Environment by the constructor - fix that with a top-level function DbConfig
-- See that that hasn't changed any of the callers, although it is a breaking change
 
 
 ### Tiny types
