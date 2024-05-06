@@ -1,13 +1,12 @@
 package com.gildedrose.persistence
 
+import com.gildedrose.Item
 import com.gildedrose.domain.StockList
-import com.gildedrose.item
 import com.gildedrose.oct29
 import com.gildedrose.persistence.StockListLoadingError.*
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -17,9 +16,9 @@ class PersistenceTests {
 
     private val now = Instant.now()
     private val items = listOf(
-        item("banana", oct29, 42),
-        item("kumquat", oct29.plusDays(1), 101),
-        item("undated", null, 50)
+        Item("banana", oct29, 42),
+        Item("kumquat", oct29.plusDays(1), 101),
+        Item("undated", null, 50)
     )
 
     @Test

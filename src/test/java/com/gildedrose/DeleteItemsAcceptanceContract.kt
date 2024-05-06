@@ -18,9 +18,9 @@ abstract class DeleteItemsAcceptanceContract(
     private val pricedStockList = PricedStockList(
         lastModified,
         listOf(
-            item("banana", LocalDate.parse("2022-02-08"), 42).withPriceResult(Price(666)),
-            item("kumquat", LocalDate.parse("2022-02-10"), 101).withPriceResult(null),
-            item("undated", null, 50).withPriceResult(Price(999))
+            Item("banana", LocalDate.parse("2022-02-08"), 42).withPriceResult(Price(666)),
+            Item("kumquat", LocalDate.parse("2022-02-10"), 101).withPriceResult(null),
+            Item("undated", null, 50).withPriceResult(Price(999))
         )
     )
     private val fixture = Fixture(pricedStockList, InMemoryItems()).apply { init() }
@@ -58,7 +58,7 @@ abstract class DeleteItemsAcceptanceContract(
     open fun `delete non-existent item doesnt save stocklist`() {
         doDelete(app,
             setOf(
-                item("no-such", "not in stock", null, 0),
+                Item("no-such", "not in stock", null, 0),
             )
         )
         fixture.checkStockListIs(fixture.originalStockList)

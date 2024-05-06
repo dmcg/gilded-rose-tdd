@@ -1,5 +1,6 @@
 package com.gildedrose.pricing
 
+import com.gildedrose.Item
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
@@ -7,7 +8,6 @@ import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.foundation.UncaughtExceptionEvent
 import com.gildedrose.foundation.succeedAfter
-import com.gildedrose.item
 import com.gildedrose.persistence.NoTX
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.withPriceResult
@@ -28,9 +28,9 @@ class PricedStockListLoaderTests {
         private val loadedStockList = StockList(
             lastModified = lastModified,
             items = listOf(
-                item("banana", localdate("2022-02-08"), 42),
-                item("kumquat", localdate("2022-02-10"), 101),
-                item("undated", null, 50)
+                Item("banana", localdate("2022-02-08"), 42),
+                Item("kumquat", localdate("2022-02-10"), 101),
+                Item("undated", null, 50)
             )
         )
         private val expectedPricedStockList = PricedStockList(

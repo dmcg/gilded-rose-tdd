@@ -9,13 +9,13 @@ import dev.forkhandles.result4k.Success
 import java.time.LocalDate
 
 
-fun item(
+fun Item(
     name: String,
     sellByDate: LocalDate?,
     quality: Int,
-): Item = item(initialsFrom(name) + "1", name, sellByDate, quality)
+): Item = Item(initialsFrom(name) + "1", name, sellByDate, quality)
 
-fun item(
+fun Item(
     id: String,
     name: String,
     sellByDate: LocalDate?,

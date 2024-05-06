@@ -1,7 +1,7 @@
 package com.gildedrose.updating
 
+import com.gildedrose.Item
 import com.gildedrose.domain.StockList
-import com.gildedrose.item
 import com.gildedrose.oct29
 import com.gildedrose.persistence.InMemoryItems
 import dev.forkhandles.result4k.valueOrNull
@@ -18,8 +18,8 @@ class StockTests {
     private val initialStockList = StockList(
         lastModified = Instant.parse("2022-02-09T23:59:59Z"),
         items = listOf(
-            item("banana", oct29.minusDays(1), 42),
-            item("kumquat", oct29.plusDays(1), 101)
+            Item("banana", oct29.minusDays(1), 42),
+            Item("kumquat", oct29.plusDays(1), 101)
         )
     )
     private val items = InMemoryItems(initialStockList)
@@ -45,8 +45,8 @@ class StockTests {
         val expectedUpdatedResult = StockList(
             lastModified = now,
             items = listOf(
-                item("banana", oct29.minusDays(1), 41),
-                item("kumquat", oct29.plusDays(1), 100)
+                Item("banana", oct29.minusDays(1), 41),
+                Item("kumquat", oct29.plusDays(1), 100)
             )
         )
         assertEquals(
@@ -64,8 +64,8 @@ class StockTests {
         val expectedUpdatedResult = StockList(
             lastModified = now,
             items = listOf(
-                item("banana", oct29.minusDays(1), 40),
-                item("kumquat", oct29.plusDays(1), 99)
+                Item("banana", oct29.minusDays(1), 40),
+                Item("kumquat", oct29.plusDays(1), 99)
             )
         )
         assertEquals(

@@ -18,7 +18,7 @@ abstract class AddItemAcceptanceContract(
     private val pricedStockList = PricedStockList(
         lastModified,
         listOf(
-            item("banana", LocalDate.parse("2022-02-08"), 42).withPriceResult(Price(666)),
+            Item("banana", LocalDate.parse("2022-02-08"), 42).withPriceResult(Price(666)),
         )
     )
     protected val fixture = Fixture(pricedStockList, InMemoryItems()).apply { init() }
@@ -31,7 +31,7 @@ abstract class AddItemAcceptanceContract(
 
     @Test
     fun `add item`() {
-        val newItem = item("new-id", "new name", LocalDate.parse("2023-07-23"), 99)
+        val newItem = Item("new-id", "new name", LocalDate.parse("2023-07-23"), 99)
         doAdd(app, newItem)
         fixture.checkStockListIs(
             StockList(
@@ -43,7 +43,7 @@ abstract class AddItemAcceptanceContract(
 
     @Test
     fun `add item with no date`() {
-        val newItem = item("new-id", "new name", null, 99)
+        val newItem = Item("new-id", "new name", null, 99)
         doAdd(app, newItem)
         fixture.checkStockListIs(
             StockList(

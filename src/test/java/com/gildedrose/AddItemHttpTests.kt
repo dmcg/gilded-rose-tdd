@@ -26,7 +26,7 @@ class AddItemHttpTests : AddItemAcceptanceContract(
 ) {
     @Test
     fun `add item with blank date via http`() {
-        val newItem = item("new-id", "new name", null, 99)
+        val newItem = Item("new-id", "new name", null, 99)
         addItemWithHttp(app, newItem)
         fixture.checkStockListIs(
             StockList(
