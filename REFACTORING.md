@@ -11,6 +11,13 @@
 - We have some places where we haven't yet gotten around to applying our new-found expressive Kotlin knowledge
 - We have a little list, so let's go on a tour and see what we can make better
 
+## TODOs
+- use `Call Hierarchy` at some point
+- use `Data Flow to here` at some point
+- mention different types of `{` at some point
+- use `Jump to Navigation Bar`
+- use `Quick Definition`
+
 ## [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
 - `fun dslContext` could be communicating better, rename to `toDslContext`
 - Now `hikariDataSource` could be `hikariDataSourceFor`
@@ -73,8 +80,5 @@
 - and delete the dummy
 - Now go through the callers and do the right things
 - Finally we can look at the name.value and elide some of those - note typeFor where CharSequence
-
-
-### Actions
 
 ### DSLs
