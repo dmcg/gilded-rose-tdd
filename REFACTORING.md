@@ -22,12 +22,12 @@
 - Now `hikariDataSource` could be `hikariDataSourceFor`
 - Now it's doing several things, the first is creating a DataSource
 - Refactor `hikariDataSourceFor()` to use `apply` via `val dataSource = this`
-- `apply` is like a conjunction in English - `with`. It joins two clauses.
+- `apply` is like a conjunction in English - `with` or `where`. It joins two clauses.
 - Now that we've created our dataSource, we also want to validate it
 - introduce `.also`
 - Now we've changed from 'do this' to 'I want a'
 - Inline and make a single expresssion - again making more 'I want a'
-- Should we include the return type? Again an opportunity to express something. In this case the single expression is complicated enough to include it.
+- Should we include the return type? Again an opportunity to express something. In this case the single expression is complicated enough to include it. Sometimes its more expressive to leave something out, sometimes to put it in.
 - `fun dslContext` could be communicating better, rename to `toDslContext`
 - Now `toDslContext` is also saying 'do this' - assign to a var, use it - Two statements.
 - We can remove one by inlining `dataSource`
@@ -38,7 +38,7 @@
 - Make an extension
 - Rename to `toDslContext`
 - Now the `.let` is redundant - both extensions and let pipe
-- Inline `hikariDataSourceFor` - note that it breaks - even IJ gets confused with too many this's
+- Inline `hikariDataSourceFor` and run the tests - note that they fail - even IJ gets confused with too many this's
 - Fix with this@DbConfig, but at this point we are talking to the compiler, not a human.
 - Undo
 - Now `toDslContext` makes DbConfig depend on Hikari and jOOQ
@@ -48,6 +48,7 @@
 ### With
 #### [DbItems](src/main/java/com/gildedrose/persistence/DbItems.kt)
 - Refactor `DSLContext.save` to use `with`
+- Note that ITEMS feels like an import, but it isn't it's a val
 - with is like an import from a variable
 - we could use multiple `with` in save for item - bad idea generally
 
