@@ -19,7 +19,6 @@
 - use `Quick Definition`
 
 ## [DbConfig.kt](src/main/java/com/gildedrose/config/DbConfig.kt)
-- `fun dslContext` could be communicating better, rename to `toDslContext`
 - Now `hikariDataSource` could be `hikariDataSourceFor`
 - Now it's doing several things, the first is creating a DataSource
 - Refactor `hikariDataSourceFor()` to use `apply` via `val dataSource = this`
@@ -29,6 +28,7 @@
 - Now we've changed from 'do this' to 'I want a'
 - Inline and make a single expresssion - again making more 'I want a'
 - Should we include the return type? Again an opportunity to express something. In this case the single expression is complicated enough to include it.
+- `fun dslContext` could be communicating better, rename to `toDslContext`
 - Now `toDslContext` is also saying 'do this' - assign to a var, use it - Two statements.
 - We can remove one by inlining `dataSource`
 - But now the ordering is wrong, we have to know that `hikariDataSourceFor` is evaluated first
