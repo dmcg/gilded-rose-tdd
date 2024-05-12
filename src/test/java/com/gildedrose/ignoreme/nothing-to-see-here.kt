@@ -12,6 +12,10 @@ import org.http4k.routing.reverseProxy
  * Starts a fake com.gildedrose.server for demos
  */
 fun main() {
+    runFakePricing()
+}
+
+fun runFakePricing() {
     val routes = reverseProxy(
         "localhost" to fakeValueElfRoutes(pricingWithMultiplier(1000)),
         "value-elf.com" to fakeValueElfRoutes(pricingWithMultiplier(1000)),
@@ -24,9 +28,9 @@ fun main() {
 
 private fun pricingWithMultiplier(multiplier: Int): (ItemID, Quality) -> Price? = { id, quality ->
     Thread.sleep(100)
-    when {
-        id == "banana" -> Price(709)!!
-        id == "no-such" -> null
+    when (id) {
+        "banana" -> Price(709)!!
+        "no-such" -> null
         else -> Price((id.length + 1 + quality.valueInt) * multiplier.toLong())!!
     }
 }
