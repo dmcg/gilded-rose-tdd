@@ -4,10 +4,10 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
+import com.gildedrose.foundation.magic
 import com.gildedrose.persistence.InMemoryItems
 import com.gildedrose.persistence.Items
 import com.gildedrose.persistence.TXContext
-import com.gildedrose.persistence.transactionally
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.valueOrNull
 import java.time.Instant
@@ -39,3 +39,8 @@ data class Fixture(
         )
     }
 }
+
+fun <R, TX : TXContext> Items<TX>.transactionally(f: context(TX) Items<TX>.() -> R): R =
+    inTransaction {
+        f(magic(), this)
+    }
