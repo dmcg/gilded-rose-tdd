@@ -8,6 +8,11 @@ import java.time.LocalDate
 import java.util.*
 
 fun main() {
+    populateDevDb()
+    Runtime.getRuntime().exit(0)
+}
+
+fun populateDevDb() {
     App(
         dbConfig = dbConfig,
         features = Features(newItemEnabled = true)
@@ -28,7 +33,6 @@ fun main() {
             )
         }
     }
-    Runtime.getRuntime().exit(0)
 }
 
 private fun qualityFor(random: Random, id: String) = when {

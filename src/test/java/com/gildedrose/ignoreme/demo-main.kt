@@ -5,8 +5,10 @@ import com.gildedrose.config.Features
 import com.gildedrose.http.serverFor
 import com.gildedrose.routes
 import dbConfig
+import populateDevDb
 
 fun main() {
+    populateDevDb()
     runFakePricing()
     App(
         dbConfig = dbConfig,

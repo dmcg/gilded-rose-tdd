@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Demo main" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="com.gildedrose.ignoreme.Demo_mainKt" />
+    <module name="gilded-rose.test" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
