@@ -82,6 +82,14 @@ class PersistenceTests {
         )
     }
 
+     @Test
+    fun `fails to load with blank name`() {
+        assertEquals(
+            Failure(BlankName("id\t\t2022-07-08\t42")),
+            sequenceOf("id\t\t2022-07-08\t42").toStockList()
+        )
+    }
+
     @Test
     fun `fails to load with too few fields`() {
         assertEquals(
