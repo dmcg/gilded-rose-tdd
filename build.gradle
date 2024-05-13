@@ -14,7 +14,8 @@ repositories {
 
 ext.junitVersion = '5.9.1'
 ext.jacksonVersion = '2.14.1'
-ext.testJdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:h2:/tmp/gilded-rose-test-db').get()
+ext.testJdbcUrl = 'jdbc:h2:/tmp/gilded-rose-test-db'
+ext.devJdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:h2:/tmp/gilded-rose.db').get()
 ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('gilded').get()
 ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('rose').get()
 
@@ -84,6 +85,12 @@ flyway {
     password = "$databasePassword"
 }
 
+tasks.register('flywayMigrateDev', org.flywaydb.gradle.task.FlywayMigrateTask) {
+    url = "$devJdbcUrl"
+    user = "$databaseUsername"
+    password = "$databasePassword"
+}
+
 jooq {
     version = '3.19.7'  // default (can be omitted)
     edition = nu.studer.gradle.jooq.JooqEdition.OSS  // default (can be omitted)
@@ -137,3 +144,7 @@ jooq {
 }
 
 tasks.named('generateJooq')
+
+task initDbs {
+    dependsOn 'flywayMigrate', 'flywayMigrateDev', 'generateJooq'
+}

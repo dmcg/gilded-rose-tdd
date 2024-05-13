@@ -8,16 +8,16 @@ You can see the development of this code on [YouTube](https://youtube.com/playli
 
 Requires Java 21
 
-### Initialise the test database, build and test
+### Initialise the test and dev databases
 
 ```bash
-./gradlew flywayMigrate clean test
+./gradlew initDbs
 ```
 
-### Initialise the local database
+### Build and test
 
 ```bash
-db/migrate-dev.sh
+./gradlew clean test
 ```
 
 ### Populate the database with test data
