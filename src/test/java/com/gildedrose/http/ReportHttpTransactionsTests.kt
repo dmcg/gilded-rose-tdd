@@ -1,5 +1,6 @@
 package com.gildedrose.http
 
+import com.gildedrose.foundation.AnalyticsEvent
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -11,11 +12,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ReportHttpTransactionsTests {
-
-    private val events: MutableList<Any> = mutableListOf()
-    private val filter = reportHttpTransactions(Duration.ofMillis(20)) { event ->
-        events.add(event)
-    }
+    private val events = mutableListOf<AnalyticsEvent>()
+    private val filter = reportHttpTransactions(
+        slowTransactionDuration = Duration.ofMillis(20),
+        analytics = { event -> events.add(event) }
+    )
 
     @Test
     fun `reports transactions to analytics`() {

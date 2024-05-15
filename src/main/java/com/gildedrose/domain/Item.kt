@@ -3,7 +3,6 @@ package com.gildedrose.domain
 import dev.forkhandles.result4k.Result4k
 import java.time.LocalDate
 
-
 typealias ItemID = String
 
 data class Item(
@@ -33,4 +32,3 @@ data class PricedItem(
         require(name.isNotBlank()) { "Name must not be blank" }
     }
 }
-
