@@ -125,13 +125,16 @@ class ConvertSecondaryConstructorToTopLevelFunction : MyIntentionAction {
 
 class MoveExtensionFunctionToClass : MyIntentionAction {
     override fun isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean {
-        val element = currentElementIn(editor, file).takeIf { it.elementType?.debugName == "IDENTIFIER" }
-        val function = element?.parentOfType<KtNamedFunction>()
-        return function != null && function.receiverTypeReference != null
+        val element = currentElementIn(editor, file).takeIf { it.elementType?.debugName == "IDENTIFIER" } ?: return false
+        val extensionFunction = element.parent as? KtNamedFunction ?: return false
+        val ktClass = extensionFunction.receiverTypeReference
+            ?.childrenDfsSequence()?.firstIsInstance<KtNameReferenceExpression>()?.resolve() as? KtClass ?: return false
+        return ktClass.isWritable
     }
 
     override fun invoke(project: Project, editor: Editor, file: PsiFile) {
-        val extensionFunction = currentElementIn(editor, file)?.parentOfType<KtNamedFunction>() ?: return
+        val element = currentElementIn(editor, file).takeIf { it.elementType?.debugName == "IDENTIFIER" } ?: return
+        val extensionFunction = element.parent as? KtNamedFunction ?: return
         val ktClass = extensionFunction.receiverTypeReference
             ?.childrenDfsSequence()?.firstIsInstance<KtNameReferenceExpression>()?.resolve() as? KtClass ?: return
 
