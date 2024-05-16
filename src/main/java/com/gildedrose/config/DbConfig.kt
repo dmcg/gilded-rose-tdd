@@ -34,6 +34,3 @@ private fun hikariDataSource(dbConfig: DbConfig): HikariDataSource {
     dataSource.validate()
     return dataSource
 }
-
-
-
