@@ -9,7 +9,7 @@ package com.gildedrose.definitions
  *
  * Objects
  */
-annotation class Noun
+object Noun
 
 /**
  * Verb
@@ -20,7 +20,7 @@ annotation class Noun
  *
  * Methods, functions
  */
-annotation class Verb
+object Verb
 
 /**
  * Preposition
@@ -31,9 +31,11 @@ annotation class Verb
  *
  * for, from, of, to, as...
  */
-annotation class Preposition
+object Preposition
 
 /**
+ * Conjunction
+ *
  * a word used to connect clauses or sentences or to coordinate words in the same clause (e.g. and, but, if ).
  *
  * Join clauses and give structure to sentences
@@ -42,10 +44,12 @@ annotation class Preposition
  *
  * Scope functions
  */
-annotation class Conjunction
+object Conjunction
 
 
 /**
+ * Pronoun
+ *
  * a word that can function as a noun phrase used by itself and that refers either to the participants in the discourse (e.g. I, you ) or to someone or something mentioned elsewhere in the discourse (e.g. she, it, this ).
  *
  * Stands in for something bigger
@@ -54,9 +58,11 @@ annotation class Conjunction
  *
  * Lambda parameter, receiver
  */
-annotation class Pronoun
+object Pronoun
 
 /**
+ * Tense
+ *
  * a set of forms taken by a verb to indicate the time (and sometimes also the continuance or completeness) of the action in relation to the time of the utterance.
  * "the future tense"
  *
@@ -64,4 +70,25 @@ annotation class Pronoun
  *
  * This is how to do this
  */
-annotation class Tense
+object Tense
+
+
+/**
+ * With
+ *
+ * Preposition
+ *
+ * indicating the instrument used to perform an action. "cut the fish with a knife"
+ *
+ * Sets up a receiver or subject
+ *
+ */
+object With
+
+/**
+ * In computer programming, a statement is a syntactic unit of an imperative programming language that expresses some action to be carried out.
+ *
+ * The bits between the semi-colons that aren't there any more.
+ */
+
+object Statement
