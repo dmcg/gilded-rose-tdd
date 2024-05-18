@@ -92,3 +92,8 @@ object With
  */
 
 object Statement
+
+/**
+ * An expression in programming is a combination of literals, variables, operators, and function calls that produce a value when evaluated.
+ */
+object Expression
