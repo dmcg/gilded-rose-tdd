@@ -1,13 +1,22 @@
+
+import com.intellij.codeInsight.documentation.render.DocRenderManager
 import com.intellij.codeInsight.intention.IntentionAction
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemHighlightType.GENERIC_ERROR_OR_WARNING
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ScrollType.CENTER_UP
+import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Splitter
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.search.FilenameIndex
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
+import liveplugin.currentEditor
+import liveplugin.registerAction
 import liveplugin.registerIntention
 import org.jetbrains.kotlin.idea.base.psi.childrenDfsSequence
 import org.jetbrains.kotlin.idea.base.util.reformat
@@ -21,11 +30,35 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 
 // depends-on-plugin org.jetbrains.kotlin
 
+project!!.currentEditor!!.settings.isLineNumbersShown = true
+
 registerIntention(ConvertApplyToLetIntention())
 registerIntention(ConvertLetToApplyIntention())
 registerIntention(CreateSecondaryConstructor())
 registerIntention(ConvertSecondaryConstructorToTopLevelFunction())
 registerIntention(MoveExtensionFunctionToClass())
+
+registerAction("Show Definitions", "ctrl shift F12") { event ->
+    val project = event.project ?: return@registerAction
+    val editorManager = FileEditorManagerEx.getInstanceEx(project)
+    val file = FilenameIndex.getVirtualFilesByName("defining.kt", GlobalSearchScope.allScope(project)).firstOrNull() ?: return@registerAction
+
+    val splitter = editorManager.splitters.getComponent(0) as? Splitter
+    if (splitter != null) {
+        editorManager.unsplitWindow()
+        editorManager.closeFile(file)
+        return@registerAction
+    }
+
+    editorManager.splitters.openInRightSplit(file, false)
+    (editorManager.splitters.getComponent(0) as? Splitter)?.proportion = 0.7f
+
+    editorManager.getAllEditors(file).filterIsInstance<TextEditor>().map { it.editor }.forEach { editor ->
+        DocRenderManager.setDocRenderingEnabled(editor, true)
+        DocRenderManager.resetEditorToDefaultState(editor)
+        editor.settings.isLineNumbersShown = false
+    }
+}
 
 class ConvertApplyToLetIntention : MyIntentionAction {
     override fun isAvailable(project: Project, editor: Editor, file: PsiFile) =
