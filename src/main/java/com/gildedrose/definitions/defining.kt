@@ -86,6 +86,8 @@ object Tense
 object With
 
 /**
+ * Statement
+ *
  * In computer programming, a statement is a syntactic unit of an imperative programming language that expresses some action to be carried out.
  *
  * The bits between the semi-colons that aren't there any more.
@@ -94,6 +96,15 @@ object With
 object Statement
 
 /**
+ * Expression
+ *
  * An expression in programming is a combination of literals, variables, operators, and function calls that produce a value when evaluated.
  */
 object Expression
+
+/**
+ * Adverb
+ *
+ * A word or phrase that modifies or qualifies an adjective, verb, or other adverb or a word group, expressing a relation of place, time, circumstance, manner, cause, degree, etc. (e.g., gently, quite, then, there ).
+ */
+object Adverb
