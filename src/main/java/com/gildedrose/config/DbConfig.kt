@@ -25,7 +25,7 @@ data class DbConfig(
         return DSL.using(dataSource, SQLDialect.H2)
     }
 
-    fun hikariDataSource(): HikariDataSource {
+    private fun hikariDataSource(): HikariDataSource {
         val dataSource = HikariDataSource()
         dataSource.jdbcUrl = jdbcUrl.toString()
         dataSource.username = username
