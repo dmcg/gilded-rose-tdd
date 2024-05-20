@@ -14,7 +14,7 @@ object Noun
 /**
  * Verb
  *
- * a word used to describe an action, state, or occurrence, and forming the main part of the predicate of a sentence, such as hear, become, happen.
+ * a word used to describe an action, state, or occurrence, and forming the main part of the predicate of a sentence.
  *
  * run, eat, save
  *
@@ -23,15 +23,60 @@ object Noun
 object Verb
 
 /**
+ * Adjective
+ *
+ * a word naming an attribute of a noun
+ *
+ * modifies or describes a noun
+ *
+ * red, transactional, mutable, fake
+ *
+ */
+object Adjective
+
+/**
+ * Subject
+ *
+ * a noun, noun phrase or pronoun representing the person or thing that performs the action of the verb, about which something is stated or, in a passive sentence, that is affected by the action
+ *
+ * record in record.save(), or save(record)
+ */
+object Subject
+
+/**
  * Preposition
  *
- * a word governing, and usually preceding, a noun or pronoun and expressing a relation to another word or element in the clause, as in ‘the man on the platform’, ‘she arrived after dinner’, ‘what did you do it for ?’.
+ * a word governing, and usually preceding, a noun or pronoun and expressing a relation to another word or element in the clause
  *
- * Give direction, or more generally the relationship, between things
+ * Gives direction, or more generally the relationship, between things
  *
- * for, from, of, to, as...
+ * ‘the man on the platform’, ‘she arrived after dinner’, ‘what did you do it for ?
+ *
+ * for, from, of, to, as, with
  */
 object Preposition
+
+/**
+ * Determiner
+ *
+ * a modifying word that determines the kind of reference a noun or noun group has
+ *
+ * a, the, every.
+ */
+object Determiner
+
+/**
+ * Pronoun
+ *
+ * a word that can function as a noun phrase used by itself and that refers either to the participants in the discourse or to someone or something mentioned elsewhere in the discourse
+ *
+ * Stands in for something already mentioned
+ *
+ * I, you, she, it, this
+ *
+ * Lambda parameter, receiver
+ */
+object Pronoun
 
 /**
  * Conjunction
@@ -46,19 +91,6 @@ object Preposition
  */
 object Conjunction
 
-
-/**
- * Pronoun
- *
- * a word that can function as a noun phrase used by itself and that refers either to the participants in the discourse (e.g. I, you ) or to someone or something mentioned elsewhere in the discourse (e.g. she, it, this ).
- *
- * Stands in for something bigger
- *
- * she, it, this
- *
- * Lambda parameter, receiver
- */
-object Pronoun
 
 /**
  * Tense
@@ -78,7 +110,9 @@ object Tense
  *
  * Preposition
  *
- * indicating the instrument used to perform an action. "cut the fish with a knife"
+ * indicates the instrument used to perform an action
+ *
+ * cut the fish with a knife
  *
  * Sets up a receiver or subject
  *
@@ -105,6 +139,8 @@ object Expression
 /**
  * Adverb
  *
- * A word or phrase that modifies or qualifies an adjective, verb, or other adverb or a word group, expressing a relation of place, time, circumstance, manner, cause, degree, etc. (e.g., gently, quite, then, there ).
+ * A word or phrase that modifies or qualifies an adjective, verb, or other adverb or a word group, expressing a relation of place, time, circumstance, manner, cause, degree, etc.
+ *
+ * gently, quite, then, there
  */
 object Adverb
