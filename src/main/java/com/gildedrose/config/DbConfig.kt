@@ -26,16 +26,14 @@ fun DbConfig.toDslContext(): DSLContext {
     return DSL.using(dataSource, SQLDialect.H2)
 }
 
-private fun hikariDataSourceFor(dbConfig: DbConfig): HikariDataSource {
-    val dataSource = HikariDataSource().apply {
+private fun hikariDataSourceFor(dbConfig: DbConfig): HikariDataSource =
+    HikariDataSource().apply {
         jdbcUrl = dbConfig.jdbcUrl.toString()
         username = dbConfig.username
         password = dbConfig.password
     }.also {
         it.validate()
     }
-    return dataSource
-}
 
 
 
