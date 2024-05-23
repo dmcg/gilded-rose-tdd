@@ -4,6 +4,7 @@ package com.gildedrose.foundation
 
 import java.io.PrintStream
 
+@Deprecated("🙈")
 inline fun <T> T.printed(to: PrintStream = System.out) =
     also { to.println(this) }
 
