@@ -7,6 +7,7 @@ import org.http4k.lens.nonEmptyString
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import java.net.URI
+import javax.sql.DataSource
 
 data class DbConfig(
     val jdbcUrl: URI,
@@ -21,9 +22,9 @@ data class DbConfig(
 }
 
 fun DbConfig.toDslContext() =
-    hikariDataSourceFor(this).toDslContext()
+    hikariDataSourceFor(this).asDslContext()
 
-private fun HikariDataSource.toDslContext() =
+private fun DataSource.asDslContext() =
     DSL.using(this, SQLDialect.H2)
 
 private fun hikariDataSourceFor(dbConfig: DbConfig) =
