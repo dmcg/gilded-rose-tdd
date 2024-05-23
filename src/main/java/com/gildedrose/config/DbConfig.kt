@@ -15,7 +15,7 @@ data class DbConfig(
     val password: String
 )
 
-fun DbConfig(environment: Environment) = DbConfig(
+fun dbConfigFrom(environment: Environment) = DbConfig(
     jdbcUrl = EnvironmentKey.map(URI::create).required("jdbc.url")(environment),
     username = EnvironmentKey.nonEmptyString().required("db.username")(environment),
     password = EnvironmentKey.nonEmptyString().required("db.password")(environment),

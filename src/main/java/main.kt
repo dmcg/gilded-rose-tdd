@@ -1,6 +1,6 @@
 
 import com.gildedrose.App
-import com.gildedrose.config.DbConfig
+import com.gildedrose.config.dbConfigFrom
 import com.gildedrose.http.serverFor
 import com.gildedrose.routes
 import org.http4k.cloudnative.env.Environment
@@ -14,7 +14,7 @@ val environment = Environment.JVM_PROPERTIES overrides
         "db.password" to "rose"
     )
 
-val dbConfig = DbConfig(environment)
+val dbConfig = dbConfigFrom(environment)
 
 fun main() {
     val app = App(dbConfig = dbConfig)
