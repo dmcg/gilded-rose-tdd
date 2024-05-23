@@ -27,11 +27,14 @@ fun DbConfig.toDslContext(): DSLContext {
 }
 
 private fun hikariDataSourceFor(dbConfig: DbConfig): HikariDataSource {
-    val dataSource = HikariDataSource()
-    dataSource.jdbcUrl = dbConfig.jdbcUrl.toString()
-    dataSource.username = dbConfig.username
-    dataSource.password = dbConfig.password
+    val dataSource = HikariDataSource().apply {
+        jdbcUrl = dbConfig.jdbcUrl.toString()
+        username = dbConfig.username
+        password = dbConfig.password
+    }
+
     dataSource.validate()
+
     return dataSource
 }
 
