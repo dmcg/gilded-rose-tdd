@@ -21,8 +21,10 @@ data class DbConfig(
 }
 
 fun DbConfig.toDslContext() =
-    hikariDataSourceFor(this)
-        .let { DSL.using(it, SQLDialect.H2) }
+    hikariDataSourceFor(this).toDslContext()
+
+private fun HikariDataSource.toDslContext() =
+    DSL.using(this, SQLDialect.H2)
 
 private fun hikariDataSourceFor(dbConfig: DbConfig) =
     HikariDataSource().apply {
