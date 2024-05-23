@@ -31,10 +31,9 @@ private fun hikariDataSourceFor(dbConfig: DbConfig): HikariDataSource {
         jdbcUrl = dbConfig.jdbcUrl.toString()
         username = dbConfig.username
         password = dbConfig.password
+    }.also {
+        it.validate()
     }
-
-    dataSource.validate()
-
     return dataSource
 }
 
