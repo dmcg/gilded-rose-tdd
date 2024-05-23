@@ -1,47 +1,105 @@
 package com.gildedrose.definitions
 
 /**
+ * State (noun)
+ *
+ * the particular condition that someone or something is in at a specific time
+ *
+ * "the state of your room"
+ */
+object State
+
+/**
+ * Data (noun)
+ *
+ * information that can be interpreted and used by computers.
+ * A collection of facts, such as numbers, words, measurements, observations or even just descriptions of things.
+ *
+ * 42, false, "banana"
+ * { "firstName": "Fred", "lastName": "Flintstone" }
+ */
+object Data
+
+/**
+ * Method (noun)
+ *
+ * the way in which an object responds to a message
+ */
+object Method
+
+
+/**
  * Noun
  *
  * a word (other than a pronoun) used to identify any of a class of people, places, or things (common noun), or to name a particular one of these (proper noun).
  *
- * banana, car, manager
+ * "identify or name things"
  *
- * Objects
+ * banana, car, manager, 42, inputString
+ *
+ * Variables
  */
 object Noun
+
+/**
+ * Source (noun)
+ *
+ * a place, person, or thing from which something originates or can be obtained
+ *
+ */
+object Source
+
+/**
+ * Compound Noun
+ *
+ * a noun that is made up of two or more different word
+ *
+ * cake shop, French fries, fileName, filename
+ */
+
+/**
+ * Hikari (noun)
+ *
+ * Japan's leading manufacturer of fish food and is recognised globally for its exceptional quality
+ */
+object Hikari
 
 /**
  * Verb
  *
  * a word used to describe an action, state, or occurrence, and forming the main part of the predicate of a sentence.
  *
- * run, eat, save
+ * "doing words"
+ *
+ * eg run, eat, save
  *
  * Methods, functions
  */
 object Verb
 
 /**
- * Adjective
+ * Create (verb)
  *
- * a word naming an attribute of a noun
- *
- * modifies or describes a noun
- *
- * red, transactional, mutable, fake
+ * bring (something) into existence
  *
  */
-object Adjective
+object Create
 
 /**
- * Subject
+ * Convert (verb)
  *
- * a noun, noun phrase or pronoun representing the person or thing that performs the action of the verb, about which something is stated or, in a passive sentence, that is affected by the action
- *
- * record in record.save(), or save(record)
+ * change the form, character, or function of something
  */
-object Subject
+object Convert
+
+/**
+ * Expressive (adjective)
+ *
+ * effectively conveying thought or feeling
+ *
+ * eg she has big expressive eyes
+ */
+object Expressive
 
 /**
  * Preposition
@@ -57,13 +115,13 @@ object Subject
 object Preposition
 
 /**
- * Determiner
+ * Subject
  *
- * a modifying word that determines the kind of reference a noun or noun group has
+ * a noun, noun phrase or pronoun representing the person or thing that performs the action of the verb, about which something is stated or, in a passive sentence, that is affected by the action
  *
- * a, the, every.
+ * record in record.save(), or save(record)
  */
-object Determiner
+object Subject
 
 /**
  * Pronoun
@@ -72,11 +130,45 @@ object Determiner
  *
  * Stands in for something already mentioned
  *
- * I, you, she, it, this
+ * I, you, she, it, this, we
  *
- * Lambda parameter, receiver
+ * Lambda parameter it, receiver this
  */
 object Pronoun
+
+/**
+ * Object
+ *
+ * a noun, pronoun, or noun phrase that represents the person or thing toward which the action of a verb is directed or to which a preposition relates
+ *
+ * Give the keys to Alice
+ */
+object Object
+
+/**
+ * Adjective
+ *
+ * a word naming an attribute of a noun
+ *
+ * modifies a noun
+ *
+ * red, transactional, mutable, fake
+ *
+ */
+object Adjective
+
+
+
+
+
+/**
+ * Determiner
+ *
+ * a modifying word that determines the kind of reference a noun or noun group has
+ *
+ * a, the, every.
+ */
+object Determiner
 
 /**
  * Conjunction
