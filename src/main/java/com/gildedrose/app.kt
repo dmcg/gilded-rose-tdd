@@ -2,7 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.config.DbConfig
 import com.gildedrose.config.Features
-import com.gildedrose.config.dslContext
+import com.gildedrose.config.toDslContext
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.loggingAnalytics
@@ -36,7 +36,7 @@ data class App(
         clock: () -> Instant = Instant::now,
         analytics: Analytics = stdOutAnalytics
     ) : this(
-        DbItems(dbConfig.dslContext()),
+        DbItems(dbConfig.toDslContext()),
         features,
         clock,
         analytics,

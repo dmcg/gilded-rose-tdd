@@ -21,7 +21,7 @@ data class DbConfig(
     )
 }
 
-fun DbConfig.dslContext(): DSLContext {
+fun DbConfig.toDslContext(): DSLContext {
     val dataSource = hikariDataSourceFor(this)
     return DSL.using(dataSource, SQLDialect.H2)
 }
