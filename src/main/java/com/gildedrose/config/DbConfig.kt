@@ -26,14 +26,12 @@ data class DbConfig(
     }
 
     private fun hikariDataSourceFor(dbConfig: DbConfig): HikariDataSource {
-        with(dbConfig) {
-            val dataSource = HikariDataSource()
-            dataSource.jdbcUrl = jdbcUrl.toString()
-            dataSource.username = username
-            dataSource.password = password
-            dataSource.validate()
-            return dataSource
-        }
+        val dataSource = HikariDataSource()
+        dataSource.jdbcUrl = dbConfig.jdbcUrl.toString()
+        dataSource.username = dbConfig.username
+        dataSource.password = dbConfig.password
+        dataSource.validate()
+        return dataSource
     }
 }
 
