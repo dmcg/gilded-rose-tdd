@@ -16,9 +16,9 @@ data class DbConfig(
 )
 
 fun dbConfigFrom(environment: Environment) = DbConfig(
-    jdbcUrl = EnvironmentKey.map(URI::create).required("jdbc.url")(environment),
-    username = EnvironmentKey.nonEmptyString().required("db.username")(environment),
-    password = EnvironmentKey.nonEmptyString().required("db.password")(environment),
+    jdbcUrl = environment[EnvironmentKey.map(URI::create).required("jdbc.url")],
+    username = environment[EnvironmentKey.nonEmptyString().required("db.username")],
+    password = environment[EnvironmentKey.nonEmptyString().required("db.password")],
 )
 
 fun DbConfig.toDslContext() =
