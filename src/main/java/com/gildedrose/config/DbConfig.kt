@@ -26,7 +26,7 @@ fun DbConfig.toDslContext(): DSLContext {
     return DSL.using(dataSource, SQLDialect.H2)
 }
 
-private fun hikariDataSourceFor(dbConfig: DbConfig): HikariDataSource =
+private fun hikariDataSourceFor(dbConfig: DbConfig) =
     HikariDataSource().apply {
         jdbcUrl = dbConfig.jdbcUrl.toString()
         username = dbConfig.username
