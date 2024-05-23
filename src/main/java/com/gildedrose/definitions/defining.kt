@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.gildedrose.definitions
 
 /**
@@ -56,6 +58,7 @@ object Source
  *
  * cake shop, French fries, fileName, filename
  */
+object CompoundNoun
 
 /**
  * Hikari (noun)
