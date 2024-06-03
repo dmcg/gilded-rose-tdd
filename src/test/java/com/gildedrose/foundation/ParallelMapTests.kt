@@ -37,6 +37,7 @@ class ParallelMapTests {
     fun shutDown() {
         threadPool.shutdown()
         System.gc()
+        @Suppress("removal", "DEPRECATION")
         System.runFinalization()
     }
 
