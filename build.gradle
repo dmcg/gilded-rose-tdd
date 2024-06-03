@@ -12,7 +12,7 @@ repositories {
     mavenCentral()
 }
 
-ext.junitVersion = '5.9.1'
+ext.junitVersion = '5.10.2'
 ext.jacksonVersion = '2.14.1'
 ext.testJdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:postgresql://localhost:5433/gilded-rose').get()
 ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('gilded').get()
@@ -24,7 +24,7 @@ dependencies {
     implementation "dev.forkhandles:result4k:2.3.0.0"
     implementation "org.slf4j:slf4j-jdk14:1.7.36"
 
-    implementation platform("org.http4k:http4k-bom:5.6.0.0")
+    implementation platform("org.http4k:http4k-bom:5.21.1.0")
     implementation "org.http4k:http4k-core"
     implementation "org.http4k:http4k-server-undertow"
     implementation "org.http4k:http4k-cloudnative"
