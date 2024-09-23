@@ -73,7 +73,7 @@ private fun App.listHandler(
     runIO {
         val now = this.clock()
         val stockListResult = loadStockList(now)
-        render(stockListResult, now, londonZoneId, this.features, request.isHtmx)
+        render(stockListResult, now, londonZoneId, request.isHtmx)
     }
 
 private fun App.deleteHandler(

@@ -14,7 +14,7 @@ import kotlin.system.exitProcess
 fun main() {
     App(
         dbConfig = dbConfig,
-        features = Features(newItemEnabled = true)
+        features = Features()
     ).apply {
         with (IO) {
             val random = Random()

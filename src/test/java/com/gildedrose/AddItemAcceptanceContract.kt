@@ -31,7 +31,7 @@ abstract class AddItemAcceptanceContract(
         items = fixture.items,
         pricing = fixture::pricing,
         clock = { sameDayAsLastModified },
-        features = Features(newItemEnabled = true)
+        features = Features()
     )
 
     @Test

@@ -1,6 +1,5 @@
 package com.gildedrose.rendering
 
-import com.gildedrose.config.Features
 import com.gildedrose.domain.PricedItem
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.http.ResponseErrors.withError
@@ -26,7 +25,6 @@ fun render(
     stockListResult: Result4k<PricedStockList, StockListLoadingError>,
     now: Instant,
     zoneId: ZoneId,
-    features: Features,
     justTable: Boolean
 ): Response {
     val today = LocalDate.ofInstant(now, zoneId)
@@ -42,7 +40,6 @@ fun render(
                         }
                         item.toMap(today, priceString)
                     },
-                    showNewItemRow = features.newItemEnabled,
                     justTable = justTable
                 )
         )
@@ -56,7 +53,6 @@ fun render(
 private data class StockListViewModel(
     val now: String,
     val items: List<Map<String, String>>,
-    val showNewItemRow: Boolean,
     val justTable: Boolean
 ) : ViewModel
 

@@ -1,6 +1,5 @@
 package com.gildedrose.rendering
 
-import com.gildedrose.config.Features
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.item
@@ -41,7 +40,6 @@ class StockListRenderingTests {
                 stockListResult = Success(pricedStockList),
                 now = Instant.parse("2021-10-29T12:00:00Z"),
                 zoneId = londonZoneId,
-                features = Features(),
                 justTable = false
             )
         )
@@ -54,7 +52,6 @@ class StockListRenderingTests {
                 stockListResult = Success(pricedStockList),
                 now = Instant.parse("2021-10-29T12:00:00Z"),
                 zoneId = londonZoneId,
-                features = Features(),
                 justTable = true
             )
         )
@@ -67,7 +64,6 @@ class StockListRenderingTests {
                 stockListResult = Failure(StockListLoadingError.BlankName("line")),
                 now = Instant.parse("2021-10-29T12:00:00Z"),
                 zoneId = londonZoneId,
-                features = Features(),
                 justTable = true
             )
         )

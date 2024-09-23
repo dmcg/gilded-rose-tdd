@@ -9,7 +9,6 @@
             <th>Quality</th>
             <th>Price</th>
         </tr>
-        
         <tr>
             <td></td>
             <td><input form="new-item-form" type="text" name="new-itemId" required size="5" aria-label="New item id"></td>
@@ -19,7 +18,6 @@
             <td style="text-align: right"><input type="number" form="new-item-form" name="new-itemQuality" required min="0" size="3" aria-label="New item quality"></td>
             <td><input type="submit" form="new-item-form" value="Add" style="width: 100%" aria-label="Add new item"></td>
         </tr>
-        
         
             <tr>
                 <td><input type="checkbox" name="B1" aria-label="Select item"></td>
