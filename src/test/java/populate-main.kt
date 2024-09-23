@@ -9,6 +9,7 @@ import com.gildedrose.foundation.IO
 import dev.forkhandles.result4k.map
 import java.time.LocalDate
 import java.util.*
+import kotlin.system.exitProcess
 
 fun main() {
     App(
@@ -32,6 +33,7 @@ fun main() {
             }
         }
     }
+    exitProcess(0)
 }
 
 private fun qualityFor(random: Random, id: String) = when {
@@ -71,5 +73,6 @@ private val itemData = listOf(
     "TH1" to "Thunder Horn",
     "TOF1" to "Tome of Fate",
     "UOR1" to "Urn of Riddles",
+    "VAN1" to "Backstage Passes for Osric and the Vandals"
 )
 
