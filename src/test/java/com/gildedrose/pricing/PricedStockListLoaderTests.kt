@@ -5,25 +5,21 @@ import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.AnalyticsEvent
-import com.gildedrose.foundation.IO
 import com.gildedrose.foundation.UncaughtExceptionEvent
 import com.gildedrose.foundation.succeedAfter
 import com.gildedrose.item
 import com.gildedrose.persistence.NoTX
 import com.gildedrose.persistence.StockListLoadingError
-import com.gildedrose.testing.IOResolver
 import com.gildedrose.withPriceResult
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import java.time.Instant.parse as t
 import java.time.LocalDate.parse as localdate
 
-@ExtendWith(IOResolver::class)
 class PricedStockListLoaderTests {
     companion object {
         private val lastModified = t("2022-02-09T12:00:00Z")
@@ -62,7 +58,6 @@ class PricedStockListLoaderTests {
         analytics = { event -> analyticsEvents.add(event) }
     )
 
-    context(IO)
     @Test
     fun `loads and prices items`() {
         assertEquals(
@@ -72,7 +67,6 @@ class PricedStockListLoaderTests {
         assertTrue(analyticsEvents.isEmpty())
     }
 
-    context(IO)
     @Test
     fun `passes on failures to load stock`() {
         val loadingError = StockListLoadingError.IOError("deliberate")
@@ -84,7 +78,6 @@ class PricedStockListLoaderTests {
         assertTrue(analyticsEvents.isEmpty())
     }
 
-    context(IO)
     @Test
     fun `item price remembers pricing failures`() {
         val exception = Exception("deliberate")
@@ -105,7 +98,6 @@ class PricedStockListLoaderTests {
         }
     }
 
-    context(IO)
     @Test
     fun `retries pricing failures`() {
         val exception = Exception("deliberate")

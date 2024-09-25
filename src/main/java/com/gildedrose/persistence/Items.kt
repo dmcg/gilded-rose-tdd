@@ -1,7 +1,6 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.IO
 import dev.forkhandles.result4k.Result
 
 /**
@@ -21,9 +20,9 @@ interface Items<out TX: TXContext> {
 
     fun <R> inTransaction(block: context(TX) () -> R): R
 
-    context(IO, TX) fun save(
+    context(TX) fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError>
 
-    context(IO, TX) fun load(): Result<StockList, StockListLoadingError>
+    context(TX) fun load(): Result<StockList, StockListLoadingError>
 }

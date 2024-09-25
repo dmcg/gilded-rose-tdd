@@ -1,11 +1,9 @@
-
 import com.gildedrose.App
 import com.gildedrose.config.Features
 import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.NonBlankString
 import com.gildedrose.domain.Quality
-import com.gildedrose.foundation.IO
 import dev.forkhandles.result4k.map
 import java.time.LocalDate
 import java.util.*
@@ -16,21 +14,20 @@ fun main() {
         dbConfig = dbConfig,
         features = Features()
     ).apply {
-        with (IO) {
-            val random = Random()
-            loadStockList().map { pricedStockList ->
-                deleteItemsWithIds(pricedStockList.map { it.id }.toSet())
-            }
-            val now = LocalDate.now()
-            itemData.forEach { (id, name) ->
-                addItem(
-                    Item(
-                        ID(id)!!,
-                        NonBlankString(name)!!,
-                        now.plusDays(sellByDaysFor(random, id)),
-                        qualityFor(random, id)
-                    ))
-            }
+        val random = Random()
+        loadStockList().map { pricedStockList ->
+            deleteItemsWithIds(pricedStockList.map { it.id }.toSet())
+        }
+        val now = LocalDate.now()
+        itemData.forEach { (id, name) ->
+            addItem(
+                Item(
+                    ID(id)!!,
+                    NonBlankString(name)!!,
+                    now.plusDays(sellByDaysFor(random, id)),
+                    qualityFor(random, id)
+                )
+            )
         }
     }
     exitProcess(0)

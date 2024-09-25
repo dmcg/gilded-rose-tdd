@@ -2,10 +2,7 @@ package com.gildedrose.pricing
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
-import com.gildedrose.foundation.IO
-import com.gildedrose.foundation.magic
 import com.gildedrose.item
-import com.gildedrose.testing.IOResolver
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import org.http4k.core.*
@@ -21,7 +18,6 @@ import java.net.URI
 import java.time.LocalDate.now
 
 @ExtendWith(FixtureResolver::class)
-@ExtendWith(IOResolver::class)
 abstract class ValueElfContract(
     override val fixture: Fixture,
 ) : FixtureResolver.FixtureSource {
@@ -36,16 +32,16 @@ abstract class ValueElfContract(
         val client = valueElfClient(uri, handler)
     }
 
-    context(Fixture, IO)
+    context(Fixture)
     @Test
     fun `returns price when there is one`() {
-        assertEquals(expectedPrice, client(magic<IO>(), aFoundItem))
+        assertEquals(expectedPrice, client(aFoundItem))
     }
 
-    context(Fixture, IO)
+    context(Fixture)
     @Test
     fun `returns null when no price`() {
-        assertEquals(null, client(magic<IO>(), aNotFoundItem))
+        assertEquals(null, client(aNotFoundItem))
     }
 
     context(Fixture)

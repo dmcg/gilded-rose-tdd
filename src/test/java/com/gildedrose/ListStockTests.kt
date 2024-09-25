@@ -3,12 +3,10 @@ package com.gildedrose
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.IO
 import com.gildedrose.persistence.Items
 import com.gildedrose.persistence.NoTX
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.rendering.render
-import com.gildedrose.testing.IOResolver
 import com.gildedrose.testing.fake
 import com.natpryce.hamkrest.assertion.assertThat
 import dev.forkhandles.result4k.Failure
@@ -23,14 +21,11 @@ import org.http4k.strikt.bodyString
 import org.http4k.strikt.status
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 import java.time.Instant.parse as t
 import java.time.LocalDate.parse as localDate
 
-context(IO)
-@ExtendWith(IOResolver::class)
 class ListStockTests {
 
     private val lastModified = t("2022-02-09T12:00:00Z")
@@ -73,7 +68,7 @@ class ListStockTests {
         val itemsThatFails = object : Items<NoTX> by fake() {
             override fun <R> inTransaction(block: context(NoTX) () -> R) = block(NoTX)
 
-            context(IO, NoTX) override fun load(): Result<StockList, StockListLoadingError> {
+            context(NoTX) override fun load(): Result<StockList, StockListLoadingError> {
                 return Failure(expectedError)
             }
         }

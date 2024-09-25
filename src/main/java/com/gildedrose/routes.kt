@@ -1,8 +1,8 @@
 package com.gildedrose
 
 import com.gildedrose.domain.*
+import com.gildedrose.domain.Item
 import com.gildedrose.foundation.AnalyticsEvent
-import com.gildedrose.foundation.runIO
 import com.gildedrose.http.ResponseErrors
 import com.gildedrose.http.ResponseErrors.withError
 import com.gildedrose.http.catchAll
@@ -43,9 +43,7 @@ internal fun App.addHandler(request: Request): Response {
         return Response(Status.BAD_REQUEST).withError(NewItemFailedEvent(form.errors.toString()))
 
     val item = Item(idLens(form), nameLens(form), sellByLens(form), qualityLens(form))
-    runIO {
-        addItem(newItem = item)
-    }
+    addItem(newItem = item)
     return when {
         request.isHtmx -> listHandler(request)
         else -> Response(Status.SEE_OTHER).header("Location", "/")
@@ -69,23 +67,22 @@ fun FormField.nonBlankString(): BiDiLensSpec<WebForm, NonBlankString> =
 
 private fun App.listHandler(
     request: Request
-): Response =
-    runIO {
-        val now = this.clock()
-        val stockListResult = loadStockList(now)
-        render(stockListResult, now, londonZoneId, request.isHtmx)
-    }
+): Response {
+    val now = clock()
+    val stockListResult1 = loadStockList(now)
+    return render(stockListResult1, now, londonZoneId, request.isHtmx)
+}
 
 private fun App.deleteHandler(
     request: Request
 ): Response {
-    runIO {
-        val itemIds = request.form().map { it.first }.mapNotNull { ID<Item>(it) }.toSet()
-        deleteItemsWithIds(itemIds)
-        return when {
-            request.isHtmx -> listHandler(request)
-            else -> Response(Status.SEE_OTHER).header("Location", "/")
-        }
+    val itemIds = request.form().map<Parameter, String> { it.first }
+        .mapNotNull<String, ID<Item>> { ID<Item>(it) }
+        .toSet<ID<Item>>()
+    deleteItemsWithIds(itemIds)
+    return when {
+        request.isHtmx -> listHandler(request)
+        else -> Response(Status.SEE_OTHER).header("Location", "/")
     }
 }
 

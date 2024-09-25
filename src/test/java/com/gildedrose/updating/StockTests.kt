@@ -1,22 +1,18 @@
 package com.gildedrose.updating
 
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.IO
 import com.gildedrose.item
 import com.gildedrose.oct29
 import com.gildedrose.persistence.InMemoryItems
-import com.gildedrose.testing.IOResolver
 import dev.forkhandles.result4k.valueOrNull
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
 import java.time.ZoneId
 import java.util.concurrent.Callable
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.Executors
 
-@ExtendWith(IOResolver::class)
 class StockTests {
 
     private val initialStockList = StockList(
@@ -34,7 +30,6 @@ class StockTests {
         itemUpdate = { days, _ -> this.copy(quality = this.quality - days) }
     )
 
-    context(IO)
     @Test
     fun `loads stock from file`() {
         val now = Instant.parse("2022-02-09T23:59:59Z")
@@ -44,7 +39,6 @@ class StockTests {
         )
     }
 
-    context(IO)
     @Test
     fun `updates stock if last modified yesterday`() {
         val now = Instant.parse("2022-02-10T00:00:01Z")
@@ -64,7 +58,6 @@ class StockTests {
         }
     }
 
-    context(IO)
     @Test
     fun `updates stock by two days if last modified the day before yesterday`() {
         val now = Instant.parse("2022-02-11T00:00:01Z")
@@ -84,7 +77,6 @@ class StockTests {
         }
     }
 
-    context(IO)
     @Test
     fun `does not update stock if modified tomorrow`() {
         val now = Instant.parse("2022-02-08T00:00:01Z")
@@ -97,7 +89,6 @@ class StockTests {
         }
     }
 
-    context(IO)
     @Test
     fun `parallel execution`() {
         val count = 8
@@ -114,7 +105,6 @@ class StockTests {
         futures.forEach { it.get() }
     }
 
-    context(IO)
     @Test
     fun `sanity check`() {
         for (i in 1..10) {

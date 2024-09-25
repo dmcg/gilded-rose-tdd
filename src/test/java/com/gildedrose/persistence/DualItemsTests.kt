@@ -2,19 +2,15 @@ package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.*
-import com.gildedrose.testing.IOResolver
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.parallel.ResourceLock
 import kotlin.test.assertEquals
 
 
-context(IO)
 @ResourceLock("DATABASE")
-@ExtendWith(IOResolver::class)
 class DualItemsTests : ItemsContract<DbTxContext>() {
 
     private val sourceOfTruth = InMemoryItems()
@@ -32,7 +28,6 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         testDslContext.truncate(com.gildedrose.db.tables.Items.ITEMS).execute()
     }
 
-    context(IO)
     @Test
     fun `returns result from source of truth`() {
         sourceOfTruth.transactionally { save(initialStockList) }
@@ -44,7 +39,6 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         assertEquals(0, events.size)
     }
 
-    context(IO)
     @Test
     fun `raises event if other items disagrees on load`() {
         sourceOfTruth.transactionally { save(initialStockList) }
@@ -62,12 +56,11 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         )
     }
 
-    context(IO)
     @Test
     fun `raises event if other items throws on load`() {
         val exception = RuntimeException("Deliberate")
         val brokenOtherItems = object : DbItems(testDslContext) {
-            context(IO, DbTxContext)
+            context(DbTxContext)
             override fun load():
                 Result<StockList, StockListLoadingError> {
                 throw exception
@@ -89,7 +82,6 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         )
     }
 
-    context(IO)
     @Test
     fun `saves to both items`() {
         assertEquals(
@@ -106,11 +98,10 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         )
     }
 
-    context(IO)
     @Test
     fun `raises event if other items disagrees on save`() {
         val brokenOtherItems = object : DbItems(testDslContext) {
-            context(IO, DbTxContext)
+            context(DbTxContext)
             override fun save(stockList: StockList)
                 : Result<StockList, StockListLoadingError.IOError> {
                 super.save(stockList)
@@ -135,12 +126,11 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         )
     }
 
-    context(IO)
     @Test
     fun `raises event if other items throws on save`() {
         val exception = RuntimeException("Deliberate")
         val brokenOtherItems = object : DbItems(testDslContext) {
-            context(IO, DbTxContext)
+            context(DbTxContext)
             override fun save(stockList: StockList)
                 : Result<StockList, StockListLoadingError.IOError> {
                 throw exception
