@@ -11,8 +11,9 @@ class StockFileItems(private val stockFile: File) : Items<NoTX> {
 
     override fun <R> inTransaction(block: context(NoTX) () -> R) = block(NoTX)
 
-    context(NoTX) override fun save(
-        stockList: StockList
+    override fun save(
+        stockList: StockList,
+        tx: NoTX
     ): Result<StockList, StockListLoadingError.IOError> = try {
         val versionFile = File.createTempFile(
             "${stockFile.nameWithoutExtension}-${stockList.lastModified}-",
@@ -28,6 +29,7 @@ class StockFileItems(private val stockFile: File) : Items<NoTX> {
     } catch (x: IOException) {
         Failure(StockListLoadingError.IOError(x.message ?: "no message"))
     }
+
 
     context(NoTX) override fun load(): Result<StockList, StockListLoadingError> =
         stockFile.loadItems()

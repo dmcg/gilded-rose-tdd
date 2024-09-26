@@ -29,11 +29,11 @@ open class DbItems(
             block(txContext)
         }
 
-    context(DbTxContext)
     override fun save(
-        stockList: StockList
+        stockList: StockList,
+        tx: DbTxContext
     ): Result<StockList, StockListLoadingError.IOError> {
-        dslContext.save(stockList)
+        tx.dslContext.save(stockList)
         return Success(stockList)
     }
 
