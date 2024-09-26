@@ -47,7 +47,7 @@ data class App<TX>(
     private val stock = Stock(items, londonZoneId)
 
     private val pricedLoader = PricedStockListLoader<TX>(
-        loading = { stock.loadAndUpdateStockList(it) },
+        loading = { now, tx -> stock.loadAndUpdateStockList(now, tx) },
         pricing = pricing,
         analytics = analytics
     )
@@ -60,7 +60,7 @@ data class App<TX>(
     fun deleteItemsWithIds(itemIds: Set<ID<Item>>, now: Instant = clock()) {
         items.inTransaction { tx ->
             with(tx) {
-                stock.loadAndUpdateStockList(now).map { stockList ->
+                stock.loadAndUpdateStockList(now, tx).map { stockList ->
                     val newItems = stockList.items.filterNot { it.id in itemIds }
                     if (newItems != stockList.items) {
                         items.save(StockList(now, newItems), tx)
@@ -73,7 +73,7 @@ data class App<TX>(
     fun addItem(newItem: Item, now: Instant = clock()) {
         items.inTransaction { tx ->
             with(tx) {
-                stock.loadAndUpdateStockList(now).map { stockList ->
+                stock.loadAndUpdateStockList(now, tx).map { stockList ->
                     val newItems = stockList.items + newItem
                     items.save(StockList(now, newItems), tx)
                 }

@@ -15,7 +15,7 @@ import java.util.concurrent.Executors
 typealias StockLoadingResult = Result<StockList, StockListLoadingError>
 
 class PricedStockListLoader<TX>(
-    private val loading: context(TX) (Instant) -> StockLoadingResult,
+    private val loading: (Instant, TX) -> StockLoadingResult,
     pricing: (Item) -> Price?,
     private val analytics: Analytics
 ) {
@@ -25,7 +25,7 @@ class PricedStockListLoader<TX>(
 
     context(TX)
     fun load(now: Instant): Result<PricedStockList, StockListLoadingError> =
-        loading(magic<TX>(),now).map {
+        loading(now, magic()).map {
             it.pricedBy(retryingPricing)
         }
 

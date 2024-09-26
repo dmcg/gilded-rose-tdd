@@ -2,7 +2,6 @@ package com.gildedrose.updating
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.magic
 import com.gildedrose.persistence.Items
 import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.Result4k
@@ -17,9 +16,8 @@ class Stock<TX>(
     private val zoneId: ZoneId,
     private val itemUpdate: (Item).(days: Int, on: LocalDate) -> Item = Item::updatedBy
 ) {
-    context(TX)
-    fun loadAndUpdateStockList(now: Instant): Result4k<StockList, StockListLoadingError> =
-        items.load(magic()).flatMap { loadedStockList ->
+    fun loadAndUpdateStockList(now: Instant, tx: TX): Result4k<StockList, StockListLoadingError> =
+        items.load(tx).flatMap { loadedStockList ->
             val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
             when {
                 daysOutOfDate > 0L -> {
@@ -28,7 +26,7 @@ class Stock<TX>(
                         daysOutOfDate.toInt(),
                         LocalDate.ofInstant(now, zoneId)
                     )
-                    items.save(updatedStockList, magic())
+                    items.save(updatedStockList, tx)
                 }
 
                 else -> Success(loadedStockList)

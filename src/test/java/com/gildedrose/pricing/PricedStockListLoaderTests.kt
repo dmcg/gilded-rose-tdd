@@ -53,7 +53,7 @@ class PricedStockListLoaderTests {
     )
     private val analyticsEvents = mutableListOf<AnalyticsEvent>()
     private val loader = PricedStockListLoader<NoTX>(
-        { stockValues.getValue(it) },
+        { now, _ -> stockValues.getValue(now) },
         pricing = { item -> priceList[item]?.invoke(item) },
         analytics = { event -> analyticsEvents.add(event) }
     )
