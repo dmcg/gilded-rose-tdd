@@ -53,8 +53,8 @@ data class App<TX>(
     )
 
     fun loadStockList(now: Instant = clock()): Result<PricedStockList, StockListLoadingError> =
-        items.inTransaction {
-            with(it) { pricedLoader.load(now) }
+        items.inTransaction { tx ->
+            pricedLoader.load(now, tx)
         }
 
     fun deleteItemsWithIds(itemIds: Set<ID<Item>>, now: Instant = clock()) {

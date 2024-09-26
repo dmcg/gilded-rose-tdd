@@ -62,7 +62,7 @@ class PricedStockListLoaderTests {
     fun `loads and prices items`() {
         assertEquals(
             Success(expectedPricedStockList),
-            with(NoTX) { loader.load(sameDayAsLastModified) }
+            loader.load(sameDayAsLastModified, NoTX)
         )
         assertTrue(analyticsEvents.isEmpty())
     }
@@ -73,7 +73,7 @@ class PricedStockListLoaderTests {
         stockValues[sameDayAsLastModified] = Failure(loadingError)
         assertEquals(
             Failure(loadingError),
-            with(NoTX) { loader.load(sameDayAsLastModified) }
+            loader.load(sameDayAsLastModified, NoTX)
         )
         assertTrue(analyticsEvents.isEmpty())
     }
@@ -90,7 +90,7 @@ class PricedStockListLoaderTests {
                     }
                 )
             ),
-            with(NoTX) { loader.load(sameDayAsLastModified) }
+            loader.load(sameDayAsLastModified, NoTX)
         )
         with(analyticsEvents) {
             assertEquals(2, size) // one for the try and the retry
@@ -106,7 +106,7 @@ class PricedStockListLoaderTests {
         }
         assertEquals(
             Success(expectedPricedStockList),
-            with(NoTX) { loader.load(sameDayAsLastModified) }
+            loader.load(sameDayAsLastModified, NoTX)
         )
         with(analyticsEvents) {
             assertEquals(1, size)
