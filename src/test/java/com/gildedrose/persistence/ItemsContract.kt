@@ -1,7 +1,6 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.magic
 import com.gildedrose.item
 import com.gildedrose.oct29
 import dev.forkhandles.result4k.Success
@@ -36,7 +35,7 @@ abstract class ItemsContract<TX : TXContext> {
         items.inTransaction {
             assertEquals(
                 Success(nullStockist),
-                items.load()
+                items.load(it)
             )
         }
     }
@@ -44,41 +43,41 @@ abstract class ItemsContract<TX : TXContext> {
     @Test
     fun `returns last saved stocklist`() {
         items.inTransaction {
-            items.save(initialStockList, magic())
+            items.save(initialStockList, it)
             assertEquals(
                 Success(initialStockList),
-                items.load()
+                items.load(it)
             )
 
             val modifiedStockList = initialStockList.copy(
                 lastModified = initialStockList.lastModified.plusSeconds(3600),
                 items = initialStockList.items.drop(1)
             )
-            items.save(modifiedStockList, magic())
+            items.save(modifiedStockList, it)
             assertEquals(
                 Success(modifiedStockList),
-                items.load()
+                items.load(it)
             )
         }
     }
 
     @Test
     fun `can save an empty stocklist`() {
-        items.inTransaction {
-            items.save(initialStockList, magic())
+        items.inTransaction { tx ->
+            items.save(initialStockList, tx)
             assertEquals(
                 Success(initialStockList),
-                items.load()
+                items.load(tx)
             )
 
             val modifiedStockList = initialStockList.copy(
                 lastModified = initialStockList.lastModified.plusSeconds(3600),
                 items = emptyList()
             )
-            items.save(modifiedStockList, magic())
+            items.save(modifiedStockList, tx)
             assertEquals(
                 Success(modifiedStockList),
-                items.load()
+                items.load(tx)
             )
         }
     }
@@ -100,14 +99,14 @@ abstract class ItemsContract<TX : TXContext> {
             val stockList = initialStockList.copy(lastModified = Instant.parse(candidate))
 
             TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
-            items.inTransactionToo {
+            items.inTransaction {
                 items.save(stockList, it)
             }
             TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
-            items.inTransaction {
+            items.inTransaction { tx ->
                 assertEquals(
                     Success(stockList),
-                    items.load()
+                    items.load(tx)
                 )
             }
         } finally {
@@ -118,7 +117,7 @@ abstract class ItemsContract<TX : TXContext> {
     open fun transactions() {
         val cyclicBarrier = CyclicBarrier(2)
         val thread = thread {
-            items.inTransactionToo {
+            items.inTransaction {
                 items.save(initialStockList, it)
                 cyclicBarrier.await()
                 cyclicBarrier.await()
@@ -127,13 +126,13 @@ abstract class ItemsContract<TX : TXContext> {
 
         cyclicBarrier.await()
         items.inTransaction {
-            assertEquals(Success(nullStockist), items.load())
+            assertEquals(Success(nullStockist), items.load(it))
         }
 
         cyclicBarrier.await()
         thread.join()
         items.inTransaction {
-            assertEquals(Success(initialStockList), items.load())
+            assertEquals(Success(initialStockList), items.load(it))
         }
     }
 

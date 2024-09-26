@@ -19,7 +19,7 @@ class Stock<TX>(
 ) {
     context(TX)
     fun loadAndUpdateStockList(now: Instant): Result4k<StockList, StockListLoadingError> =
-        items.load().flatMap { loadedStockList ->
+        items.load(magic()).flatMap { loadedStockList ->
             val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
             when {
                 daysOutOfDate > 0L -> {

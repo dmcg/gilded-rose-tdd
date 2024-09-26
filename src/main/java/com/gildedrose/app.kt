@@ -54,11 +54,11 @@ data class App<TX>(
 
     fun loadStockList(now: Instant = clock()): Result<PricedStockList, StockListLoadingError> =
         items.inTransaction {
-            pricedLoader.load(now)
+            with(it) { pricedLoader.load(now) }
         }
 
     fun deleteItemsWithIds(itemIds: Set<ID<Item>>, now: Instant = clock()) {
-        items.inTransactionToo { tx ->
+        items.inTransaction { tx ->
             with(tx) {
                 stock.loadAndUpdateStockList(now).map { stockList ->
                     val newItems = stockList.items.filterNot { it.id in itemIds }
@@ -71,7 +71,7 @@ data class App<TX>(
     }
 
     fun addItem(newItem: Item, now: Instant = clock()) {
-        items.inTransactionToo { tx ->
+        items.inTransaction { tx ->
             with(tx) {
                 stock.loadAndUpdateStockList(now).map { stockList ->
                     val newItems = stockList.items + newItem

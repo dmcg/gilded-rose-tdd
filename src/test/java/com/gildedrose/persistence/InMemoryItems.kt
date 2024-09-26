@@ -11,7 +11,7 @@ class InMemoryItems(
 ) : Items<NoTX> {
     private val stockList = AtomicReference(stockList)
 
-    override fun <R> inTransaction(block: context(NoTX) () -> R) = block(NoTX)
+    override fun <R> inTransaction(block: (NoTX) -> R): R = block(NoTX)
 
     override fun save(
         stockList: StockList,
@@ -21,7 +21,7 @@ class InMemoryItems(
         return Success(stockList)
     }
 
-    context(NoTX) override fun load(): Result<StockList, StockListLoadingError> {
+    override fun load(tx: NoTX): Result<StockList, StockListLoadingError> {
         return Success(stockList.get())
     }
 }

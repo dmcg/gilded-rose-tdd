@@ -34,7 +34,7 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         otherItems.transactionally { this.save(initialStockList, it) }
         assertEquals(
             Success(initialStockList),
-            items.transactionally { with (it) { load() } }
+            items.transactionally { load(it) }
         )
         assertEquals(0, events.size)
     }
@@ -45,7 +45,7 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         otherItems.transactionally { this.save(nullStockist, it) }
         assertEquals(
             Success(initialStockList),
-            items.transactionally { with(it) { load() } }
+            items.transactionally { load(it) }
         )
         assertEquals(
             stocklistLoadingMismatch(
@@ -60,8 +60,7 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
     fun `raises event if other items throws on load`() {
         val exception = RuntimeException("Deliberate")
         val brokenOtherItems = object : DbItems(testDslContext) {
-            context(DbTxContext)
-            override fun load():
+            override fun load(tx: DbTxContext):
                 Result<StockList, StockListLoadingError> {
                 throw exception
             }
@@ -74,7 +73,7 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         sourceOfTruth.transactionally { this.save(initialStockList, it) }
         assertEquals(
             Success(initialStockList),
-            items.transactionally { with (it) {load() } }
+            items.transactionally { load(it) }
         )
         assertEquals(
             StockListLoadingExceptionCaught(exception),
@@ -90,11 +89,11 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         )
         assertEquals(
             Success(initialStockList),
-            sourceOfTruth.transactionally { with (it) { load() } }
+            sourceOfTruth.transactionally { load(it) }
         )
         assertEquals(
             Success(initialStockList),
-            otherItems.transactionally { with (it) { load() } }
+            otherItems.transactionally { load(it) }
         )
     }
 
@@ -151,7 +150,7 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
 }
 
 fun <R, TX : TXContext> Items<TX>.transactionally(f: Items<TX>.(tx: TX) -> R): R =
-    inTransactionToo { tx ->
+    inTransaction { tx ->
         f(this, tx)
     }
 

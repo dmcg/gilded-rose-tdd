@@ -14,14 +14,12 @@ class DualItems(
     private val analytics: Analytics
 ) : Items<DbTxContext> {
 
-    override fun <R> inTransaction(
-        block: context(DbTxContext) () -> R
-    ): R = otherItems.inTransaction(block)
+    override fun <R> inTransaction(block: (DbTxContext) -> R): R = otherItems.inTransaction(block)
 
     override fun save(
         stockList: StockList,
         tx: DbTxContext
-    ): Result<StockList, StockListLoadingError.IOError> = sourceOfTruth.inTransactionToo { innerTx ->
+    ): Result<StockList, StockListLoadingError.IOError> = sourceOfTruth.inTransaction { innerTx ->
         sourceOfTruth.save(stockList, innerTx)
     }.also { result ->
         try {
@@ -33,14 +31,12 @@ class DualItems(
         }
     }
 
-
-    context(DbTxContext)
-    override fun load(): Result<StockList, StockListLoadingError> =
+    override fun load(tx: DbTxContext): Result<StockList, StockListLoadingError> =
         sourceOfTruth.inTransaction {
-            sourceOfTruth.load()
+            sourceOfTruth.load(it)
         }.also { result ->
             try {
-                val otherResult = otherItems.load()
+                val otherResult = otherItems.load(tx)
                 if (result != otherResult)
                     analytics(stocklistLoadingMismatch(result, otherResult))
             } catch (throwable: Throwable) {

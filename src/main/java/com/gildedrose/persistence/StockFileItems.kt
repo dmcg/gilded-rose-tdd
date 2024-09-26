@@ -9,7 +9,7 @@ import java.io.IOException
 
 class StockFileItems(private val stockFile: File) : Items<NoTX> {
 
-    override fun <R> inTransaction(block: context(NoTX) () -> R) = block(NoTX)
+    override fun <R> inTransaction(block: (NoTX) -> R): R = block(NoTX)
 
     override fun save(
         stockList: StockList,
@@ -30,8 +30,8 @@ class StockFileItems(private val stockFile: File) : Items<NoTX> {
         Failure(StockListLoadingError.IOError(x.message ?: "no message"))
     }
 
-
-    context(NoTX) override fun load(): Result<StockList, StockListLoadingError> =
-        stockFile.loadItems()
+    override fun load(tx: NoTX): Result<StockList, StockListLoadingError> {
+        return stockFile.loadItems()
+    }
 }
 

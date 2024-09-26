@@ -23,7 +23,7 @@ open class DbItems(
         val untransactionalDSLContext = dslContext
     }
 
-    override fun <R> inTransaction(block: context(DbTxContext) () -> R): R =
+    override fun <R> inTransaction(block: (DbTxContext) -> R): R =
         forInTransaction.untransactionalDSLContext.transactionResult { trx: Configuration ->
             val txContext = DbTxContext(trx.dsl())
             block(txContext)
@@ -37,9 +37,8 @@ open class DbItems(
         return Success(stockList)
     }
 
-    context(DbTxContext)
-    override fun load(): Result<StockList, StockListLoadingError> {
-        return Success(dslContext.load())
+    override fun load(tx: DbTxContext): Result<StockList, StockListLoadingError> {
+        return Success(tx.dslContext.load())
     }
 }
 
