@@ -10,7 +10,7 @@ import java.time.Instant
 import java.time.LocalDate
 
 abstract class DeleteItemsAcceptanceContract(
-    val doDelete: (App, Set<Item>) -> Unit
+    val doDelete: (App<*>, Set<Item>) -> Unit
 )
 {
     private val lastModified = Instant.parse("2022-02-09T12:00:00Z")

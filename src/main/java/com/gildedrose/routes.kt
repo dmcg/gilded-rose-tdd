@@ -18,7 +18,7 @@ import org.http4k.routing.routes
 import java.time.Duration
 
 
-val App.routes: HttpHandler
+val App<*>.routes: HttpHandler
     get() = ServerFilters.RequestTracing()
         .then(reportHttpTransactions(Duration.ofSeconds(1), analytics))
         .then(catchAll(analytics))
@@ -32,7 +32,7 @@ val App.routes: HttpHandler
             )
         )
 
-internal fun App.addHandler(request: Request): Response {
+internal fun App<*>.addHandler(request: Request): Response {
     val idLens = FormField.nonBlankString().map { ID<Item>(it) }.required("new-itemId")
     val nameLens = FormField.nonBlankString().required("new-itemName")
     val sellByLens = FormField.localDate().optional("new-itemSellBy")
@@ -65,7 +65,7 @@ fun FormField.nonBlankString(): BiDiLensSpec<WebForm, NonBlankString> =
         NonBlankString(s) ?: throw IllegalArgumentException("String cannot be blank")
     }, { it.toString() }))
 
-private fun App.listHandler(
+private fun App<*>.listHandler(
     request: Request
 ): Response {
     val now = clock()
@@ -73,7 +73,7 @@ private fun App.listHandler(
     return render(stockListResult1, now, londonZoneId, request.isHtmx)
 }
 
-private fun App.deleteHandler(
+private fun App<*>.deleteHandler(
     request: Request
 ): Response {
     val itemIds = request.form().map<Parameter, String> { it.first }

@@ -20,31 +20,33 @@ import java.time.ZoneId
 val stdOutAnalytics = loggingAnalytics(::println)
 val londonZoneId = ZoneId.of("Europe/London")
 
-data class App(
-    val items: Items<TXContext>,
+data class App<TX>(
+    val items: Items<TX>,
     val features: Features = Features(),
     val clock: () -> Instant = Instant::now,
     val analytics: Analytics = stdOutAnalytics,
     val pricing: (Item) -> Price?
 ) {
-    constructor(
-        stockFile: File = File("stock.tsv"),
-        dbConfig: DbConfig,
-        features: Features = Features(),
-        valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
-        clock: () -> Instant = Instant::now,
-        analytics: Analytics = stdOutAnalytics
-    ) : this(
-        DualItems(StockFileItems(stockFile), DbItems(dbConfig.toDslContext()), analytics),
-        features,
-        clock,
-        analytics,
-        valueElfClient(valueElfUri)
-    )
+    companion object {
+        operator fun invoke(
+            stockFile: File = File("stock.tsv"),
+            dbConfig: DbConfig,
+            features: Features = Features(),
+            valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
+            clock: () -> Instant = Instant::now,
+            analytics: Analytics = stdOutAnalytics
+        ) = App(
+            DualItems(StockFileItems(stockFile), DbItems(dbConfig.toDslContext()), analytics),
+            features,
+            clock,
+            analytics,
+            valueElfClient(valueElfUri)
+        )
+    }
 
     private val stock = Stock(items, londonZoneId)
 
-    private val pricedLoader = PricedStockListLoader(
+    private val pricedLoader = PricedStockListLoader<TX>(
         loading = { stock.loadAndUpdateStockList(it) },
         pricing = pricing,
         analytics = analytics

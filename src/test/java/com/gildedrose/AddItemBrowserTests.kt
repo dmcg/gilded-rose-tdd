@@ -12,7 +12,7 @@ class AddItemBrowserTests : AddItemAcceptanceContract(
     doAdd = ::addWithPlaywright
 )
 
-private fun addWithPlaywright(app: App, newItem: Item) {
+private fun addWithPlaywright(app: App<*>, newItem: Item) {
     runWithPlaywright(
         app.routes,
         launchOptions = launchOptions(showRunning)

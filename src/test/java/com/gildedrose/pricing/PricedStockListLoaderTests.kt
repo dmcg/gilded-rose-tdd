@@ -52,7 +52,7 @@ class PricedStockListLoaderTests {
         loadedStockList[2] to { Price(999) }
     )
     private val analyticsEvents = mutableListOf<AnalyticsEvent>()
-    private val loader = PricedStockListLoader(
+    private val loader = PricedStockListLoader<NoTX>(
         { stockValues.getValue(it) },
         pricing = { item -> priceList[item]?.invoke(item) },
         analytics = { event -> analyticsEvents.add(event) }

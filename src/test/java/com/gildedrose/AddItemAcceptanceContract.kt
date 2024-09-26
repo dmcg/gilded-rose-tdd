@@ -11,7 +11,7 @@ import java.time.Instant
 import java.time.LocalDate
 
 abstract class AddItemAcceptanceContract(
-    private val doAdd: (App, Item) -> Unit
+    private val doAdd: (App<*>, Item) -> Unit
 ) {
     private val lastModified = Instant.parse("2022-02-09T12:00:00Z")
     protected val sameDayAsLastModified = Instant.parse("2022-02-09T23:59:59Z")

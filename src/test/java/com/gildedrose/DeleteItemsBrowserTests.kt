@@ -17,7 +17,7 @@ class DeleteItemsBrowserTests : DeleteItemsAcceptanceContract(
     }
 }
 
-private fun deleteWithPlaywright(app: App, toDelete: Set<Item>) {
+private fun deleteWithPlaywright(app: App<*>, toDelete: Set<Item>) {
     runWithPlaywright(
         app.routes,
         launchOptions = launchOptions(showRunning)

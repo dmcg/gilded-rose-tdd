@@ -97,7 +97,7 @@ class AddItemHttpTests : AddItemAcceptanceContract(
     }
 }
 
-private fun addItemWithHttp(app: App, newItem: Item) {
+private fun addItemWithHttp(app: App<*>, newItem: Item) {
     val response = app.routes(
         postFormToAddItemsRoute().withFormFor(newItem)
     )
@@ -111,7 +111,7 @@ class AddItemHttpNoHtmxTests : AddItemAcceptanceContract(
     doAdd = ::addItemWithHttpNoHtmx
 )
 
-private fun addItemWithHttpNoHtmx(app: App, newItem: Item) {
+private fun addItemWithHttpNoHtmx(app: App<*>, newItem: Item) {
     val response = app.routes(
         postFormToAddItemsRoute(withHTMX = false)
             .withFormFor(newItem)

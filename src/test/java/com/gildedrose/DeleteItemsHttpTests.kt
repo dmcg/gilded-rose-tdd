@@ -14,7 +14,7 @@ class DeleteItemsHttpTests : DeleteItemsAcceptanceContract(
     doDelete = ::deleteWithHttp
 )
 
-private fun deleteWithHttp(app: App, toDelete: Set<Item>) {
+private fun deleteWithHttp(app: App<*>, toDelete: Set<Item>) {
     val request = Request(Method.POST, "/delete-items")
         .header("HX-Request", "True")
         .withDeleteForm(toDelete)
@@ -29,7 +29,7 @@ class DeleteItemsHttpWithNoHtmxTests : DeleteItemsAcceptanceContract(
     doDelete = ::deleteWithHttpNoHtmx
 )
 
-private fun deleteWithHttpNoHtmx(app: App, toDelete: Set<Item>) {
+private fun deleteWithHttpNoHtmx(app: App<*>, toDelete: Set<Item>) {
     val request = Request(Method.POST, "/delete-items")
         .withDeleteForm(toDelete)
     val response = app.routes(request)

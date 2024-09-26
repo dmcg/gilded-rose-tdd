@@ -3,7 +3,6 @@ package com.gildedrose.pricing
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.*
 import com.gildedrose.persistence.StockListLoadingError
-import com.gildedrose.persistence.TXContext
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
 import dev.forkhandles.result4k.peekFailure
@@ -15,8 +14,8 @@ import java.util.concurrent.Executors
 
 typealias StockLoadingResult = Result<StockList, StockListLoadingError>
 
-class PricedStockListLoader(
-    private val loading: context(TXContext) (Instant) -> StockLoadingResult,
+class PricedStockListLoader<TX>(
+    private val loading: context(TX) (Instant) -> StockLoadingResult,
     pricing: (Item) -> Price?,
     private val analytics: Analytics
 ) {
@@ -24,9 +23,9 @@ class PricedStockListLoader(
     private val retryingPricing: (Item) -> Price? =
         pricing.wrappedWith(retry(1, reporter = ::reportException))
 
-    context(TXContext)
+    context(TX)
     fun load(now: Instant): Result<PricedStockList, StockListLoadingError> =
-        loading(magic<TXContext>(),now).map {
+        loading(magic<TX>(),now).map {
             it.pricedBy(retryingPricing)
         }
 

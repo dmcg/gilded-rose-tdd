@@ -93,7 +93,7 @@ class ListStockTests {
     }
 }
 
-fun App.expectedRenderingFor(
+fun App<*>.expectedRenderingFor(
     pricedStocklist: Success<PricedStockList>
 ) = render(pricedStocklist, clock(), londonZoneId, justTable = false).bodyString()
 

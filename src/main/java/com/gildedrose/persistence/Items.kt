@@ -16,13 +16,20 @@ object NoTX: TXContext()
 /**
  * Repository for our StockList.
  */
-interface Items<out TX: TXContext> {
+interface Items<TX> {
 
     fun <R> inTransaction(block: context(TX) () -> R): R
 
     context(TX) fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError>
+
+    fun save(
+        stockList: StockList,
+        tx: TX
+    ): Result<StockList, StockListLoadingError.IOError> = with(tx) {
+        save(stockList)
+    }
 
     context(TX) fun load(): Result<StockList, StockListLoadingError>
 }

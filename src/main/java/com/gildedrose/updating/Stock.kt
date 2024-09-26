@@ -4,7 +4,6 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
 import com.gildedrose.persistence.Items
 import com.gildedrose.persistence.StockListLoadingError
-import com.gildedrose.persistence.TXContext
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.flatMap
@@ -12,12 +11,12 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
-class Stock(
-    val items: Items<TXContext>,
+class Stock<TX>(
+    val items: Items<TX>,
     private val zoneId: ZoneId,
     private val itemUpdate: (Item).(days: Int, on: LocalDate) -> Item = Item::updatedBy
 ) {
-    context(TXContext)
+    context(TX)
     fun loadAndUpdateStockList(now: Instant): Result4k<StockList, StockListLoadingError> =
         items.load().flatMap { loadedStockList ->
             val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
