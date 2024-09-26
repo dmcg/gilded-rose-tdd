@@ -58,21 +58,25 @@ data class App<TX>(
         }
 
     fun deleteItemsWithIds(itemIds: Set<ID<Item>>, now: Instant = clock()) {
-        items.inTransaction {
-            stock.loadAndUpdateStockList(now).map { stockList ->
-                val newItems = stockList.items.filterNot { it.id in itemIds }
-                if (newItems != stockList.items) {
-                    items.save(StockList(now, newItems))
+        items.inTransactionToo { tx ->
+            with(tx) {
+                stock.loadAndUpdateStockList(now).map { stockList ->
+                    val newItems = stockList.items.filterNot { it.id in itemIds }
+                    if (newItems != stockList.items) {
+                        items.save(StockList(now, newItems), tx)
+                    }
                 }
             }
         }
     }
 
     fun addItem(newItem: Item, now: Instant = clock()) {
-        items.inTransaction {
-            stock.loadAndUpdateStockList(now).map { stockList ->
-                val newItems = stockList.items + newItem
-                items.save(StockList(now, newItems))
+        items.inTransactionToo { tx ->
+            with(tx) {
+                stock.loadAndUpdateStockList(now).map { stockList ->
+                    val newItems = stockList.items + newItem
+                    items.save(StockList(now, newItems), tx)
+                }
             }
         }
     }

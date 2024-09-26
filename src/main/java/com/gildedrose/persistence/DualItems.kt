@@ -21,11 +21,11 @@ class DualItems(
     override fun save(
         stockList: StockList,
         tx: DbTxContext
-    ): Result<StockList, StockListLoadingError.IOError> = sourceOfTruth.inTransaction {
-        sourceOfTruth.save(stockList)
+    ): Result<StockList, StockListLoadingError.IOError> = sourceOfTruth.inTransactionToo { innerTx ->
+        sourceOfTruth.save(stockList, innerTx)
     }.also { result ->
         try {
-            val otherResult = with(tx) { otherItems.save(stockList) }
+            val otherResult = with(tx) { otherItems.save(stockList, tx) }
             if (result != otherResult)
                 analytics(stocklistSavingMismatch(result, otherResult))
         } catch (throwable: Throwable) {

@@ -1,6 +1,7 @@
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
+import com.gildedrose.foundation.magic
 import com.gildedrose.item
 import com.gildedrose.oct29
 import dev.forkhandles.result4k.Success
@@ -43,7 +44,7 @@ abstract class ItemsContract<TX : TXContext> {
     @Test
     fun `returns last saved stocklist`() {
         items.inTransaction {
-            items.save(initialStockList)
+            items.save(initialStockList, magic())
             assertEquals(
                 Success(initialStockList),
                 items.load()
@@ -53,7 +54,7 @@ abstract class ItemsContract<TX : TXContext> {
                 lastModified = initialStockList.lastModified.plusSeconds(3600),
                 items = initialStockList.items.drop(1)
             )
-            items.save(modifiedStockList)
+            items.save(modifiedStockList, magic())
             assertEquals(
                 Success(modifiedStockList),
                 items.load()
@@ -64,7 +65,7 @@ abstract class ItemsContract<TX : TXContext> {
     @Test
     fun `can save an empty stocklist`() {
         items.inTransaction {
-            items.save(initialStockList)
+            items.save(initialStockList, magic())
             assertEquals(
                 Success(initialStockList),
                 items.load()
@@ -74,7 +75,7 @@ abstract class ItemsContract<TX : TXContext> {
                 lastModified = initialStockList.lastModified.plusSeconds(3600),
                 items = emptyList()
             )
-            items.save(modifiedStockList)
+            items.save(modifiedStockList, magic())
             assertEquals(
                 Success(modifiedStockList),
                 items.load()
@@ -99,8 +100,8 @@ abstract class ItemsContract<TX : TXContext> {
             val stockList = initialStockList.copy(lastModified = Instant.parse(candidate))
 
             TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
-            items.inTransaction {
-                items.save(stockList)
+            items.inTransactionToo {
+                items.save(stockList, it)
             }
             TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
             items.inTransaction {
@@ -117,8 +118,8 @@ abstract class ItemsContract<TX : TXContext> {
     open fun transactions() {
         val cyclicBarrier = CyclicBarrier(2)
         val thread = thread {
-            items.inTransaction {
-                items.save(initialStockList)
+            items.inTransactionToo {
+                items.save(initialStockList, it)
                 cyclicBarrier.await()
                 cyclicBarrier.await()
             }

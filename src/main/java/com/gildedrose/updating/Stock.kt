@@ -2,6 +2,7 @@ package com.gildedrose.updating
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
+import com.gildedrose.foundation.magic
 import com.gildedrose.persistence.Items
 import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.Result4k
@@ -27,7 +28,7 @@ class Stock<TX>(
                         daysOutOfDate.toInt(),
                         LocalDate.ofInstant(now, zoneId)
                     )
-                    items.save(updatedStockList)
+                    items.save(updatedStockList, magic())
                 }
 
                 else -> Success(loadedStockList)
