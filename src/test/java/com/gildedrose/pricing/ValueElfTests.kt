@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.net.URI
 
-@Suppress("JUnitMalformedDeclaration") // confused by the Fixture receivers
 @EnabledIfSystemProperty(named = "run-external-tests", matches = "true")
 class ValueElfTests : ValueElfContract(
     Fixture(
@@ -21,9 +20,8 @@ class ValueElfTests : ValueElfContract(
         expectedPrice = Price(709)!!
     )
 ) {
-    context(Fixture)
     @Test
-    fun `fails sometimes`() {
+    fun Fixture.`fails sometimes`() {
         val result: List<Result<Price?, Exception>> = (1..500).map {
             resultFrom {
                 client.invoke(aFoundItem)
@@ -35,9 +33,8 @@ class ValueElfTests : ValueElfContract(
         println("Successes = ${successes.size}, failures = ${failures.size}, ratio = $successRatio")
     }
 
-    context(Fixture)
     @Test
-    fun `retry prevents failure`() {
+    fun Fixture.`retry prevents failure`() {
         val retryingClient = retry(1, function = { it: Item -> client(it) })
         val result: List<Result<Price?, Exception>> = (1..500).map {
             resultFrom {
@@ -49,4 +46,3 @@ class ValueElfTests : ValueElfContract(
         assertTrue(failures.isEmpty())
     }
 }
-

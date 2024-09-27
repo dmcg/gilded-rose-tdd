@@ -4,7 +4,6 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
-import com.gildedrose.foundation.magic
 import com.gildedrose.persistence.InMemoryItems
 import com.gildedrose.persistence.Items
 import com.gildedrose.persistence.NoTX
@@ -31,7 +30,7 @@ data class Fixture(
     fun checkStockListIs(stockList: StockList) {
         assertEquals(
             Success(stockList),
-            this.items.transactionally { tx -> with(tx) { load(magic()) } }
+            this.items.transactionally { tx -> load(tx) }
         )
     }
 }
