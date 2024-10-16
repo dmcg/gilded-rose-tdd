@@ -98,6 +98,10 @@ I'd like a way to add new items when they come into stock.
 
 I accidentally deleted an item the other day. Can we stop that from happening?
 
+## ☐ Edit Items in the Stock List
+
+I would like to be able to edit existing items in the stock list
+
 ## ☐ Reduce the Value Elf Service Charges
 
 Inflation has increased Elf wages - can we reduce the bill?
@@ -106,7 +110,6 @@ Inflation has increased Elf wages - can we reduce the bill?
 
 ## ☐ Let people buy on the Internet
 
-## ☐ Edit Items in the Stock List
 
 
 
