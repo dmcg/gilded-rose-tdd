@@ -34,8 +34,8 @@ fun Page.checkReloadsTheSame() {
     val renderedPage = content()
     reload()
     assertEquals(
-        content().withNoEmptyLines(),
-        renderedPage.withNoEmptyClassAttributes().withNoEmptyLines()
+        content().normalised(),
+        renderedPage.withNoEmptyClassAttributes().normalised()
     )
 }
 
@@ -66,6 +66,6 @@ fun Page.checkBoxNamed(name: String): Locator =
 
 
 private fun String.withNoEmptyClassAttributes() = replace(""" class=""""", "")
-private fun String.withNoEmptyLines(): String {
-    return this.lines().filter { it.isNotBlank() }.joinToString("\n")
+private fun String.normalised(): String {
+    return this.lines().filter { it.isNotBlank() }.map { it.trim() }.joinToString("\n")
 }

@@ -70,7 +70,7 @@ private fun App<*>.listHandler(
 ): Response {
     val now = clock()
     val stockListResult1 = loadStockList(now)
-    return render(stockListResult1, now, londonZoneId, request.isHtmx)
+    return render(stockListResult1, now, londonZoneId, justTable = request.isHtmx)
 }
 
 private fun App<*>.deleteHandler(

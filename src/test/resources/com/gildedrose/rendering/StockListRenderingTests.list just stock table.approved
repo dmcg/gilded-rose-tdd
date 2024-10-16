@@ -1,53 +1,47 @@
-
-    <table>
-        <tr>
-        <th></th>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Sell By Date</th>
-            <th>Sell By Days</th>
-            <th>Quality</th>
-            <th>Price</th>
-        </tr>
-        <tr>
-            <td></td>
-            <td><input form="new-item-form" type="text" name="new-itemId" required size="5" aria-label="New item id"></td>
-            <td><input form="new-item-form" type="text" name="new-itemName" required size="20" aria-label="New item name"></td>
-            <td><input form="new-item-form" type="date" name="new-itemSellBy" aria-label="New item sell by date"></td>
-            <td></td>
-            <td style="text-align: right"><input type="number" form="new-item-form" name="new-itemQuality" required min="0" size="3" aria-label="New item quality"></td>
-            <td><input type="submit" form="new-item-form" value="Add" style="width: 100%" aria-label="Add new item"></td>
-        </tr>
-        
-            <tr>
-                <td><input type="checkbox" name="B1" aria-label="Select item"></td>
-                <td>B1</td>
-                <td>banana</td>
-                <td>28 October 2021</td>
-                <td style="text-align: right">-1</td>
-                <td style="text-align: right">42</td>
-                <td style="text-align: right">£1.00</td>
-            </tr>
-        
-            <tr>
-                <td><input type="checkbox" name="K1" aria-label="Select item"></td>
-                <td>K1</td>
-                <td>kumquat</td>
-                <td>30 October 2021</td>
-                <td style="text-align: right">1</td>
-                <td style="text-align: right">101</td>
-                <td style="text-align: right">error</td>
-            </tr>
-        
-            <tr>
-                <td><input type="checkbox" name="U1" aria-label="Select item"></td>
-                <td>U1</td>
-                <td>undated</td>
-                <td></td>
-                <td style="text-align: right">0</td>
-                <td style="text-align: right">50</td>
-                <td style="text-align: right"></td>
-            </tr>
-        
-    </table>
-
+<table>
+  <tr>
+    <th></th>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Sell By Date</th>
+    <th>Sell By Days</th>
+    <th>Quality</th>
+    <th>Price</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td><input form="new-item-form" type="text" name="new-itemId" required="required" size="5" aria-label="New item id"></td>
+    <td><input form="new-item-form" type="text" name="new-itemName" required="required" size="20" aria-label="New item name"></td>
+    <td><input form="new-item-form" type="date" name="new-itemSellBy" aria-label="New item sell by date"></td>
+    <td></td>
+    <td style="text-align: right"><input form="new-item-form" type="number" name="new-itemQuality" required="required" min="0" size="3" aria-label="New item quality"></td>
+    <td><input type="submit" form="new-item-form" value="Add" style="width: 100%" aria-label="Add new item"></td>
+  </tr>
+  <tr>
+    <td><input type="checkbox" name="B1" aria-label="Select item"></td>
+    <td>B1</td>
+    <td>banana</td>
+    <td>28 October 2021</td>
+    <td style="text-align: right">-1</td>
+    <td style="text-align: right">42</td>
+    <td style="text-align: right">£1.00</td>
+  </tr>
+  <tr>
+    <td><input type="checkbox" name="K1" aria-label="Select item"></td>
+    <td>K1</td>
+    <td>kumquat</td>
+    <td>30 October 2021</td>
+    <td style="text-align: right">1</td>
+    <td style="text-align: right">101</td>
+    <td style="text-align: right">error</td>
+  </tr>
+  <tr>
+    <td><input type="checkbox" name="U1" aria-label="Select item"></td>
+    <td>U1</td>
+    <td>undated</td>
+    <td></td>
+    <td style="text-align: right">0</td>
+    <td style="text-align: right">50</td>
+    <td style="text-align: right"></td>
+  </tr>
+</table>
