@@ -53,7 +53,7 @@ class PricedStockListLoaderTests {
     )
     private val analyticsEvents = mutableListOf<AnalyticsEvent>()
     private val loader = PricedStockListLoader<NoTX>(
-        { now, _ -> stockValues.getValue(now) },
+        { stockValues.getValue(it) },
         pricing = { item -> priceList[item]?.invoke(item) },
         analytics = { event -> analyticsEvents.add(event) }
     )
@@ -62,7 +62,7 @@ class PricedStockListLoaderTests {
     fun `loads and prices items`() {
         assertEquals(
             Success(expectedPricedStockList),
-            loader.load(sameDayAsLastModified, NoTX)
+            with(NoTX) { loader.load(sameDayAsLastModified) }
         )
         assertTrue(analyticsEvents.isEmpty())
     }
@@ -73,7 +73,7 @@ class PricedStockListLoaderTests {
         stockValues[sameDayAsLastModified] = Failure(loadingError)
         assertEquals(
             Failure(loadingError),
-            loader.load(sameDayAsLastModified, NoTX)
+            with(NoTX) { loader.load(sameDayAsLastModified) }
         )
         assertTrue(analyticsEvents.isEmpty())
     }
@@ -90,7 +90,7 @@ class PricedStockListLoaderTests {
                     }
                 )
             ),
-            loader.load(sameDayAsLastModified, NoTX)
+            with(NoTX) { loader.load(sameDayAsLastModified) }
         )
         with(analyticsEvents) {
             assertEquals(2, size) // one for the try and the retry
@@ -106,7 +106,7 @@ class PricedStockListLoaderTests {
         }
         assertEquals(
             Success(expectedPricedStockList),
-            loader.load(sameDayAsLastModified, NoTX)
+            with(NoTX) { loader.load(sameDayAsLastModified) }
         )
         with(analyticsEvents) {
             assertEquals(1, size)

@@ -66,9 +66,9 @@ class ListStockTests {
         val expectedError = StockListLoadingError.BlankName("B1\t\t2022-02-08\t42")
 
         val itemsThatFails = object : Items<NoTX> by fake() {
-            override fun <R> inTransaction(block: (NoTX) -> R) = block(NoTX)
+            override fun <R> inTransaction(block: context(NoTX) () -> R) = block(NoTX)
 
-            override fun load(tx: NoTX): Result<StockList, StockListLoadingError> {
+            context(NoTX) override fun load(): Result<StockList, StockListLoadingError> {
                 return Failure(expectedError)
             }
         }

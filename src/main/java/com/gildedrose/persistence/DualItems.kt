@@ -14,29 +14,34 @@ class DualItems(
     private val analytics: Analytics
 ) : Items<DbTxContext> {
 
-    override fun <R> inTransaction(block: (DbTxContext) -> R): R = otherItems.inTransaction(block)
+    override fun <R> inTransaction(
+        block: context(DbTxContext) () -> R
+    ): R = otherItems.inTransaction(block)
 
+    context(DbTxContext)
     override fun save(
-        stockList: StockList,
-        tx: DbTxContext
-    ): Result<StockList, StockListLoadingError.IOError> = sourceOfTruth.inTransaction { innerTx ->
-        sourceOfTruth.save(stockList, innerTx)
-    }.also { result ->
-        try {
-            val otherResult = with(tx) { otherItems.save(stockList, tx) }
-            if (result != otherResult)
-                analytics(stocklistSavingMismatch(result, otherResult))
-        } catch (throwable: Throwable) {
-            analytics(StockListSavingExceptionCaught(throwable))
-        }
-    }
-
-    override fun load(tx: DbTxContext): Result<StockList, StockListLoadingError> =
+        stockList: StockList
+    ): Result<StockList, StockListLoadingError.IOError> =
         sourceOfTruth.inTransaction {
-            sourceOfTruth.load(it)
+            sourceOfTruth.save(stockList)
         }.also { result ->
             try {
-                val otherResult = otherItems.load(tx)
+                val otherResult = otherItems.save(stockList)
+                if (result != otherResult)
+                    analytics(stocklistSavingMismatch(result, otherResult))
+            } catch (throwable: Throwable) {
+                analytics(StockListSavingExceptionCaught(throwable))
+            }
+        }
+
+
+    context(DbTxContext)
+    override fun load(): Result<StockList, StockListLoadingError> =
+        sourceOfTruth.inTransaction {
+            sourceOfTruth.load()
+        }.also { result ->
+            try {
+                val otherResult = otherItems.load()
                 if (result != otherResult)
                     analytics(stocklistLoadingMismatch(result, otherResult))
             } catch (throwable: Throwable) {

@@ -35,9 +35,7 @@ class StockTests {
         val now = Instant.parse("2022-02-09T23:59:59Z")
         assertEquals(
             initialStockList,
-            items.inTransaction { tx ->
-                stock.loadAndUpdateStockList(now, tx).valueOrNull()
-            }
+            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
         )
     }
 
@@ -53,10 +51,10 @@ class StockTests {
         )
         assertEquals(
             expectedUpdatedResult,
-            items.inTransaction { stock.loadAndUpdateStockList(now, it).valueOrNull() }
+            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
         )
         items.inTransaction {
-            assertEquals(expectedUpdatedResult, items.load(it).valueOrNull())
+            assertEquals(expectedUpdatedResult, items.load().valueOrNull())
         }
     }
 
@@ -72,10 +70,10 @@ class StockTests {
         )
         assertEquals(
             expectedUpdatedResult,
-            items.inTransaction { tx -> stock.loadAndUpdateStockList(now, tx).valueOrNull() }
+            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
         )
         items.inTransaction {
-            assertEquals(expectedUpdatedResult, items.load(it).valueOrNull())
+            assertEquals(expectedUpdatedResult, items.load().valueOrNull())
         }
     }
 
@@ -84,11 +82,10 @@ class StockTests {
         val now = Instant.parse("2022-02-08T00:00:01Z")
         assertEquals(
             initialStockList,
-            items.inTransaction { tx ->
-                stock.loadAndUpdateStockList(now, tx).valueOrNull() }
+            items.inTransaction { stock.loadAndUpdateStockList(now).valueOrNull() }
         )
         items.inTransaction {
-            assertEquals(initialStockList, items.load(it).valueOrNull())
+            assertEquals(initialStockList, items.load().valueOrNull())
         }
     }
 

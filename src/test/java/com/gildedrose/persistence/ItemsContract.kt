@@ -35,7 +35,7 @@ abstract class ItemsContract<TX : TXContext> {
         items.inTransaction {
             assertEquals(
                 Success(nullStockist),
-                items.load(it)
+                items.load()
             )
         }
     }
@@ -43,41 +43,41 @@ abstract class ItemsContract<TX : TXContext> {
     @Test
     fun `returns last saved stocklist`() {
         items.inTransaction {
-            items.save(initialStockList, it)
+            items.save(initialStockList)
             assertEquals(
                 Success(initialStockList),
-                items.load(it)
+                items.load()
             )
 
             val modifiedStockList = initialStockList.copy(
                 lastModified = initialStockList.lastModified.plusSeconds(3600),
                 items = initialStockList.items.drop(1)
             )
-            items.save(modifiedStockList, it)
+            items.save(modifiedStockList)
             assertEquals(
                 Success(modifiedStockList),
-                items.load(it)
+                items.load()
             )
         }
     }
 
     @Test
     fun `can save an empty stocklist`() {
-        items.inTransaction { tx ->
-            items.save(initialStockList, tx)
+        items.inTransaction {
+            items.save(initialStockList)
             assertEquals(
                 Success(initialStockList),
-                items.load(tx)
+                items.load()
             )
 
             val modifiedStockList = initialStockList.copy(
                 lastModified = initialStockList.lastModified.plusSeconds(3600),
                 items = emptyList()
             )
-            items.save(modifiedStockList, tx)
+            items.save(modifiedStockList)
             assertEquals(
                 Success(modifiedStockList),
-                items.load(tx)
+                items.load()
             )
         }
     }
@@ -100,13 +100,13 @@ abstract class ItemsContract<TX : TXContext> {
 
             TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
             items.inTransaction {
-                items.save(stockList, it)
+                items.save(stockList)
             }
             TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
-            items.inTransaction { tx ->
+            items.inTransaction {
                 assertEquals(
                     Success(stockList),
-                    items.load(tx)
+                    items.load()
                 )
             }
         } finally {
@@ -118,7 +118,7 @@ abstract class ItemsContract<TX : TXContext> {
         val cyclicBarrier = CyclicBarrier(2)
         val thread = thread {
             items.inTransaction {
-                items.save(initialStockList, it)
+                items.save(initialStockList)
                 cyclicBarrier.await()
                 cyclicBarrier.await()
             }
@@ -126,13 +126,13 @@ abstract class ItemsContract<TX : TXContext> {
 
         cyclicBarrier.await()
         items.inTransaction {
-            assertEquals(Success(nullStockist), items.load(it))
+            assertEquals(Success(nullStockist), items.load())
         }
 
         cyclicBarrier.await()
         thread.join()
         items.inTransaction {
-            assertEquals(Success(initialStockList), items.load(it))
+            assertEquals(Success(initialStockList), items.load())
         }
     }
 

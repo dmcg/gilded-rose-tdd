@@ -30,22 +30,22 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
 
     @Test
     fun `returns result from source of truth`() {
-        sourceOfTruth.transactionally { this.save(initialStockList, it) }
-        otherItems.transactionally { this.save(initialStockList, it) }
+        sourceOfTruth.transactionally { save(initialStockList) }
+        otherItems.transactionally { save(initialStockList) }
         assertEquals(
             Success(initialStockList),
-            items.transactionally { load(it) }
+            items.transactionally { load() }
         )
         assertEquals(0, events.size)
     }
 
     @Test
     fun `raises event if other items disagrees on load`() {
-        sourceOfTruth.transactionally { this.save(initialStockList, it) }
-        otherItems.transactionally { this.save(nullStockist, it) }
+        sourceOfTruth.transactionally { save(initialStockList) }
+        otherItems.transactionally { save(nullStockist) }
         assertEquals(
             Success(initialStockList),
-            items.transactionally { load(it) }
+            items.transactionally { load() }
         )
         assertEquals(
             stocklistLoadingMismatch(
@@ -60,7 +60,8 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
     fun `raises event if other items throws on load`() {
         val exception = RuntimeException("Deliberate")
         val brokenOtherItems = object : DbItems(testDslContext) {
-            override fun load(tx: DbTxContext):
+            context(DbTxContext)
+            override fun load():
                 Result<StockList, StockListLoadingError> {
                 throw exception
             }
@@ -70,10 +71,10 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
             brokenOtherItems,
             analytics = printingAnalytics
         )
-        sourceOfTruth.transactionally { this.save(initialStockList, it) }
+        sourceOfTruth.transactionally { save(initialStockList) }
         assertEquals(
             Success(initialStockList),
-            items.transactionally { load(it) }
+            items.transactionally { load() }
         )
         assertEquals(
             StockListLoadingExceptionCaught(exception),
@@ -85,24 +86,25 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
     fun `saves to both items`() {
         assertEquals(
             Success(initialStockList),
-            items.transactionally { this.save(initialStockList, it) }
+            items.transactionally { save(initialStockList) }
         )
         assertEquals(
             Success(initialStockList),
-            sourceOfTruth.transactionally { load(it) }
+            sourceOfTruth.transactionally { load() }
         )
         assertEquals(
             Success(initialStockList),
-            otherItems.transactionally { load(it) }
+            otherItems.transactionally { load() }
         )
     }
 
     @Test
     fun `raises event if other items disagrees on save`() {
         val brokenOtherItems = object : DbItems(testDslContext) {
-            override fun save(stockList: StockList, tx: DbTxContext)
+            context(DbTxContext)
+            override fun save(stockList: StockList)
                 : Result<StockList, StockListLoadingError.IOError> {
-                super.save(stockList, tx)
+                super.save(stockList)
                 return Success(nullStockist)
             }
         }
@@ -113,7 +115,7 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         )
         assertEquals(
             Success(initialStockList),
-            items.transactionally { this.save(initialStockList, it) }
+            items.transactionally { save(initialStockList) }
         )
         assertEquals(
             stocklistSavingMismatch(
@@ -128,7 +130,8 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
     fun `raises event if other items throws on save`() {
         val exception = RuntimeException("Deliberate")
         val brokenOtherItems = object : DbItems(testDslContext) {
-            override fun save(stockList: StockList, tx: DbTxContext)
+            context(DbTxContext)
+            override fun save(stockList: StockList)
                 : Result<StockList, StockListLoadingError.IOError> {
                 throw exception
             }
@@ -140,7 +143,7 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
         )
         assertEquals(
             Success(initialStockList),
-            items.transactionally { tx -> this.save(initialStockList, tx) }
+            items.transactionally { save(initialStockList) }
         )
         assertEquals(
             StockListSavingExceptionCaught(exception),
@@ -149,9 +152,9 @@ class DualItemsTests : ItemsContract<DbTxContext>() {
     }
 }
 
-fun <R, TX : TXContext> Items<TX>.transactionally(f: Items<TX>.(tx: TX) -> R): R =
-    inTransaction { tx ->
-        f(this, tx)
+fun <R, TX : TXContext> Items<TX>.transactionally(f: context(TX) Items<TX>.() -> R): R =
+    inTransaction {
+        f(magic(), this)
     }
 
 

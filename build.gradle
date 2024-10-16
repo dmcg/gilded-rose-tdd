@@ -70,6 +70,14 @@ java {
     }
 }
 
+compileKotlin {
+    compilerOptions.freeCompilerArgs.add("-Xcontext-receivers")
+}
+
+compileTestKotlin {
+    compilerOptions.freeCompilerArgs.add("-Xcontext-receivers")
+}
+
 flyway {
     url = "$testJdbcUrl"
     user = "$databaseUsername"

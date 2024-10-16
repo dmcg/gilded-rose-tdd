@@ -21,7 +21,7 @@ data class Fixture(
     )
 
     fun init() {
-        items.transactionally { tx -> this.save(originalStockList, tx) }
+        items.transactionally { save(originalStockList) }
     }
 
     fun pricing(item: Item): Price? =
@@ -30,7 +30,7 @@ data class Fixture(
     fun checkStockListIs(stockList: StockList) {
         assertEquals(
             Success(stockList),
-            this.items.transactionally { tx -> load(tx) }
+            this.items.transactionally { load() }
         )
     }
 }
