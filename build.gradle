@@ -15,6 +15,7 @@ repositories {
 
 ext.junitVersion = '5.11.3'
 ext.jacksonVersion = '2.18.0'
+ext.pgVersion = '42.7.4'
 ext.testJdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:postgresql://localhost:5433/gilded-rose').get()
 ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('gilded').get()
 ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('rose').get()
@@ -23,7 +24,7 @@ ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('rose
 dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0"
     implementation "dev.forkhandles:result4k:2.20.0.0"
-    implementation "org.slf4j:slf4j-jdk14:1.7.36"
+    implementation "org.slf4j:slf4j-jdk14:2.0.16"
 
     implementation platform("org.http4k:http4k-bom:5.32.4.0")
     implementation "org.http4k:http4k-core"
@@ -37,7 +38,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
 
-    implementation "org.postgresql:postgresql:42.7.4"
+    implementation "org.postgresql:postgresql:$pgVersion"
     implementation "com.zaxxer:HikariCP:6.0.0"
 
     implementation "org.jooq:jooq:3.19.14"
@@ -56,7 +57,7 @@ dependencies {
     testImplementation "org.http4k:http4k-testing-hamkrest"
     testImplementation "org.http4k:http4k-testing-strikt"
 
-    jooqGenerator 'org.postgresql:postgresql:42.5.3'
+    jooqGenerator "org.postgresql:postgresql:$pgVersion"
 }
 
 test {
