@@ -50,7 +50,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "io.strikt:strikt-core:0.34.1"
 
-    testImplementation 'com.microsoft.playwright:playwright:1.36.0'
+    testImplementation 'com.microsoft.playwright:playwright:1.48.0'
 
     testImplementation "org.http4k:http4k-testing-approval"
     testImplementation "org.http4k:http4k-testing-hamkrest"
