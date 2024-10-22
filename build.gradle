@@ -48,7 +48,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
-    testImplementation "io.strikt:strikt-core:0.34.1"
+    testImplementation "io.strikt:strikt-core:0.35.1"
 
     testImplementation 'com.microsoft.playwright:playwright:1.48.0'
 
