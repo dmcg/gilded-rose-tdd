@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.0.0'
     id 'nu.studer.jooq' version '9.0'
     id "org.flywaydb.flyway" version "9.16.3"
+    id "com.github.ben-manes.versions" version "0.51.0"
 }
 
 group = 'com.gildedrose'
@@ -12,7 +13,7 @@ repositories {
     mavenCentral()
 }
 
-ext.junitVersion = '5.10.2'
+ext.junitVersion = '5.11.3'
 ext.jacksonVersion = '2.14.1'
 ext.testJdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:postgresql://localhost:5433/gilded-rose').get()
 ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('gilded').get()
