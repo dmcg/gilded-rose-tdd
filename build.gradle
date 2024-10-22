@@ -38,7 +38,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
 
     implementation "org.postgresql:postgresql:42.5.3"
-    implementation "com.zaxxer:HikariCP:5.0.1"
+    implementation "com.zaxxer:HikariCP:6.0.0"
 
     implementation "org.jooq:jooq:3.19.1"
     implementation "org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0"
