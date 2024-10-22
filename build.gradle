@@ -14,7 +14,7 @@ repositories {
 }
 
 ext.junitVersion = '5.11.3'
-ext.jacksonVersion = '2.14.1'
+ext.jacksonVersion = '2.18.0'
 ext.testJdbcUrl = providers.environmentVariable('JDBC_URL').orElse('jdbc:postgresql://localhost:5433/gilded-rose').get()
 ext.databaseUsername = providers.environmentVariable('DB_USERNAME').orElse('gilded').get()
 ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('rose').get()
