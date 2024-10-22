@@ -25,7 +25,7 @@ dependencies {
     implementation "dev.forkhandles:result4k:2.3.0.0"
     implementation "org.slf4j:slf4j-jdk14:1.7.36"
 
-    implementation platform("org.http4k:http4k-bom:5.21.1.0")
+    implementation platform("org.http4k:http4k-bom:5.32.4.0")
     implementation "org.http4k:http4k-core"
     implementation "org.http4k:http4k-server-undertow"
     implementation "org.http4k:http4k-cloudnative"
