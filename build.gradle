@@ -21,7 +21,7 @@ ext.databasePassword = providers.environmentVariable('DB_PASSWORD').orElse('rose
 
 
 dependencies {
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0"
     implementation "dev.forkhandles:result4k:2.20.0.0"
     implementation "org.slf4j:slf4j-jdk14:1.7.36"
 
