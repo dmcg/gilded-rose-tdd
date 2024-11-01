@@ -1,10 +1,6 @@
-import org.jooq.meta.jaxb.ForcedType
-import org.jooq.meta.jaxb.Property
-import org.jooq.util.jaxb.tools.XMLAppendable
-
 plugins {
     java
-    id("org.jetbrains.kotlin.jvm") version "2.0.21"
+    kotlin("jvm") version "2.0.21"
     id("nu.studer.jooq") version "9.0"
     id("org.flywaydb.flyway") version "9.22.3" // 10.x gives issues connecting
     id("com.github.ben-manes.versions") version "0.51.0"
@@ -23,7 +19,6 @@ val pgVersion = "42.7.4"
 val testJdbcUrl = providers.environmentVariable("JDBC_URL").orElse("jdbc:postgresql://localhost:5433/gilded-rose").get()
 val databaseUsername = providers.environmentVariable("DB_USERNAME").orElse("gilded").get()
 val databasePassword = providers.environmentVariable("DB_PASSWORD").orElse("rose").get()
-
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
@@ -52,7 +47,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation(kotlin("test"))
     testImplementation("io.strikt:strikt-core:0.35.1")
 
     testImplementation("com.microsoft.playwright:playwright:1.48.0")
@@ -86,13 +81,14 @@ flyway {
     password = databasePassword
 }
 
-private operator fun <T: XMLAppendable> T.invoke(block: T.() -> Unit) = apply(block)
+private operator fun <T: org.jooq.util.jaxb.tools.XMLAppendable> T.invoke(block: T.() -> Unit) = apply(block)
 
 jooq {
     edition = nu.studer.gradle.jooq.JooqEdition.OSS // default (can be omitted)
     configurations {
-        create("main") { // name of the jOOQ configuration
-            generateSchemaSourceOnCompilation.set(true) // default (can be omitted)
+        create("main") {
+            generateSchemaSourceOnCompilation = true
+
             jooqConfiguration {
                 logging = org.jooq.meta.jaxb.Logging.WARN
                 jdbc {
@@ -100,25 +96,18 @@ jooq {
                     url = testJdbcUrl
                     user = databaseUsername
                     password = databasePassword
-                    properties.add(Property().apply {
-                        key = "ssl"
-                        value = "false"
-                    })
+                    properties.add(org.jooq.meta.jaxb.Property().withKey("ssl").withValue("false"))
                 }
                 generator {
                     name = "org.jooq.codegen.DefaultGenerator"
                     database {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
                         inputSchema = "public"
-                        forcedTypes.addAll(
-                            listOf(
-                                ForcedType().apply {
-                                    name = "instant"
-                                    includeExpression = ".*"
-                                    includeTypes = "TIMESTAMPTZ"
-                                }
-                            )
-                        )
+                        forcedTypes.add((org.jooq.meta.jaxb.ForcedType()) {
+                            name = "instant"
+                            includeExpression = ".*"
+                            includeTypes = "TIMESTAMPTZ"
+                        })
                     }
                     generate {
                         isDeprecated = false
