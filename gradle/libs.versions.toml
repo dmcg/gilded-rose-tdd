@@ -1,22 +1,30 @@
+[plugins]
+
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+jooq = { id = "nu.studer.jooq", version.ref = "jooq" }
+flyway = { id = "org.flywaydb.flyway", version.ref = "flyway" }
+versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
+
 [versions]
+
 kotlin = "2.0.21"
 jooq = "9.0"
 flyway = "9.22.3"
-versions = "0.51.0"
 junit = "5.11.3"
-jackson = "2.18.0"
+jackson = "2.18.1"
 postgresql = "42.7.4"
 coroutines = "1.9.0"
 result4k = "2.20.0.0"
 slf4j = "2.0.16"
-http4k = "5.32.4.0"
-hikaricp = "6.0.0"
-jooq-core = "3.19.14"
+http4k = "5.33.1.0"
+hikaricp = "6.1.0"
+jooq-core = "3.19.15"
 kotlinx-html = "0.11.0"
 strikt = "0.35.1"
 playwright = "1.48.0"
 
 [libraries]
+
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 result4k = { module = "dev.forkhandles:result4k", version.ref = "result4k" }
@@ -49,9 +57,3 @@ junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref 
 
 strikt = { module = "io.strikt:strikt-core", version.ref = "strikt" }
 playwright = { module = "com.microsoft.playwright:playwright", version.ref = "playwright" }
-
-[plugins]
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-jooq = { id = "nu.studer.jooq", version.ref = "jooq" }
-flyway = { id = "org.flywaydb.flyway", version.ref = "flyway" }
-versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
