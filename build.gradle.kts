@@ -1,9 +1,9 @@
 plugins {
     java
-    kotlin("jvm") version "2.0.21"
-    id("nu.studer.jooq") version "9.0"
-    id("org.flywaydb.flyway") version "9.22.3" // 10.x gives issues connecting
-    id("com.github.ben-manes.versions") version "0.51.0"
+    alias (libs.plugins.kotlin.jvm)
+    alias (libs.plugins.jooq)
+    alias (libs.plugins.flyway)
+    alias (libs.plugins.versions)
 }
 
 group = "com.gildedrose"
@@ -13,50 +13,47 @@ repositories {
     mavenCentral()
 }
 
-val junitVersion = "5.11.3"
-val jacksonVersion = "2.18.0"
-val pgVersion = "42.7.4"
 val testJdbcUrl = providers.environmentVariable("JDBC_URL").orElse("jdbc:postgresql://localhost:5433/gilded-rose").get()
 val databaseUsername = providers.environmentVariable("DB_USERNAME").orElse("gilded").get()
 val databasePassword = providers.environmentVariable("DB_PASSWORD").orElse("rose").get()
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-    implementation("dev.forkhandles:result4k:2.20.0.0")
-    implementation("org.slf4j:slf4j-jdk14:2.0.16")
+    implementation(libs.kotlinx.coroutines)
+    implementation(libs.result4k)
+    implementation(libs.slf4j)
 
-    implementation(platform("org.http4k:http4k-bom:5.32.4.0"))
-    implementation("org.http4k:http4k-core")
-    implementation("org.http4k:http4k-server-undertow")
-    implementation("org.http4k:http4k-cloudnative")
-    implementation("org.http4k:http4k-client-apache")
+    implementation(platform(libs.http4k.bom))
+    implementation(libs.http4k.core)
+    implementation(libs.http4k.server.undertow)
+    implementation(libs.http4k.cloudnative)
+    implementation(libs.http4k.client.apache)
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.module.kotlin)
+    implementation(libs.jackson.module.parameter.names)
+    implementation(libs.jackson.datatype.jdk8)
+    implementation(libs.jackson.datatype.jsr310)
 
-    implementation("org.postgresql:postgresql:$pgVersion")
-    implementation("com.zaxxer:HikariCP:6.0.0")
+    implementation(libs.postgresql)
+    implementation(libs.hikaricp)
 
-    implementation("org.jooq:jooq:3.19.14")
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
+    implementation(libs.jooq)
+    implementation(libs.kotlinx.html)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.params)
+    testImplementation(libs.junit.engine)
 
     testImplementation(kotlin("test"))
-    testImplementation("io.strikt:strikt-core:0.35.1")
+    testImplementation(libs.strikt)
 
-    testImplementation("com.microsoft.playwright:playwright:1.48.0")
+    testImplementation(libs.playwright)
 
-    testImplementation("org.http4k:http4k-testing-approval")
-    testImplementation("org.http4k:http4k-testing-hamkrest")
-    testImplementation("org.http4k:http4k-testing-strikt")
+    testImplementation(libs.http4k.testing.approval)
+    testImplementation(libs.http4k.testing.hamkrest)
+    testImplementation(libs.http4k.testing.strikt)
 
-    jooqGenerator("org.postgresql:postgresql:$pgVersion")
+    jooqGenerator(libs.postgresql)
 }
 
 tasks.test {
@@ -81,7 +78,7 @@ flyway {
     password = databasePassword
 }
 
-private operator fun <T: org.jooq.util.jaxb.tools.XMLAppendable> T.invoke(block: T.() -> Unit) = apply(block)
+private operator fun <T : org.jooq.util.jaxb.tools.XMLAppendable> T.invoke(block: T.() -> Unit) = apply(block)
 
 jooq {
     edition = nu.studer.gradle.jooq.JooqEdition.OSS // default (can be omitted)
