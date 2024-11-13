@@ -17,13 +17,13 @@ private fun addWithPlaywright(app: App<*>, newItem: Item) {
         app.routes,
         launchOptions = launchOptions(showRunning)
     ) {
-        inputNamed("new-itemId").type(newItem.id.toString())
-        inputNamed("new-itemName").type(newItem.name.toString())
+        inputNamed("new-itemId").fill(newItem.id.toString())
+        inputNamed("new-itemName").fill(newItem.name.toString())
         newItem.sellByDate?.let {
             inputNamed("new-itemSellBy")
-                .type(it.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                .pressSequentially(it.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
         }
-        inputNamed("new-itemQuality").type(newItem.quality.toString())
+        inputNamed("new-itemQuality").fill(newItem.quality.toString())
 
         waitingForHtmx {
             submitButtonNamed("Add").click()
