@@ -1,9 +1,10 @@
 plugins {
     java
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.jooq)
     alias(libs.plugins.flyway)
+    alias(libs.plugins.jooq)
     alias(libs.plugins.versions)
+    id("org.barfuin.gradle.taskinfo") version "2.2.0"
 }
 
 group = "com.gildedrose"
@@ -126,5 +127,7 @@ jooq {
 }
 
 tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
+    dependsOn("flywayMigrate")
+    inputs.files("src/main/resources/db/migration")
     allInputsDeclared = true
 }

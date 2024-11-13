@@ -14,12 +14,6 @@ Requires Java 21 and Docker
 db/start-db.sh
 ```
 
-### Initialise the test database
-
-```bash
-./gradlew flywayMigrate
-```
-
 ### Run (most of) the Tests
 
 ```bash
