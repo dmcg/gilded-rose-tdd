@@ -1,9 +1,9 @@
 plugins {
     java
-    alias (libs.plugins.kotlin.jvm)
-    alias (libs.plugins.jooq)
-    alias (libs.plugins.flyway)
-    alias (libs.plugins.versions)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.jooq)
+    alias(libs.plugins.flyway)
+    alias(libs.plugins.versions)
 }
 
 group = "com.gildedrose"
@@ -79,6 +79,7 @@ flyway {
     password = databasePassword
 }
 
+@Suppress("UnstableApiUsage") // XMLAppendable
 private operator fun <T : org.jooq.util.jaxb.tools.XMLAppendable> T.invoke(block: T.() -> Unit) = apply(block)
 
 jooq {
