@@ -4,6 +4,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 jooq = { id = "nu.studer.jooq", version.ref = "jooq" }
 flyway = { id = "org.flywaydb.flyway", version.ref = "flyway" }
 versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
+taskinfo = { id = "org.barfuin.gradle.taskinfo", version = "2.2.0" }
 
 [versions]
 

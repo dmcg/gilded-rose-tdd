@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.flyway)
     alias(libs.plugins.jooq)
     alias(libs.plugins.versions)
-    id("org.barfuin.gradle.taskinfo") version "2.2.0"
+    alias(libs.plugins.taskinfo)
 }
 
 group = "com.gildedrose"
