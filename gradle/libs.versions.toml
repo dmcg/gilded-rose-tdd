@@ -26,7 +26,6 @@ playwright = "1.48.0"
 
 [libraries]
 
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 result4k = { module = "dev.forkhandles:result4k", version.ref = "result4k" }
 slf4j = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4j" }
@@ -34,7 +33,7 @@ slf4j = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4j" }
 http4k-bom = { module = "org.http4k:http4k-bom", version.ref = "http4k" }
 http4k-core = { module = "org.http4k:http4k-core" }
 http4k-server-undertow = { module = "org.http4k:http4k-server-undertow" }
-http4k-cloudnative = { module = "org.http4k:http4k-cloudnative" }
+http4k-config = { module = "org.http4k:http4k-config" }
 http4k-client-apache = { module = "org.http4k:http4k-client-apache" }
 http4k-testing-approval = { module = "org.http4k:http4k-testing-approval" }
 http4k-testing-hamkrest = { module = "org.http4k:http4k-testing-hamkrest" }

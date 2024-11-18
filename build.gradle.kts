@@ -26,7 +26,7 @@ dependencies {
     implementation(platform(libs.http4k.bom))
     implementation(libs.http4k.core)
     implementation(libs.http4k.server.undertow)
-    implementation(libs.http4k.cloudnative)
+    implementation(libs.http4k.config)
     implementation(libs.http4k.client.apache)
 
     implementation(libs.jackson.databind)
