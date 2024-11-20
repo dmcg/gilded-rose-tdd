@@ -14,5 +14,6 @@ bin/
 
 /out/
 /stock.tsv
-/stock.xlsx
+/attic/stock.xlsx
 /google-api-key.txt
+/attic/
