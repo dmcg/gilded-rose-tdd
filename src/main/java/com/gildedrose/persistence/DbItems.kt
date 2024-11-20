@@ -2,6 +2,7 @@ package com.gildedrose.persistence
 
 import com.gildedrose.db.tables.Items.ITEMS
 import com.gildedrose.domain.*
+import com.gildedrose.domain.Item
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jooq.Configuration
@@ -33,13 +34,46 @@ class DbItems(
     override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError> {
-        dslContext.save(stockList)
+        val toSave = when {
+            stockList.items.isEmpty() -> listOf(sentinelItem)
+            else -> stockList.items
+        }
+        toSave.forEach<Item> { item ->
+            with(ITEMS) {
+                dslContext.insertInto(ITEMS)
+                    .set<String>(ID, item.id.toString())
+                    .set<Instant>(MODIFIED, stockList.lastModified)
+                    .set<String>(NAME, item.name.toString())
+                    .set<Int>(QUALITY, item.quality.valueInt)
+                    .set<LocalDate>(SELLBYDATE, item.sellByDate)
+                    .execute()
+            }
+        }
         return Success(stockList)
     }
 
     context(DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> {
-        return Success(dslContext.load())
+        val stockList = with(ITEMS) {
+            val records = dslContext.select(ID, MODIFIED, NAME, QUALITY, SELLBYDATE)
+                .from(ITEMS)
+                .where(
+                    MODIFIED.eq(DSL.select<Instant>(max(MODIFIED)).from(ITEMS))
+                )
+                .fetch()
+            if (records.isEmpty())
+                StockList(Instant.EPOCH, emptyList())
+            else {
+                val lastModified: Instant = records.first()[MODIFIED]
+                val items: List<Item> = records.map<Item> { it.toItem() }
+                val isEmpty = (items.singleOrNull() == sentinelItem)
+                StockList(
+                    lastModified,
+                    if (isEmpty) emptyList<Item>() else items
+                )
+            }
+        }
+        return Success(stockList)
     }
 }
 
@@ -49,46 +83,6 @@ private val sentinelItem = Item(
     sellByDate = null,
     quality = Quality(Int.MAX_VALUE)!!
 )
-
-fun DSLContext.save(stockList: StockList) {
-    val toSave = when {
-        stockList.items.isEmpty() -> listOf(sentinelItem)
-        else -> stockList.items
-    }
-    toSave.forEach { item ->
-        with(ITEMS) {
-            insertInto(ITEMS)
-                .set(ID, item.id.toString())
-                .set(MODIFIED, stockList.lastModified)
-                .set(NAME, item.name.toString())
-                .set(QUALITY, item.quality.valueInt)
-                .set(SELLBYDATE, item.sellByDate)
-                .execute()
-        }
-    }
-}
-
-fun DSLContext.load(): StockList {
-    with(ITEMS) {
-        val records = select(ID, MODIFIED, NAME, QUALITY, SELLBYDATE)
-            .from(ITEMS)
-            .where(
-                MODIFIED.eq(DSL.select(max(MODIFIED)).from(ITEMS))
-            )
-            .fetch()
-        return if (records.isEmpty())
-            StockList(Instant.EPOCH, emptyList())
-        else {
-            val lastModified: Instant = records.first()[MODIFIED]
-            val items: List<Item> = records.map { it.toItem() }
-            val isEmpty = (items.singleOrNull() == sentinelItem)
-            StockList(
-                lastModified,
-                if (isEmpty) emptyList() else items
-            )
-        }
-    }
-}
 
 private fun Record5<String, Instant, String, Int, LocalDate>.toItem() =
     Item(
