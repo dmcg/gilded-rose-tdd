@@ -12,7 +12,6 @@ import com.gildedrose.pricing.valueElfClient
 import com.gildedrose.updating.Stock
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
-import java.io.File
 import java.net.URI
 import java.time.Instant
 import java.time.ZoneId
@@ -29,14 +28,13 @@ data class App<TX>(
 ) {
     companion object {
         operator fun invoke(
-            stockFile: File = File("stock.tsv"),
             dbConfig: DbConfig,
             features: Features = Features(),
             valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
             clock: () -> Instant = Instant::now,
             analytics: Analytics = stdOutAnalytics
         ) = App(
-            DualItems(StockFileItems(stockFile), DbItems(dbConfig.toDslContext()), analytics),
+            DbItems(dbConfig.toDslContext()),
             features,
             clock,
             analytics,
