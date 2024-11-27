@@ -53,6 +53,9 @@ dependencies {
     testImplementation(libs.http4k.testing.approval)
     testImplementation(libs.http4k.testing.hamkrest)
     testImplementation(libs.http4k.testing.strikt)
+    testImplementation("org.testcontainers:postgresql:1.19.8")
+    testImplementation("org.flywaydb:flyway-core:10.21.0")
+    testImplementation("org.flywaydb:flyway-database-postgresql:10.21.0")
 
     jooqGenerator(libs.postgresql)
 }

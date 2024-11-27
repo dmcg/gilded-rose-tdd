@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.time.Instant
 import java.util.*
+import java.util.TimeZone.getAvailableIDs
 import java.util.concurrent.CyclicBarrier
 import kotlin.concurrent.thread
 import kotlin.test.assertEquals
@@ -82,6 +83,10 @@ abstract class ItemsContract<TX : TXContext> {
         }
     }
 
+    private val timezonesInPostgres = getAvailableIDs().toList().minus(
+        listOf("EAT", "IST", "SST", "NST", "IET"),
+    )
+
     @ParameterizedTest
     @ValueSource(
         strings = [
@@ -98,11 +103,11 @@ abstract class ItemsContract<TX : TXContext> {
         try {
             val stockList = initialStockList.copy(lastModified = Instant.parse(candidate))
 
-            TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
+            TimeZone.setDefault(TimeZone.getTimeZone(timezonesInPostgres.random()))
             items.inTransaction {
                 items.save(stockList)
             }
-            TimeZone.setDefault(TimeZone.getTimeZone(TimeZone.getAvailableIDs().random()))
+            TimeZone.setDefault(TimeZone.getTimeZone(timezonesInPostgres.random()))
             items.inTransaction {
                 assertEquals(
                     Success(stockList),
