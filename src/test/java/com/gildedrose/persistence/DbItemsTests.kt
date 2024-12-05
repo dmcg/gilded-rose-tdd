@@ -3,18 +3,11 @@ package com.gildedrose.persistence
 import com.gildedrose.config.DbConfig
 import com.gildedrose.config.toDslContext
 import org.flywaydb.core.Flyway
-import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.testcontainers.containers.PostgreSQLContainer
 import java.net.URI
-
-val testDslContext: DSLContext = DbConfig(
-    URI.create("jdbc:postgresql://localhost:5433/gilded-rose"),
-    username = "gilded",
-    password = "rose"
-).toDslContext()
 
 
 private val postgres = PostgreSQLContainer("postgres:16-alpine").withUsername("gilded").apply { start() }
