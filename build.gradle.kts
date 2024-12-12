@@ -126,6 +126,11 @@ jooq {
     }
 }
 
+tasks.named("flywayMigrate") {
+    inputs.files("src/main/resources/db/migration")
+    outputs.dir("build/generated-src/jooq/main")
+}
+
 tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
     dependsOn("flywayMigrate")
     inputs.files("src/main/resources/db/migration")
