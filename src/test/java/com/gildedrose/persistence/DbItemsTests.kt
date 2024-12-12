@@ -5,6 +5,7 @@ import com.gildedrose.config.toDslContext
 import com.gildedrose.db.tables.Items
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
 import java.net.URI
@@ -16,6 +17,7 @@ val testDslContext: DSLContext = DbConfig(
 ).toDslContext()
 
 @ResourceLock("DATABASE")
+@Order(0)
 class DbItemsTests : ItemsContract<DbTxContext>() {
     override val items = DbItems(testDslContext)
 
