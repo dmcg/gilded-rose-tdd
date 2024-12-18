@@ -44,6 +44,7 @@ dependencies {
     testImplementation(libs.junit.api)
     testImplementation(libs.junit.params)
     testImplementation(libs.junit.engine)
+    testImplementation("org.junit.platform:junit-platform-launcher:1.11.3")
 
     testImplementation(kotlin("test"))
     testImplementation(libs.strikt)
