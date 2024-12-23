@@ -5,6 +5,7 @@ import org.junit.platform.engine.UniqueId
 import org.junit.platform.launcher.TestExecutionListener
 import org.junit.platform.launcher.TestIdentifier
 import org.junit.platform.launcher.TestPlan
+import java.io.File
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -12,7 +13,6 @@ import kotlin.jvm.optionals.getOrNull
 
 class TimingExtension : TestExecutionListener {
 
-    // Use a mutable map to store test names and start times
     private val startTimes = ConcurrentHashMap<TestIdentifier, Instant>()
     private val endTimes = ConcurrentHashMap<TestIdentifier, Instant>()
 
@@ -25,7 +25,9 @@ class TimingExtension : TestExecutionListener {
     }
 
     override fun testPlanExecutionFinished(testPlan: TestPlan) {
-        extractStats().forEach { printTree(it) }
+        val stats = extractStats()
+        stats.forEach { printTree(it) }
+        File("testrun.mmd").writeText(generateMermaidGanttChart(stats), Charsets.UTF_8)
     }
 
     private fun extractStats(): List<TestStats> {
@@ -36,7 +38,7 @@ class TimingExtension : TestExecutionListener {
         fun createStats(testIdentifier: TestIdentifier): TestStats {
             val childStats = groupedByParent[testIdentifier.uniqueIdObject]
                 ?.map { createStats(it) }
-                ?.sortedBy { it.end }
+                ?.sortedBy { it.start }
                 ?: emptyList()
             return TestStats(testIdentifier, startTimes[testIdentifier]!!, endTimes[testIdentifier]!!, childStats)
         }
