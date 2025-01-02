@@ -25,8 +25,15 @@ fun generateMermaidGanttChart(testStatsList: List<TestStats>): String {
             builder.appendLine("${indent}section $taskName")
         builder.appendLine("$indent$taskName ${testStats.duration.toMillis()} :, $startTime, $endTime")
 
-        // Recursively add child tasks
-        testStats.children.forEach { addTaskToChart(it, depth + 1) }
+        (testStats.events + testStats.children)
+            .sortedBy { it.start }
+            .forEach { thing ->
+                when (thing) {
+                    is TestStats -> addTaskToChart(thing, depth + 1)
+                    is TestEvent -> builder.appendLine("${indent}${thing.name} : milestone, ${thing.start},")
+                    else -> error("Unexpected type of thing")
+                }
+            }
     }
 
     // Add all the root-level tasks

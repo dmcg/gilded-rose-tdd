@@ -9,19 +9,43 @@ import java.io.File
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.jvm.optionals.getOrNull
 
 class TimingExtension : TestExecutionListener {
+    companion object {
+        var INSTANCE: TimingExtension? = null
+        fun event(name: String, now: Instant = Instant.now()) {
+            INSTANCE?.event(name, now) ?: error("No TimingExtension exists")
+        }
+    }
 
+
+    init {
+        if (INSTANCE != null) error("Another TimingExtension exists")
+        INSTANCE = this
+    }
+
+    private var testPath: ThreadLocal<ConcurrentLinkedDeque<TestIdentifier>> = ThreadLocal.withInitial {
+        ConcurrentLinkedDeque<TestIdentifier>()
+    }
     private val startTimes = ConcurrentHashMap<TestIdentifier, Instant>()
     private val endTimes = ConcurrentHashMap<TestIdentifier, Instant>()
+    private val eventTimes = ConcurrentLinkedQueue<TestEvent>()
+
+    private fun event(name: String, now: Instant) {
+        eventTimes.add(TestEvent(testPath.get().peek(), name, now))
+    }
 
     override fun executionStarted(testIdentifier: TestIdentifier) {
         startTimes[testIdentifier] = Instant.now()
+        testPath.get().push(testIdentifier)
     }
 
     override fun executionFinished(testIdentifier: TestIdentifier, testExecutionResult: TestExecutionResult) {
         endTimes[testIdentifier] = Instant.now()
+        testPath.get().pop()
     }
 
     override fun testPlanExecutionFinished(testPlan: TestPlan) {
@@ -33,6 +57,9 @@ class TimingExtension : TestExecutionListener {
     private fun extractStats(): List<TestStats> {
         val groupedByParent: Map<UniqueId?, List<TestIdentifier>> =
             endTimes.keys.groupBy { it.parentIdObject.getOrNull() }
+
+        val eventGroupedByParent = eventTimes.groupBy { it.currentTestIdentifier }
+
         val roots = groupedByParent[null] ?: emptyList()
 
         fun createStats(testIdentifier: TestIdentifier): TestStats {
@@ -40,7 +67,8 @@ class TimingExtension : TestExecutionListener {
                 ?.map { createStats(it) }
                 ?.sortedBy { it.start }
                 ?: emptyList()
-            return TestStats(testIdentifier, startTimes[testIdentifier]!!, endTimes[testIdentifier]!!, childStats)
+            val childEvents = eventGroupedByParent[testIdentifier] ?: emptyList()
+            return TestStats(testIdentifier, startTimes[testIdentifier]!!, endTimes[testIdentifier]!!, childEvents, childStats)
         }
         return roots.map { createStats(it) }
     }
@@ -51,11 +79,22 @@ private fun printTree(testStats: TestStats, depth: Int = 0) {
     testStats.children.forEach { printTree(it, depth + 1) }
 }
 
+interface Timed {
+    val start: Instant
+}
+
 data class TestStats(
     val test: TestIdentifier,
-    val start: Instant,
+    override val start: Instant,
     val end: Instant,
+    val events: List<TestEvent>,
     val children: List<TestStats> = emptyList(),
-) {
+): Timed {
     val duration = Duration.between(start, end)
 }
+
+data class TestEvent(
+    val currentTestIdentifier: TestIdentifier?,
+    val name: String,
+    override val start: Instant,
+) : Timed
