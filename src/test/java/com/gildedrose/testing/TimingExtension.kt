@@ -21,7 +21,6 @@ class TimingExtension : TestExecutionListener {
         }
     }
 
-
     init {
         if (INSTANCE != null) error("Another TimingExtension exists")
         INSTANCE = this
@@ -51,7 +50,7 @@ class TimingExtension : TestExecutionListener {
     override fun testPlanExecutionFinished(testPlan: TestPlan) {
         val stats = extractStats()
         stats.forEach { printTree(it) }
-        File("testrun.mmd").writeText(generateMermaidGanttChart(stats), Charsets.UTF_8)
+        File("testrun.mmd").writeText(stats.toMermaidGanttChart().joinToString("\n"), Charsets.UTF_8)
     }
 
     private fun extractStats(): List<TestStats> {
@@ -79,7 +78,7 @@ private fun printTree(testStats: TestStats, depth: Int = 0) {
     testStats.children.forEach { printTree(it, depth + 1) }
 }
 
-interface Timed {
+sealed interface Timed {
     val start: Instant
 }
 
