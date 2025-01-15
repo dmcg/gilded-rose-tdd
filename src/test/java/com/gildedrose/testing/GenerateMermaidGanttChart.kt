@@ -3,7 +3,7 @@ package com.gildedrose.testing
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-fun List<TestStats>.toMermaidGanttChart(): List<String> = listOf(
+fun List<TestStats>.toMermaidGanttChart(): Sequence<String> = sequenceOf(
     "gantt",
     "title Test Execution Timeline",
     "dateFormat $mermaidDateFormat",
@@ -13,29 +13,30 @@ fun List<TestStats>.toMermaidGanttChart(): List<String> = listOf(
     stats.toChartLines()
 }
 
-private fun Timed.toChartLines(depth: Int): List<String> = when (this) {
+private fun Timed.toChartLines(depth: Int): Sequence<String> = when (this) {
     is TestStats -> toChartLines(depth)
     is TestEvent -> toChartLines()
 }
 
-private fun TestStats.toChartLines(depth: Int = 0): List<String> {
-    val taskName = test.displayName.replace(":", " ")
-    val startTime = javaFormatter.format(start)
-    val endTime = javaFormatter.format(end)
-    return buildList {
+private fun TestStats.toChartLines(depth: Int = 0): Sequence<String> =
+    sequence {
+        val taskName = test.displayName.replace(":", " ")
+        val startTime = javaFormatter.format(start)
+        val endTime = javaFormatter.format(end)
         if (depth == 1)
-            add("section $taskName")
-        add("$taskName ${duration.toMillis()} :, $startTime, $endTime")
+            yield("section $taskName")
+        yield("$taskName ${duration.toMillis()} :, $startTime, $endTime")
+
         val childLines = (events + children)
             .sortedBy { it.start }
+            .asSequence()
             .flatMap { thing ->
                 thing.toChartLines(depth + 1)
             }.map { "    $it" }
-        addAll(childLines)
+        yieldAll(childLines)
     }
-}
 
-private fun TestEvent.toChartLines() = listOf("$name : milestone, $start,")
+private fun TestEvent.toChartLines() = sequenceOf("$name : milestone, $start,")
 
 private val mermaidDateFormat = "YYYY-MM-DDTHH:mm:ss.SSS"
 private val javaFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
