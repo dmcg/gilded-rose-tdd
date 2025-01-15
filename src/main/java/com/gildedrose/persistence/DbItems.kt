@@ -2,7 +2,7 @@ package com.gildedrose.persistence
 
 import com.gildedrose.db.tables.Items.ITEMS
 import com.gildedrose.domain.*
-import com.gildedrose.domain.Item
+import com.gildedrose.testing.TestTiming
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jooq.Configuration
@@ -16,7 +16,7 @@ import java.time.LocalDate
 class DbTxContext(val dslContext: DSLContext) : TXContext()
 
 class DbItems(
-    dslContext: DSLContext
+    dslContext: DSLContext,
 ) : Items<DbTxContext> {
 
     private val forInTransaction = object {
@@ -32,7 +32,7 @@ class DbItems(
 
     context(DbTxContext)
     override fun save(
-        stockList: StockList
+        stockList: StockList,
     ): Result<StockList, StockListLoadingError.IOError> {
         val toSave = when {
             stockList.items.isEmpty() -> listOf(sentinelItem)
@@ -55,12 +55,17 @@ class DbItems(
     context(DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> {
         val stockList = with(ITEMS) {
-            val records = dslContext.select(ID, MODIFIED, NAME, QUALITY, SELLBYDATE)
+
+            TestTiming.event("where >")
+            val where = dslContext.select(ID, MODIFIED, NAME, QUALITY, SELLBYDATE)
                 .from(ITEMS)
                 .where(
                     MODIFIED.eq(DSL.select<Instant>(max(MODIFIED)).from(ITEMS))
                 )
-                .fetch()
+            TestTiming.event("< where")
+            TestTiming.event("fetch >")
+            val records = where.fetch()
+            TestTiming.event("< fetch")
             if (records.isEmpty())
                 StockList(Instant.EPOCH, emptyList())
             else {

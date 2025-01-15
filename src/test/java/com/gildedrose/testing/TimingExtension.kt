@@ -13,17 +13,10 @@ import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.jvm.optionals.getOrNull
 
-class TimingExtension : TestExecutionListener {
-    companion object {
-        var INSTANCE: TimingExtension? = null
-        fun event(name: String, now: Instant = Instant.now()) {
-            INSTANCE?.event(name, now) ?: error("No TimingExtension exists")
-        }
-    }
+class TimingExtension : TestExecutionListener, TestTiming {
 
     init {
-        if (INSTANCE != null) error("Another TimingExtension exists")
-        INSTANCE = this
+        TestTiming.init(this)
     }
 
     private var testPath: ThreadLocal<ConcurrentLinkedDeque<TestIdentifier>> = ThreadLocal.withInitial {
@@ -33,7 +26,7 @@ class TimingExtension : TestExecutionListener {
     private val endTimes = ConcurrentHashMap<TestIdentifier, Instant>()
     private val eventTimes = ConcurrentLinkedQueue<TestEvent>()
 
-    private fun event(name: String, now: Instant) {
+    override fun event(name: String, now: Instant) {
         eventTimes.add(TestEvent(testPath.get().peek(), name, now))
     }
 
