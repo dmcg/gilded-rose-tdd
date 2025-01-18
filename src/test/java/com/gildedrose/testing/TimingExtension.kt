@@ -37,7 +37,7 @@ class TimingExtension : TestExecutionListener, TestTiming {
 
     override fun executionFinished(testIdentifier: TestIdentifier, testExecutionResult: TestExecutionResult) {
         endTimes[testIdentifier] = Instant.now()
-        testPath.get().pop()
+        testPath.get().takeUnless { it.isEmpty() }?.pop()
     }
 
     override fun testPlanExecutionFinished(testPlan: TestPlan) {
