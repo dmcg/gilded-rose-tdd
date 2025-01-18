@@ -3,8 +3,9 @@ package com.gildedrose.persistence
 import com.gildedrose.domain.StockList
 import com.gildedrose.item
 import com.gildedrose.oct29
-import com.gildedrose.testing.TestTiming
 import dev.forkhandles.result4k.Success
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.time.Instant
 import java.util.*
@@ -29,19 +30,17 @@ abstract class ItemsContract<TX : TXContext> {
 
     abstract val items: Items<TX>
 
-//    @Test
+    @Test
     fun `returns empty stocklist before any save`() {
         items.inTransaction {
-            TestTiming.event("load >")
             assertEquals(
                 Success(nullStockist),
                 items.load()
             )
-            TestTiming.event("< load")
         }
     }
 
-//    @Test
+    @Test
     fun `returns last saved stocklist`() {
         items.inTransaction {
             items.save(initialStockList)
@@ -62,7 +61,7 @@ abstract class ItemsContract<TX : TXContext> {
         }
     }
 
-//    @Test
+    @Test
     fun `can save an empty stocklist`() {
         items.inTransaction {
             items.save(initialStockList)
@@ -83,7 +82,7 @@ abstract class ItemsContract<TX : TXContext> {
         }
     }
 
-//    @ParameterizedTest
+    @ParameterizedTest
     @ValueSource(
         strings = [
             "1970-01-01T00:00:00Z",

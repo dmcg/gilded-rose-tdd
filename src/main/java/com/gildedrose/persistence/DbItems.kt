@@ -2,7 +2,6 @@ package com.gildedrose.persistence
 
 import com.gildedrose.db.tables.Items.ITEMS
 import com.gildedrose.domain.*
-import com.gildedrose.testing.TestTiming
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jooq.Configuration
@@ -41,11 +40,11 @@ class DbItems(
         toSave.forEach<Item> { item ->
             with(ITEMS) {
                 dslContext.insertInto(ITEMS)
-                    .set<String>(ID, item.id.toString())
-                    .set<Instant>(MODIFIED, stockList.lastModified)
-                    .set<String>(NAME, item.name.toString())
-                    .set<Int>(QUALITY, item.quality.valueInt)
-                    .set<LocalDate>(SELLBYDATE, item.sellByDate)
+                    .set(ID, item.id.toString())
+                    .set(MODIFIED, stockList.lastModified)
+                    .set(NAME, item.name.toString())
+                    .set(QUALITY, item.quality.valueInt)
+                    .set(SELLBYDATE, item.sellByDate)
                     .execute()
             }
         }
@@ -55,17 +54,16 @@ class DbItems(
     context(DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> {
         val stockList = with(ITEMS) {
-
-            TestTiming.event("where >")
-            val where = dslContext.select(ID, MODIFIED, NAME, QUALITY, SELLBYDATE)
-                .from(ITEMS)
+            val records = dslContext.select(
+                ID,
+                MODIFIED,
+                NAME,
+                QUALITY,
+                SELLBYDATE
+            ).from(ITEMS)
                 .where(
-                    MODIFIED.eq(DSL.select<Instant>(max(MODIFIED)).from(ITEMS))
-                )
-            TestTiming.event("< where")
-            TestTiming.event("fetch >")
-            val records = where.fetch()
-            TestTiming.event("< fetch")
+                    MODIFIED.eq(DSL.select(max(MODIFIED)).from(ITEMS))
+                ).fetch()
             if (records.isEmpty())
                 StockList(Instant.EPOCH, emptyList())
             else {
@@ -74,7 +72,7 @@ class DbItems(
                 val isEmpty = (items.singleOrNull() == sentinelItem)
                 StockList(
                     lastModified,
-                    if (isEmpty) emptyList<Item>() else items
+                    if (isEmpty) emptyList() else items
                 )
             }
         }

@@ -1,6 +1,5 @@
 package com.gildedrose.config
 
-import com.gildedrose.testing.TestTiming
 import com.zaxxer.hikari.HikariDataSource
 import org.http4k.config.Environment
 import org.http4k.config.EnvironmentKey
@@ -16,16 +15,12 @@ data class DbConfig(
     val password: String
 )
 
-fun DbConfig.toDslContext(): DSLContext {
-    val apply = toHikariDataSource().apply {
+fun DbConfig.toDslContext(): DSLContext = DSL.using(
+    toHikariDataSource().apply {
         validate()
-    }
-    TestTiming.event("hikari created")
-    return DSL.using(
-        apply,
-        SQLDialect.POSTGRES
-    )
-}
+    },
+    SQLDialect.POSTGRES
+)
 
 
 fun Environment.toDbConfig() = DbConfig(
