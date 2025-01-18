@@ -5,7 +5,6 @@ import com.gildedrose.config.toDslContext
 import com.gildedrose.db.tables.Items
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -17,7 +16,6 @@ val testDslContext: DSLContext = DbConfig(
     password = "rose"
 ).toDslContext()
 
-@Disabled
 @ResourceLock("DATABASE")
 @Order(0)
 class DbItemsTests : ItemsContract<DbTxContext>() {
