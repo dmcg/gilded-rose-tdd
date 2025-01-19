@@ -5,7 +5,10 @@ import com.gildedrose.domain.Price
 import com.gildedrose.item
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
-import org.http4k.core.*
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Response
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Assertions.assertEquals

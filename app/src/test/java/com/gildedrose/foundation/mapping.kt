@@ -9,7 +9,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
-import kotlin.streams.toList
 
 fun <T, R> List<T>.parallelMapStream(f: (T) -> R) =
     stream().parallel().map(f).toList()

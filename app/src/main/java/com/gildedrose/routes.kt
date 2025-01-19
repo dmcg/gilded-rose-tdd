@@ -1,7 +1,6 @@
 package com.gildedrose
 
 import com.gildedrose.domain.*
-import com.gildedrose.domain.Item
 import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.http.ResponseErrors
 import com.gildedrose.http.ResponseErrors.withError

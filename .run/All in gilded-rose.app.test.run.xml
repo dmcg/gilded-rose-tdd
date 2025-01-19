@@ -1,13 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Browser tests" type="JUnit" factoryName="JUnit">
+  <configuration default="false" name="All in gilded-rose.app.test" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
     <module name="gilded-rose.app.test" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-    <option name="ALTERNATIVE_JRE_PATH" value="21" />
     <option name="PACKAGE_NAME" value="" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="package" />
-    <option name="VM_PARAMETERS" value="-ea  -Drun-browser-tests=true -Dorg.jooq.no-logo=true -Dorg.jooq.no-tips=true" />
+    <option name="VM_PARAMETERS" value="-ea -Dorg.jooq.no-logo=true -Dorg.jooq.no-tips=true" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
