@@ -1,6 +1,6 @@
 plugins {
     java
-    alias(libs.plugins.kotlin.jvm)
+    kotlin("jvm")
     alias(libs.plugins.flyway)
     alias(libs.plugins.jooq)
     alias(libs.plugins.versions)
@@ -19,6 +19,7 @@ val databaseUsername = providers.environmentVariable("DB_USERNAME").orElse("gild
 val databasePassword = providers.environmentVariable("DB_PASSWORD").orElse("rose").get()
 
 dependencies {
+    implementation(project(":domain"))
     implementation(libs.kotlinx.coroutines)
     implementation(libs.result4k)
     implementation(libs.slf4j)

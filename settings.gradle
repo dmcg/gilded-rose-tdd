@@ -1,9 +1,11 @@
 
 plugins {
+    id("org.jetbrains.kotlin.jvm") version "2.0.21" apply false
+
     // See https://jmfayard.github.io/refreshVersions
     id 'de.fayard.refreshVersions' version '0.60.5'
 }
 
 rootProject.name = 'gilded-rose'
 
-include('app')
+include('domain', 'app')
