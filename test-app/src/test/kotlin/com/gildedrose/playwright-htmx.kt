@@ -1,4 +1,4 @@
-package com.gildedrose.testing
+package com.gildedrose
 
 import com.gildedrose.http.serverFor
 import com.microsoft.playwright.*

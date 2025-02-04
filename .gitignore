@@ -3,6 +3,7 @@
 target/
 .DS_Store
 
+out/
 .classpath
 .project
 bin/
@@ -10,11 +11,8 @@ bin/
 
 # Gradle
 .gradle
-/build/
+build/
 
-/out/
 /stock.tsv
-/attic/stock.xlsx
-/google-api-key.txt
+google-api-key.txt
 /attic/
-/app/build/

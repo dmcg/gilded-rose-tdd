@@ -1,7 +1,6 @@
 package com.gildedrose
 
 import com.gildedrose.domain.Item
-import com.gildedrose.testing.*
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.time.format.DateTimeFormatter
 

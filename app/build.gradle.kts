@@ -1,5 +1,6 @@
 plugins {
     java
+    id("java-test-fixtures")
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.flyway)
     alias(libs.plugins.jooq)
@@ -20,11 +21,11 @@ val databasePassword = providers.environmentVariable("DB_PASSWORD").orElse("rose
 
 dependencies {
     implementation(libs.kotlinx.coroutines)
-    implementation(libs.result4k)
+    api(libs.result4k)
     implementation(libs.slf4j)
 
-    implementation(platform(libs.http4k.bom))
-    implementation(libs.http4k.core)
+    api(platform(libs.http4k.bom))
+    api(libs.http4k.core)
     implementation(libs.http4k.server.undertow)
     implementation(libs.http4k.config)
     implementation(libs.http4k.client.apache)
@@ -41,15 +42,13 @@ dependencies {
     implementation(libs.jooq)
     implementation(libs.kotlinx.html)
 
-    testImplementation(libs.junit.api)
+    testFixturesImplementation(libs.junit.api)
     testImplementation(libs.junit.params)
     testImplementation(libs.junit.engine)
     testImplementation("org.junit.platform:junit-platform-launcher:1.11.3")
 
-    testImplementation(kotlin("test"))
+    testFixturesApi(kotlin("test"))
     testImplementation(libs.strikt)
-
-    testImplementation(libs.playwright)
 
     testImplementation(libs.http4k.testing.approval)
     testImplementation(libs.http4k.testing.hamkrest)
