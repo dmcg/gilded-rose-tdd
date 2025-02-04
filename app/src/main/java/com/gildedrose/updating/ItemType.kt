@@ -50,7 +50,7 @@ val BrieType = typeFor("BRIE") { item, on ->
 
 val PassType = typeFor("PASS") { item, on ->
     requireNotNull(item.sellByDate)
-    val daysUntilSellBy = item.sellByDate!!.toEpochDay() - on.toEpochDay()
+    val daysUntilSellBy = item.sellByDate.toEpochDay() - on.toEpochDay()
     if (daysUntilSellBy < 0) {
         item.copy(quality = Quality.ZERO)
     } else {

@@ -6,15 +6,15 @@ target/
 .classpath
 .project
 bin/
-out/
 .settings/
 
 # Gradle
 .gradle
-build/
+/build/
 
-stock.tsv
-stock.xlsx
-google-api-key.txt
-
+/out/
+/stock.tsv
+/attic/stock.xlsx
+/google-api-key.txt
 /attic/
+/app/build/
