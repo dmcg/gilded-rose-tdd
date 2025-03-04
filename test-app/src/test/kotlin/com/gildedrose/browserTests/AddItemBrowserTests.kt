@@ -1,12 +1,13 @@
-package com.gildedrose
+package com.gildedrose.browserTests
 
+import com.gildedrose.AddItemAcceptanceContract
+import com.gildedrose.App
 import com.gildedrose.domain.Item
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty
+import com.gildedrose.routes
 import java.time.format.DateTimeFormatter
 
-private const val showRunning = false
+private const val showRunning = showBrowserTests
 
-@EnabledIfSystemProperty(named = "run-browser-tests", matches = "true")
 class AddItemBrowserTests : AddItemAcceptanceContract(
     doAdd = ::addWithPlaywright
 )

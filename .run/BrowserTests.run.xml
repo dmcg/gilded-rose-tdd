@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BrowserTests" type="JUnit" factoryName="JUnit">
+    <module name="gilded-rose.test-app.test" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.gildedrose.browserTests.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="PACKAGE_NAME" value="com.gildedrose.browserTests" />
+    <option name="MAIN_CLASS_NAME" value="" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="package" />
+    <option name="VM_PARAMETERS" value="-ea -Dorg.jooq.no-logo=true -Dorg.jooq.no-tips=true" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

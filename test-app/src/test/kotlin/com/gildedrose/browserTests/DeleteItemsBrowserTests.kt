@@ -1,13 +1,14 @@
-package com.gildedrose
+package com.gildedrose.browserTests
 
+import com.gildedrose.App
+import com.gildedrose.DeleteItemsAcceptanceContract
 import com.gildedrose.domain.Item
+import com.gildedrose.routes
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 
-private const val showRunning = true
+private const val showRunning = showBrowserTests
 
-@EnabledIfSystemProperty(named = "run-browser-tests", matches = "true")
 class DeleteItemsBrowserTests : DeleteItemsAcceptanceContract(
     doDelete = ::deleteWithPlaywright
 ) {

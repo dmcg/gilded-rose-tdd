@@ -1,10 +1,12 @@
-package com.gildedrose
+package com.gildedrose.browserTests
 
 import com.gildedrose.http.serverFor
 import com.microsoft.playwright.*
 import com.microsoft.playwright.BrowserType.LaunchOptions
 import org.http4k.core.HttpHandler
 import kotlin.test.assertEquals
+
+const val showBrowserTests = true
 
 fun runWithPlaywright(
     handler: HttpHandler,

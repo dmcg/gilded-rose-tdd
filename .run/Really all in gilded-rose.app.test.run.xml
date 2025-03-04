@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Really all in gilded-rose.test" type="JUnit" factoryName="JUnit">
+  <configuration default="false" name="Really all in gilded-rose.app.test" type="JUnit" factoryName="JUnit">
     <module name="gilded-rose.app.test" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" value="21" />
