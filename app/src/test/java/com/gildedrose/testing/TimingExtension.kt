@@ -43,7 +43,10 @@ class TimingExtension : TestExecutionListener, TestTiming {
     override fun testPlanExecutionFinished(testPlan: TestPlan) {
         val stats = extractStats()
         stats.forEach { printTree(it) }
-        File("./build/reports/testrun.mmd").writeText(stats.toMermaidGanttChart().joinToString("\n"), Charsets.UTF_8)
+        File("./build/reports/testrun.mmd").let {
+            it.parentFile.mkdirs()
+            it.writeText(stats.toMermaidGanttChart().joinToString("\n"), Charsets.UTF_8)
+        }
     }
 
     private fun extractStats(): List<TestStats> {
