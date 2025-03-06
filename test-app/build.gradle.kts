@@ -1,6 +1,5 @@
 plugins {
-    java
-    alias(libs.plugins.kotlin.jvm)
+    id("kotlin-conventions")
     alias(libs.plugins.versions)
     alias(libs.plugins.taskinfo)
 }
@@ -8,26 +7,12 @@ plugins {
 group = "com.gildedrose"
 version = "0.0.1-SNAPSHOT"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     testImplementation(project(":app"))
     testImplementation(testFixtures(project(":app")))
     testImplementation(libs.junit.api)
     testImplementation(kotlin("test"))
     testImplementation(libs.playwright)
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

@@ -1,7 +1,6 @@
 plugins {
-    java
+    id("kotlin-conventions")
     id("java-test-fixtures")
-    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.flyway)
     alias(libs.plugins.jooq)
     alias(libs.plugins.versions)
@@ -10,10 +9,6 @@ plugins {
 
 group = "com.gildedrose"
 version = "0.0.1-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
 
 val testJdbcUrl = providers.environmentVariable("JDBC_URL").orElse("jdbc:postgresql://localhost:5433/gilded-rose").get()
 val databaseUsername = providers.environmentVariable("DB_USERNAME").orElse("gilded").get()
@@ -55,16 +50,6 @@ dependencies {
     testImplementation(libs.http4k.testing.strikt)
 
     jooqGenerator(libs.postgresql)
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
