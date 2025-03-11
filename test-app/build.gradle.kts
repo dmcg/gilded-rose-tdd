@@ -10,8 +10,6 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     testImplementation(project(":app"))
     testImplementation(testFixtures(project(":app")))
-    testImplementation(libs.junit.api)
-    testImplementation(kotlin("test"))
     testImplementation(libs.playwright)
 }
 
