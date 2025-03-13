@@ -7,9 +7,6 @@ plugins {
     alias(libs.plugins.taskinfo)
 }
 
-group = "com.gildedrose"
-version = "0.0.1-SNAPSHOT"
-
 val testJdbcUrl = providers.environmentVariable("JDBC_URL").orElse("jdbc:postgresql://localhost:5433/gilded-rose").get()
 val databaseUsername = providers.environmentVariable("DB_USERNAME").orElse("gilded").get()
 val databasePassword = providers.environmentVariable("DB_PASSWORD").orElse("rose").get()
@@ -50,13 +47,6 @@ dependencies {
     testImplementation(libs.http4k.testing.strikt)
 
     jooqGenerator(libs.postgresql)
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
-        suppressWarnings = true // TODO 2024-11-13 DMCG remove me
-    }
 }
 
 flyway {
