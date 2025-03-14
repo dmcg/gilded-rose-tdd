@@ -1,5 +1,6 @@
-package com.gildedrose.foundation
+package com.gildedrose.parallelMapping
 
+import com.gildedrose.foundation.parallelMapCoroutines
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking

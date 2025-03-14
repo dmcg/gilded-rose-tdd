@@ -1,4 +1,4 @@
-package com.gildedrose.foundation
+package com.gildedrose.competition
 
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.instanceParameter

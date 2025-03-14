@@ -1,4 +1,4 @@
-package com.gildedrose.foundation
+package com.gildedrose.competition
 
 typealias PropertySet = Map<String, Any?>
 

@@ -1,4 +1,4 @@
-package com.gildedrose.foundation
+package com.gildedrose.parallelMapping
 
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k

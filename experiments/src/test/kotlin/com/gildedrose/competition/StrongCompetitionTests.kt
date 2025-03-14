@@ -4,10 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PRO
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.gildedrose.competition.FetchData.Companion.dataFile
-import com.gildedrose.foundation.andThen
-import com.gildedrose.foundation.asLens
-import com.gildedrose.foundation.get
-import com.gildedrose.foundation.with
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
 import org.http4k.testing.assertApproved

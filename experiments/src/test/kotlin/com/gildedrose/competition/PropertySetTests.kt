@@ -1,4 +1,4 @@
-package com.gildedrose.foundation
+package com.gildedrose.competition
 
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat

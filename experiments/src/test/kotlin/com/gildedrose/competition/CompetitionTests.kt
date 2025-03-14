@@ -3,9 +3,8 @@ package com.gildedrose.competition
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.gildedrose.competition.FetchData.Companion.dataFile
-import com.gildedrose.foundation.*
-import com.gildedrose.foundation.PropertySets.asLens
-import com.gildedrose.foundation.PropertySets.lens
+import com.gildedrose.competition.PropertySets.asLens
+import com.gildedrose.competition.PropertySets.lens
 import org.http4k.testing.ApprovalTest
 import org.http4k.testing.Approver
 import org.http4k.testing.assertApproved
