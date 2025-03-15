@@ -9,7 +9,7 @@ import org.http4k.cloudnative.env.Environment
 val environment = Environment.JVM_PROPERTIES overrides
     Environment.ENV overrides
     Environment.from(
-        "jdbc.url" to "jdbc:h2:~/gilded-rose.db",
+        "jdbc.url" to "jdbc:h2:/tmp/gilded-rose.db",
         "db.username" to "gilded",
         "db.password" to "rose"
     )

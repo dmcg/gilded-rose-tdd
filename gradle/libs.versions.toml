@@ -10,7 +10,7 @@ taskinfo = { id = "org.barfuin.gradle.taskinfo", version = "2.2.0" }
 
 kotlin = "2.0.21"
 jooq = "9.0"
-flyway = "9.22.3"
+flyway = "11.4.0"
 junit = "5.11.3"
 jackson = "2.18.1"
 postgresql = "42.7.4"
@@ -23,6 +23,7 @@ jooq-core = "3.19.15"
 kotlinx-html = "0.11.0"
 strikt = "0.35.1"
 playwright = "1.48.0"
+h2="2.3.232"
 
 [libraries]
 
@@ -48,6 +49,7 @@ jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datat
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 
 jooq = { module = "org.jooq:jooq", version.ref = "jooq-core" }

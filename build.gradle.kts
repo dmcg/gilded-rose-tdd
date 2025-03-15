@@ -14,7 +14,7 @@ repositories {
     mavenCentral()
 }
 
-val testJdbcUrl = providers.environmentVariable("JDBC_URL").orElse("jdbc:h2:~/gilded-rose-test-db").get()
+val testJdbcUrl = providers.environmentVariable("JDBC_URL").orElse("jdbc:h2:/tmp/gilded-rose-test-db").get()
 val databaseUsername = providers.environmentVariable("DB_USERNAME").orElse("gilded").get()
 val databasePassword = providers.environmentVariable("DB_PASSWORD").orElse("rose").get()
 
@@ -36,7 +36,7 @@ dependencies {
     implementation(libs.jackson.datatype.jdk8)
     implementation(libs.jackson.datatype.jsr310)
 
-    implementation("com.h2database:h2:2.2.224")
+    implementation(libs.h2)
     implementation(libs.hikaricp)
 
     implementation(libs.jooq)
