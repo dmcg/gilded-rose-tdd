@@ -11,7 +11,7 @@ Requires Java 21 and Docker
 ### Initialise the test database
 
 ```bash
-./gradlew flywayMigrate
+./gradlew flywayMigrate generateJooq
 ```
 
 ### Run (most of) the Tests
