@@ -55,7 +55,7 @@ dependencies {
     testImplementation(libs.http4k.testing.hamkrest)
     testImplementation(libs.http4k.testing.strikt)
 
-    jooqGenerator("com.h2database:h2:2.2.224")
+    jooqGenerator(libs.h2)
 }
 
 tasks.test {
