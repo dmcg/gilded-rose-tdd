@@ -2,7 +2,7 @@ package com.gildedrose.persistence
 
 import com.gildedrose.config.DbConfig
 import com.gildedrose.db.tables.Items
-import org.http4k.cloudnative.env.Environment
+import org.http4k.config.Environment
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

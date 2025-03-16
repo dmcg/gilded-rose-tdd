@@ -3,31 +3,28 @@
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 jooq = { id = "nu.studer.jooq", version.ref = "jooq" }
 flyway = { id = "org.flywaydb.flyway", version.ref = "flyway" }
-versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 taskinfo = { id = "org.barfuin.gradle.taskinfo", version = "2.2.0" }
 
 [versions]
 
 kotlin = "2.0.21"
-jooq = "9.0"
-flyway = "11.4.0"
-junit = "5.11.3"
-jackson = "2.18.1"
-postgresql = "42.7.4"
-coroutines = "1.9.0"
-result4k = "2.20.0.0"
-slf4j = "2.0.16"
-http4k = "5.33.1.0"
-hikaricp = "6.1.0"
-jooq-core = "3.19.15"
-kotlinx-html = "0.11.0"
-strikt = "0.35.1"
-playwright = "1.48.0"
+jooq = "10.0"
+flyway = "9.22.3"
+junit = "5.12.1"
+jackson = "2.18.3"
 h2="2.3.232"
+coroutines = "1.10.1"
+result4k = "2.22.2.1"
+slf4j = "2.0.17"
+http4k = "6.1.0.1"
+hikaricp = "6.2.1"
+jooq-core = "3.20.2"
+kotlinx-html = "0.12.0"
+strikt = "0.35.1"
+playwright = "1.50.0"
 
 [libraries]
 
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 result4k = { module = "dev.forkhandles:result4k", version.ref = "result4k" }
 slf4j = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4j" }
@@ -35,7 +32,7 @@ slf4j = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4j" }
 http4k-bom = { module = "org.http4k:http4k-bom", version.ref = "http4k" }
 http4k-core = { module = "org.http4k:http4k-core" }
 http4k-server-undertow = { module = "org.http4k:http4k-server-undertow" }
-http4k-cloudnative = { module = "org.http4k:http4k-cloudnative" }
+http4k-config = { module = "org.http4k:http4k-config" }
 http4k-template-handlebars = { module = "org.http4k:http4k-template-handlebars" }
 http4k-client-apache = { module = "org.http4k:http4k-client-apache" }
 http4k-testing-approval = { module = "org.http4k:http4k-testing-approval" }
@@ -48,7 +45,6 @@ jackson-module-parameter-names = { module = "com.fasterxml.jackson.module:jackso
 jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8", version.ref = "jackson" }
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
-postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 

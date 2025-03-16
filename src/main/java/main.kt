@@ -3,7 +3,7 @@ import com.gildedrose.App
 import com.gildedrose.config.DbConfig
 import com.gildedrose.http.serverFor
 import com.gildedrose.routes
-import org.http4k.cloudnative.env.Environment
+import org.http4k.config.Environment
 
 
 val environment = Environment.JVM_PROPERTIES overrides
