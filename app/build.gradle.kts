@@ -3,8 +3,6 @@ plugins {
     id("java-test-fixtures")
     alias(libs.plugins.flyway)
     alias(libs.plugins.jooq)
-    alias(libs.plugins.versions)
-    alias(libs.plugins.taskinfo)
 }
 
 val testJdbcUrl = providers.environmentVariable("JDBC_URL").orElse("jdbc:postgresql://localhost:5433/gilded-rose").get()

@@ -1,7 +1,5 @@
 plugins {
     id("kotlin-conventions")
-    alias(libs.plugins.versions)
-    alias(libs.plugins.taskinfo)
 }
 
 dependencies {
