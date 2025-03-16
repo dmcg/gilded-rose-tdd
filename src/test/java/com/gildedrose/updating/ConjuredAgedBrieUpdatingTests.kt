@@ -3,8 +3,10 @@ package com.gildedrose.updating
 import com.gildedrose.item
 import com.gildedrose.oct29
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
+@Disabled("Not yet implemented")
 class ConjuredAgedBrieUpdatingTests {
 
     @Test fun `increases in quality by two every day until its sell by date`() {

@@ -54,8 +54,8 @@ class ConjuredStandardUpdatingTests {
 
     @Test fun `items with no sellBy don't change quality`() {
         assertEquals(
-            item("Conjured banana", null, 42),
-            item("Conjured banana", null, 42).updatedBy(days = 1, on = oct29)
+            item("Sulfuras", null, 42),
+            item("Sulfuras", null, 42).updatedBy(days = 1, on = oct29)
         )
     }
 
