@@ -17,7 +17,7 @@ import java.time.LocalDate
 
 class DbTxContext(val dslContext: DSLContext) : TXContext()
 
-open class DbItems(
+class DbItems(
     dslContext: DSLContext
 ) : Items<DbTxContext> {
 

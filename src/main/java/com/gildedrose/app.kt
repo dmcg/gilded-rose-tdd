@@ -5,13 +5,15 @@ import com.gildedrose.config.Features
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.loggingAnalytics
-import com.gildedrose.persistence.*
+import com.gildedrose.persistence.DbItems
+import com.gildedrose.persistence.Items
+import com.gildedrose.persistence.StockListLoadingError
+import com.gildedrose.persistence.TXContext
 import com.gildedrose.pricing.PricedStockListLoader
 import com.gildedrose.pricing.valueElfClient
 import com.gildedrose.updating.Stock
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
-import java.io.File
 import java.net.URI
 import java.time.Instant
 import java.time.ZoneId
@@ -27,14 +29,13 @@ data class App(
     val pricing: (Item) -> Price?
 ) {
     constructor(
-        stockFile: File = File("stock.tsv"),
         dbConfig: DbConfig,
         features: Features = Features(),
         valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
         clock: () -> Instant = Instant::now,
         analytics: Analytics = stdOutAnalytics
     ) : this(
-        DualItems(StockFileItems(stockFile), DbItems(dbConfig.toDslContext()), analytics),
+        DbItems(dbConfig.toDslContext()),
         features,
         clock,
         analytics,
