@@ -6,7 +6,7 @@ import com.microsoft.playwright.BrowserType.LaunchOptions
 import org.http4k.core.HttpHandler
 import kotlin.test.assertEquals
 
-const val showBrowserTests = true
+const val showBrowserTests = false
 
 fun runWithPlaywright(
     handler: HttpHandler,
