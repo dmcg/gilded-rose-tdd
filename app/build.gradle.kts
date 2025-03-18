@@ -43,6 +43,7 @@ dependencies {
     testImplementation(libs.http4k.testing.approval)
     testImplementation(libs.http4k.testing.hamkrest)
     testImplementation(libs.http4k.testing.strikt)
+    testImplementation("io.github.classgraph:classgraph:4.8.162")
 
     jooqGenerator(libs.postgresql)
 }
