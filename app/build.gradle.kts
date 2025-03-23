@@ -10,6 +10,7 @@ val databaseUsername = providers.environmentVariable("DB_USERNAME").orElse("gild
 val databasePassword = providers.environmentVariable("DB_PASSWORD").orElse("rose").get()
 
 dependencies {
+    api(project(":foundation"))
     implementation(libs.kotlinx.coroutines)
     api(libs.result4k)
     implementation(libs.slf4j)
