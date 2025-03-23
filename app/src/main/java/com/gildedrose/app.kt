@@ -5,7 +5,6 @@ import com.gildedrose.config.Features
 import com.gildedrose.config.toDslContext
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.Analytics
-import com.gildedrose.foundation.loggingAnalytics
 import com.gildedrose.persistence.DbItems
 import com.gildedrose.persistence.Items
 import com.gildedrose.persistence.StockListLoadingError

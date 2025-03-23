@@ -1,5 +1,6 @@
-package com.gildedrose.foundation
+package com.gildedrose
 
+import com.gildedrose.foundation.AnalyticsEvent
 import org.http4k.filter.TraceId
 import org.http4k.filter.ZipkinTraces
 import org.http4k.filter.ZipkinTracesStorage

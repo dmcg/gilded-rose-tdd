@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 
 @Disabled("Run by hand only")
 class PackageAnalyzer {
-    private val includeExternalDependencies = false
+    private val includeExternalDependencies = true
 
     @Test
     fun main() {
