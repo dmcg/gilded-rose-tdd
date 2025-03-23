@@ -1,6 +1,6 @@
-package com.gildedrose.foundation
+package com.gildedrose.http
 
-import com.gildedrose.http.ResponseErrorsImpl
+import com.gildedrose.foundation.AnalyticsEvent
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
