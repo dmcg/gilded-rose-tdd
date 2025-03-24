@@ -6,4 +6,4 @@ plugins {
 
 rootProject.name = 'gilded-rose'
 
-include('foundation', 'core', 'app', 'test-app', 'experiments')
+include('foundation', 'core', 'app', 'database', 'test-app', 'experiments')

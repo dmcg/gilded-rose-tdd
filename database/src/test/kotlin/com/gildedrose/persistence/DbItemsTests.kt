@@ -1,7 +1,5 @@
 package com.gildedrose.persistence
 
-import com.gildedrose.config.DbConfig
-import com.gildedrose.config.toDslContext
 import com.gildedrose.db.tables.Items
 import com.gildedrose.domain.ItemsContract
 import org.jooq.DSLContext
