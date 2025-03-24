@@ -1,4 +1,4 @@
-package com.gildedrose.persistence
+package com.gildedrose.domain
 
 import com.gildedrose.foundation.AnalyticsEvent
 

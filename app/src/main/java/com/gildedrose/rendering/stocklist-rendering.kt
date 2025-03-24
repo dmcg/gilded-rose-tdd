@@ -2,8 +2,8 @@ package com.gildedrose.rendering
 
 import com.gildedrose.domain.PricedItem
 import com.gildedrose.domain.PricedStockList
+import com.gildedrose.domain.StockListLoadingError
 import com.gildedrose.http.ResponseErrors.withError
-import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.*
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML

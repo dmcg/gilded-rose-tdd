@@ -1,6 +1,5 @@
-package com.gildedrose.persistence
+package com.gildedrose.domain
 
-import com.gildedrose.domain.StockList
 import dev.forkhandles.result4k.Result
 
 /**

@@ -2,7 +2,6 @@ package com.gildedrose.pricing
 
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.*
-import com.gildedrose.persistence.StockListLoadingError
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
 import dev.forkhandles.result4k.peekFailure

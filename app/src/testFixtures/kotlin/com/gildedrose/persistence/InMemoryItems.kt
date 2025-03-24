@@ -1,6 +1,9 @@
 package com.gildedrose.persistence
 
+import com.gildedrose.domain.Items
+import com.gildedrose.domain.NoTX
 import com.gildedrose.domain.StockList
+import com.gildedrose.domain.StockListLoadingError
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import java.time.Instant

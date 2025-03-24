@@ -1,9 +1,9 @@
 package com.gildedrose.updating
 
 import com.gildedrose.domain.Item
+import com.gildedrose.domain.Items
 import com.gildedrose.domain.StockList
-import com.gildedrose.persistence.Items
-import com.gildedrose.persistence.StockListLoadingError
+import com.gildedrose.domain.StockListLoadingError
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.flatMap

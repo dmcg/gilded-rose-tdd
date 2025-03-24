@@ -6,8 +6,6 @@ import com.gildedrose.config.toDslContext
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.persistence.DbItems
-import com.gildedrose.persistence.Items
-import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.pricing.PricedStockListLoader
 import com.gildedrose.pricing.valueElfClient
 import com.gildedrose.updating.Stock
