@@ -33,11 +33,13 @@ dependencies {
     implementation(libs.kotlinx.html)
 
     testFixturesImplementation(libs.junit.api)
-    testImplementation(libs.junit.params)
+    testFixturesImplementation(testFixtures(project(":core")))
+    testFixturesApi(kotlin("test"))
+
     testImplementation(libs.junit.engine)
     testImplementation("org.junit.platform:junit-platform-launcher:1.11.3")
 
-    testFixturesApi(kotlin("test"))
+    testImplementation(testFixtures(project(":core")))
     testImplementation(libs.strikt)
 
     testImplementation(libs.http4k.testing.approval)

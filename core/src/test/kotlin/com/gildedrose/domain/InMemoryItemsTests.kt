@@ -1,7 +1,6 @@
-package com.gildedrose.persistence
+package com.gildedrose.domain
 
-import com.gildedrose.domain.Items
-import com.gildedrose.domain.NoTX
+import com.gildedrose.testing.InMemoryItems
 
 class InMemoryItemsTests : ItemsContract<NoTX>() {
     override val items: Items<NoTX> = InMemoryItems()

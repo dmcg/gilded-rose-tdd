@@ -3,6 +3,8 @@ package com.gildedrose
 import com.gildedrose.domain.*
 import com.gildedrose.rendering.render
 import com.gildedrose.testing.fake
+import com.gildedrose.testing.item
+import com.gildedrose.testing.withPriceResult
 import com.natpryce.hamkrest.assertion.assertThat
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result

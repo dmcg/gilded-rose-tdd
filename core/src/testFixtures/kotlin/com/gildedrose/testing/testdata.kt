@@ -1,4 +1,4 @@
-package com.gildedrose
+package com.gildedrose.testing
 
 import com.gildedrose.domain.*
 import dev.forkhandles.result4k.Result

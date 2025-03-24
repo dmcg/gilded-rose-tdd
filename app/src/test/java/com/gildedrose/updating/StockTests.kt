@@ -1,9 +1,9 @@
 package com.gildedrose.updating
 
 import com.gildedrose.domain.StockList
-import com.gildedrose.item
-import com.gildedrose.oct29
-import com.gildedrose.persistence.InMemoryItems
+import com.gildedrose.testing.InMemoryItems
+import com.gildedrose.testing.item
+import com.gildedrose.testing.oct29
 import dev.forkhandles.result4k.valueOrNull
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

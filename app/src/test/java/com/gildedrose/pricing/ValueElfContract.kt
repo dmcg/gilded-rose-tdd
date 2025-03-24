@@ -2,7 +2,7 @@ package com.gildedrose.pricing
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
-import com.gildedrose.item
+import com.gildedrose.testing.item
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import org.http4k.core.HttpHandler

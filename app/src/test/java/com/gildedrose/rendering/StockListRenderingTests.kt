@@ -3,10 +3,10 @@ package com.gildedrose.rendering
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockListLoadingError
-import com.gildedrose.item
 import com.gildedrose.londonZoneId
-import com.gildedrose.oct29
-import com.gildedrose.withPriceResult
+import com.gildedrose.testing.item
+import com.gildedrose.testing.oct29
+import com.gildedrose.testing.withPriceResult
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.http4k.testing.ApprovalTest

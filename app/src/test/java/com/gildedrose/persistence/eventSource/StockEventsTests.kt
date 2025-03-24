@@ -3,8 +3,8 @@ package com.gildedrose.persistence.eventSource
 import com.gildedrose.domain.ID
 import com.gildedrose.domain.NonBlankString
 import com.gildedrose.domain.Quality
-import com.gildedrose.item
 import com.gildedrose.londonZoneId
+import com.gildedrose.testing.item
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEmpty

@@ -1,4 +1,4 @@
-package com.gildedrose.persistence
+package com.gildedrose.testing
 
 import com.gildedrose.domain.Items
 import com.gildedrose.domain.NoTX

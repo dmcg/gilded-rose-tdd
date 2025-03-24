@@ -2,7 +2,8 @@ package com.gildedrose
 
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.magic
-import com.gildedrose.persistence.InMemoryItems
+import com.gildedrose.testing.InMemoryItems
+import com.gildedrose.testing.withNoPrice
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.valueOrNull
 import kotlin.test.assertEquals

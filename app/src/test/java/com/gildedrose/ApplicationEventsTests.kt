@@ -2,7 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.foundation.UncaughtExceptionEvent
 import com.gildedrose.http.HttpEvent
-import com.gildedrose.persistence.InMemoryItems
+import com.gildedrose.testing.InMemoryItems
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import org.http4k.core.Method.GET

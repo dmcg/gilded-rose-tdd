@@ -5,7 +5,9 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
-import com.gildedrose.persistence.InMemoryItems
+import com.gildedrose.testing.InMemoryItems
+import com.gildedrose.testing.item
+import com.gildedrose.testing.withPriceResult
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.LocalDate

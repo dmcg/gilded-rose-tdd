@@ -4,8 +4,8 @@ import com.gildedrose.domain.*
 import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.foundation.UncaughtExceptionEvent
 import com.gildedrose.foundation.succeedAfter
-import com.gildedrose.item
-import com.gildedrose.withPriceResult
+import com.gildedrose.testing.item
+import com.gildedrose.testing.withPriceResult
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
