@@ -19,7 +19,7 @@ fun DbConfig.toDslContext(): DSLContext = DSL.using(
     SQLDialect.POSTGRES
 )
 
-fun DbConfig.toHikariDataSource() = HikariDataSource().apply {
+private fun DbConfig.toHikariDataSource() = HikariDataSource().apply {
     jdbcUrl = this@toHikariDataSource.jdbcUrl.toString()
     username = this@toHikariDataSource.username
     password = this@toHikariDataSource.password

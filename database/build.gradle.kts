@@ -11,11 +11,11 @@ val databasePassword = providers.environmentVariable("DB_PASSWORD").orElse("rose
 
 dependencies {
     implementation(project(":core"))
-    testImplementation(testFixtures(project(":core")))
-
     api(libs.jooq)
     implementation(libs.postgresql)
     implementation(libs.hikaricp)
+
+    testImplementation(testFixtures(project(":core")))
 
     jooqGenerator(libs.postgresql)
 }
