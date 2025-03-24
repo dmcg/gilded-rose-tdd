@@ -11,6 +11,7 @@ val databasePassword = providers.environmentVariable("DB_PASSWORD").orElse("rose
 
 dependencies {
     api(project(":foundation"))
+    api(project(":core"))
     implementation(libs.kotlinx.coroutines)
     api(libs.result4k)
     implementation(libs.slf4j)

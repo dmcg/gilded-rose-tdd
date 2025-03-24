@@ -29,9 +29,9 @@ fun conjured(baseType: ItemType) = typeFor("CONJURED $baseType") { item, on ->
 }
 
 val StandardType = typeFor("STANDARD") { item, on ->
-    requireNotNull(item.sellByDate)
+    val sellByDate = requireNotNull(item.sellByDate)
     val degradation = when {
-        on.isAfter(item.sellByDate) -> 2
+        on.isAfter(sellByDate) -> 2
         else -> 1
     }
     item.copy(quality = item.quality - degradation)
@@ -40,17 +40,17 @@ val StandardType = typeFor("STANDARD") { item, on ->
 val UndatedType = typeFor("UNDATED") { item, _ -> item }
 
 val BrieType = typeFor("BRIE") { item, on ->
-    requireNotNull(item.sellByDate)
+    val sellByDate = requireNotNull(item.sellByDate)
     val improvement = when {
-        on.isAfter(item.sellByDate) -> 2
+        on.isAfter(sellByDate) -> 2
         else -> 1
     }
     item.copy(quality = item.quality + improvement)
 }
 
 val PassType = typeFor("PASS") { item, on ->
-    requireNotNull(item.sellByDate)
-    val daysUntilSellBy = item.sellByDate.toEpochDay() - on.toEpochDay()
+    val sellByDate = requireNotNull(item.sellByDate)
+    val daysUntilSellBy = sellByDate.toEpochDay() - on.toEpochDay()
     if (daysUntilSellBy < 0) {
         item.copy(quality = Quality.ZERO)
     } else {
