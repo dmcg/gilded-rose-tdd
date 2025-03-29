@@ -6,6 +6,7 @@ import java.time.LocalDate
 
 abstract class ItemType {
     abstract fun update(item: Item, on: LocalDate): Item
+    fun updateNow(item: Item): Item = update(item, LocalDate.now())
 }
 
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType {
