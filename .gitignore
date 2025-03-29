@@ -10,7 +10,7 @@ bin/
 
 # Gradle
 .gradle
-/build/
+build/
 
 /out/
 /stock.tsv
