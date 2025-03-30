@@ -8,25 +8,12 @@ abstract class ItemType {
     abstract fun update(item: Item, on: LocalDate): Item
 }
 
-fun typeFor(sellByDate: LocalDate?, name: String): ItemType {
-    return when {
-        sellByDate == null -> Undated()
-        name.contains("Aged Brie", ignoreCase = true) -> Brie()
-        name.contains("Backstage Pass", ignoreCase = true) -> Pass()
-        name.startsWith("Conjured", ignoreCase = true) -> Conjured()
-        else -> Standard()
-    } }
-
-class Conjured : ItemType() {
-    override fun update(item: Item, on: LocalDate): Item {
-        requireNotNull(item.sellByDate)
-        val degradation = when {
-            on.isAfter(item.sellByDate) -> 4
-            else -> 2
-        }
-        return item.copy(quality = subtract(item.quality, degradation))
-    }
-
+fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
+    sellByDate == null -> Undated()
+    name.contains("Aged Brie", ignoreCase = true) -> Brie()
+    name.contains("Backstage Pass", ignoreCase = true) -> Pass()
+    name.startsWith("Conjured", ignoreCase = true) -> Conjured()
+    else -> Standard()
 }
 
 class Standard : ItemType() {
@@ -73,7 +60,17 @@ class Pass : ItemType() {
             item.copy(quality = add(item.quality, improvement))
         }
     }
+}
 
+class Conjured : ItemType() {
+    override fun update(item: Item, on: LocalDate): Item {
+        requireNotNull(item.sellByDate)
+        val degradation = when {
+            on.isAfter(item.sellByDate) -> 4
+            else -> 2
+        }
+        return item.copy(quality = subtract(item.quality, degradation))
+    }
 }
 
 fun subtract(quality: Quality, value: Int): Quality =
