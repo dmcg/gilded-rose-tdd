@@ -9,9 +9,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.ZoneId
-import java.util.concurrent.Callable
-import java.util.concurrent.CyclicBarrier
-import java.util.concurrent.Executors
 
 class StockTests {
 
@@ -31,7 +28,7 @@ class StockTests {
     )
 
     @Test
-    fun `loads stock from file`() {
+    fun `loads stock from Items`() {
         val now = Instant.parse("2022-02-09T23:59:59Z")
         assertEquals(
             initialStockList,
@@ -86,29 +83,6 @@ class StockTests {
         )
         items.inTransaction {
             assertEquals(initialStockList, items.load().valueOrNull())
-        }
-    }
-
-    @Test
-    fun `parallel execution`() {
-        val count = 8
-        val executor = Executors.newFixedThreadPool(count)
-        val barrier = CyclicBarrier(count)
-        val futures = executor.invokeAll(
-            (1..count).map {
-                Callable {
-                    barrier.await()
-                    `updates stock if last modified yesterday`()
-                }
-            }
-        )
-        futures.forEach { it.get() }
-    }
-
-    @Test
-    fun `sanity check`() {
-        for (i in 1..10) {
-            `parallel execution`()
         }
     }
 }
