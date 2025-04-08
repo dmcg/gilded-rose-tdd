@@ -1,86 +1,77 @@
 import io.github.classgraph.ClassGraph
+import io.github.classgraph.ClassInfo
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
-import java.util.regex.Pattern
 import kotlin.test.assertEquals
 
 
 @Disabled("Run by hand only")
 class PackageAnalyzer {
     private val includeExternalDependencies = false
+    private val outputDot = File.createTempFile("output", ".dot")
 
     @Test
     fun main() {
-        val outputDot = File.createTempFile("output", ".dot")
-        val outputPng = File("packages.png")
-        val srcDirPath = File("./src/main")
-        val fileTree = walkTree(srcDirPath, includeExternalDependencies = includeExternalDependencies)
-
-        generateDotFile(outputDot, fileTree)
-        createImageOutput(outputDot, outputPng)
+        val scanResult = ClassGraph().enableInterClassDependencies().scan()
+        val dependencies: Map<ClassInfo, List<ClassInfo>> = scanResult.classDependencyMap
+        val root = scanResult.getClassInfo("MainKt")
+        val packageDependencies = walkClassTree(root, dependencies, includeExternalDependencies)
+        generateDotFile(outputDot, packageDependencies)
+        createImageOutput(outputDot, File("packages.png"))
         checkDotFile(outputDot)
     }
 }
 
-private fun walkTree(srcDirPath: File, includeExternalDependencies: Boolean): Map<String, Set<String>> =
-    srcDirPath.walkTopDown()
-        .filter { it.isFile && it.path.endsWith(".kt") }
-        .map { file -> file.extractPackageAndImports(includeExternalDependencies) }
-        .groupingBy { it.first }
-        .fold(emptySet()) { acc, (_, importedPackages) -> acc union importedPackages }
+private fun walkClassTree(
+    root: ClassInfo,
+    dependencies: Map<ClassInfo, List<ClassInfo>>,
+    includeExternalDependencies: Boolean,
+    destination: MutableMap<String, MutableSet<String>> = mutableMapOf(),
+    visited: MutableSet<ClassInfo> = mutableSetOf(),
+): MutableMap<String, MutableSet<String>> {
+    if (visited.contains(root))
+        return destination
+    else
+        visited.add(root)
+    val rootPackageName = nameFor(root.packageName, includeExternalDependencies)
+        ?: return destination
 
-private val packagePattern = Pattern.compile("^package\\s+(.*)$")
-private val importPattern = Pattern.compile("^import\\s+(.*)$")
-
-private fun File.extractPackageAndImports(includeExternal: Boolean): Pair<String, Set<String>> {
-    val lines = this.readLines()
-    val matcher = packagePattern.matcher(lines.firstOrNull() ?: "")
-    val packageName = if (matcher.find()) matcher.group(1) else "<root>"
-
-    val importedPackages = lines.drop(1)
-        .mapNotNull { line ->
-            val importMatcher = importPattern.matcher(line)
-            if (importMatcher.find()) {
-                val importedPackage = packageNameFrom(importMatcher.group(1).split('.'))
-                importedPackage?.let { nameFor(it, includeExternal = includeExternal) }
-            } else null
+    val classDependencies = dependencies[root] ?: emptyList()
+    val packageDependencies = classDependencies
+        .mapNotNull {
+            nameFor(it.packageName, includeExternalDependencies)
         }.toSet()
-
-    return Pair(packageName, importedPackages)
+    destination.getOrPut(rootPackageName) { mutableSetOf() }.addAll(packageDependencies)
+    classDependencies
+        .filter { it.packageName.startsWith("com.gildedrose") }
+        .forEach { walkClassTree(it, dependencies, includeExternalDependencies, destination, visited) }
+    return destination
 }
 
-private fun nameFor(importedPackage: String, includeExternal: Boolean) =
-    if (includeExternal) {
-        when {
-            importedPackage.startsWith("com.fasterxml.jackson") -> "jackson"
-            importedPackage.startsWith("org.apache.hc") -> "apache-hc"
-            importedPackage.startsWith("org.http4k.core") -> "org.http4k.core"
-            importedPackage.startsWith("org.jooq") -> "jooq"
-            else -> importedPackage
+private fun nameFor(importedPackage: String, includeExternal: Boolean): String? =
+    when {
+        importedPackage.isEmpty() -> "<root>"
+        importedPackage.startsWith("com.gildedrose.db") -> "com.gildedrose.db.*"
+        includeExternal -> {
+            when {
+                importedPackage.startsWith("com.fasterxml.jackson") -> "jackson"
+                importedPackage.startsWith("org.apache.hc") -> "apache-hc"
+                importedPackage.startsWith("org.http4k.core") -> "org.http4k.core"
+                importedPackage.startsWith("org.jooq") -> "jooq"
+                importedPackage.startsWith("kotlinx.html") -> "kotlinx-html"
+                importedPackage.startsWith("kotlinx") -> importedPackage
+                importedPackage.startsWith("kotlin") -> null
+                importedPackage.startsWith("org.jetbrains.annotations") -> null
+                else -> importedPackage
+            }
         }
-    } else {
-        if (importedPackage.startsWith("com.gildedrose"))
-            importedPackage
-        else
-            null
+
+        else -> when {
+            importedPackage.startsWith("com.gildedrose") -> importedPackage
+            else -> null
+        }
     }
-
-private fun packageNameFrom(components: List<String>): String? {
-    var current = components
-    while (current.isNotEmpty()) {
-        val packageName = current.joinToString(".")
-        if (packageName.isValidPackageName())
-            return packageName
-        current = current.dropLast(1)
-    }
-    return null
-}
-
-private val allPackages = ClassGraph().enableClassInfo()
-    .scan().allClasses.map { it.packageName }.toSet()
-
-private fun String.isValidPackageName(): Boolean = allPackages.contains(this)
 
 private fun checkDotFile(dotFile: File) {
     val dotFileContents = dotFile.readText()
@@ -88,17 +79,16 @@ private fun checkDotFile(dotFile: File) {
     assertEquals(approvedFileContents, dotFileContents)
 }
 
-private fun generateDotFile(dotFile: File, fileTree: Map<String, Set<String>>) {
+private fun generateDotFile(dotFile: File, packagesMap: Map<String, Set<String>>) {
     dotFile.printWriter().use { out ->
         out.println("digraph KotlinPackageDependencies {")
         out.println("rankdir=TB;")
         out.println("node [shape=box];")
         out.println("\"com.gildedrose\" [rank=min];")
 
-        fileTree.forEach { (pkg, imports) ->
-            imports.forEach { importedFull ->
-                // For the dot file, we need to use the full import path
-                out.println("\"$pkg\" -> \"$importedFull\";")
+        packagesMap.forEach { (packageInfo, packageDependencies) ->
+            packageDependencies.forEach { dependency ->
+                out.println(""""$packageInfo" -> "$dependency";""")
             }
         }
 
