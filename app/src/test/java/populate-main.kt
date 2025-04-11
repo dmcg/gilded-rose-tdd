@@ -1,5 +1,5 @@
 import com.gildedrose.App
-import com.gildedrose.config.Features
+import com.gildedrose.Features
 import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.NonBlankString

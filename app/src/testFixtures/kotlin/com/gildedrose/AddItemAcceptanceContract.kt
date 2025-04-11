@@ -1,6 +1,5 @@
 package com.gildedrose
 
-import com.gildedrose.config.Features
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
