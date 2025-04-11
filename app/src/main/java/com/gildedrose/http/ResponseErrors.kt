@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 object ResponseErrors : ResponseErrorsImpl()
 
+// This class just exists so that we have a non-singleton version to use in tests
 open class ResponseErrorsImpl(
     private val headerName: String = "x-http4k-error-id",
     private val lookup: MutableMap<String, AnalyticsEvent> = ConcurrentHashMap<String, AnalyticsEvent>()
