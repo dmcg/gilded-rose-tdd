@@ -20,12 +20,6 @@ dependencies {
     jooqGenerator(libs.postgresql)
 }
 
-flyway {
-    url = testJdbcUrl
-    user = databaseUsername
-    password = databasePassword
-}
-
 @Suppress("UnstableApiUsage") // XMLAppendable
 private operator fun <T : org.jooq.util.jaxb.tools.XMLAppendable> T.invoke(block: T.() -> Unit) = apply(block)
 
@@ -72,13 +66,18 @@ jooq {
     }
 }
 
-tasks.named("flywayMigrate") {
+tasks.named<org.flywaydb.gradle.task.FlywayMigrateTask>("flywayMigrate") {
+    url = testJdbcUrl
+    user = databaseUsername
+    password = databasePassword
+
+    // only run if migrations have changed since gernerated sources
     inputs.files("src/main/resources/db/migration")
     outputs.dir("build/generated-src/jooq/main")
 }
 
 tasks.register<org.flywaydb.gradle.task.FlywayMigrateTask>("flywayMigrateDev") {
-    url = "jdbc:postgresql://localhost:5432/gilded-rose"
+    url = "jdbc:postgresql://localhost:5432/gilded-rose" // local dev
     user = databaseUsername
     password = databasePassword
 }
