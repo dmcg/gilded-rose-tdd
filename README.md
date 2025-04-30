@@ -11,7 +11,7 @@ Requires Java 21 and Docker
 ### Start Postgres in Docker
 
 ```bash
-db/start-db.sh
+scripts/start-db.sh
 ```
 
 ### Run (most of) the Tests
@@ -23,13 +23,13 @@ db/start-db.sh
 ### Initialise the local database
 
 ```bash
-db/migrate-dev.sh
+scripts/migrate-dev.sh
 ```
 
 ### Populate the database with test data
 
-Run src/test/java/populate-main.kt
+Run app/src/test/java/populate-main.kt
 
 ### Run the app
 
-Run src/main/java/main.kt
+Run app/src/main/java/main.kt

@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.jooq)
 }
 
-val testJdbcUrl = providers.environmentVariable("JDBC_URL").orElse("jdbc:postgresql://localhost:5433/gilded-rose").get()
+val testJdbcUrl = "jdbc:postgresql://localhost:5433/gilded-rose"
 val databaseUsername = providers.environmentVariable("DB_USERNAME").orElse("gilded").get()
 val databasePassword = providers.environmentVariable("DB_PASSWORD").orElse("rose").get()
 
@@ -75,6 +75,12 @@ jooq {
 tasks.named("flywayMigrate") {
     inputs.files("src/main/resources/db/migration")
     outputs.dir("build/generated-src/jooq/main")
+}
+
+tasks.register<org.flywaydb.gradle.task.FlywayMigrateTask>("flywayMigrateDev") {
+    url = "jdbc:postgresql://localhost:5432/gilded-rose"
+    user = databaseUsername
+    password = databasePassword
 }
 
 tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
