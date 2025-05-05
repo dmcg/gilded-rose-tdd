@@ -7,7 +7,7 @@ taskinfo = { id = "org.barfuin.gradle.taskinfo", version = "2.2.0" }
 
 [versions]
 
-kotlin = "2.0.21"
+kotlin = "2.1.20"
 jooq = "10.0"
 flyway = "9.22.3"
 junit = "5.12.1"
