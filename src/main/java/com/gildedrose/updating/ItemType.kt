@@ -42,7 +42,6 @@ class Brie : ItemType() {
         }
         return item.copy(quality = add(item.quality, improvement))
     }
-
 }
 
 class Pass : ItemType() {
