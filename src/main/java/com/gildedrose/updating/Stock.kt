@@ -1,3 +1,5 @@
+@file:Suppress("CONTEXT_RECEIVERS_DEPRECATED")
+
 package com.gildedrose.updating
 
 import com.gildedrose.domain.Item

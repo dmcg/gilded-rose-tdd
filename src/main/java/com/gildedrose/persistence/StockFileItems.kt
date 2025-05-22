@@ -1,3 +1,5 @@
+@file:Suppress("CONTEXT_RECEIVERS_DEPRECATED")
+
 package com.gildedrose.persistence
 
 import com.gildedrose.domain.StockList
