@@ -10,7 +10,7 @@ interface ItemType {
 
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType =
     when {
-        sellByDate == null -> Undated()
+        sellByDate == null -> undated
         name.contains("Aged Brie", ignoreCase = true) -> Brie()
         name.contains("Backstage Pass", ignoreCase = true) -> Pass()
         name.startsWith("Conjured", ignoreCase = true) -> Conjured()
@@ -28,10 +28,8 @@ object Standard : ItemType {
     }
 }
 
-class Undated : ItemType {
-    override fun update(item: Item, on: LocalDate): Item {
-        return item
-    }
+val undated = object : ItemType {
+    override fun update(item: Item, on: LocalDate) = item
 }
 
 class Brie : ItemType {
