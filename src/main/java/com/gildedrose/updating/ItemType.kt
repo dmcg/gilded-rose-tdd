@@ -5,7 +5,7 @@ import com.gildedrose.domain.Quality
 import java.time.LocalDate
 
 abstract class ItemType {
-    abstract fun update(item: Item, localDate: LocalDate): Item
+    abstract fun update(item: Item, on: LocalDate): Item
 }
 
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType =
@@ -18,10 +18,10 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType =
     }
 
 class Standard : ItemType() {
-    override fun update(item: Item, localDate: LocalDate): Item {
+    override fun update(item: Item, on: LocalDate): Item {
         requireNotNull(item.sellByDate)
         val degradation = when {
-            localDate.isAfter(item.sellByDate) -> 2
+            on.isAfter(item.sellByDate) -> 2
             else -> 1
         }
         return item.copy(quality = item.quality - degradation)
@@ -29,16 +29,16 @@ class Standard : ItemType() {
 }
 
 class Undated : ItemType() {
-    override fun update(item: Item, localDate: LocalDate): Item {
+    override fun update(item: Item, on: LocalDate): Item {
         return item
     }
 }
 
 class Brie : ItemType() {
-    override fun update(item: Item, localDate: LocalDate): Item {
+    override fun update(item: Item, on: LocalDate): Item {
         requireNotNull(item.sellByDate)
         val improvement = when {
-            localDate.isAfter(item.sellByDate) -> 2
+            on.isAfter(item.sellByDate) -> 2
             else -> 1
         }
         return item.copy(quality = item.quality + improvement)
@@ -46,9 +46,9 @@ class Brie : ItemType() {
 }
 
 class Pass : ItemType() {
-    override fun update(item: Item, localDate: LocalDate): Item {
+    override fun update(item: Item, on: LocalDate): Item {
         requireNotNull(item.sellByDate)
-        val daysUntilSellBy = item.sellByDate.toEpochDay() - localDate.toEpochDay()
+        val daysUntilSellBy = item.sellByDate.toEpochDay() - on.toEpochDay()
         return if (daysUntilSellBy < 0) {
             item.copy(quality = Quality.ZERO)
         } else {
@@ -63,10 +63,10 @@ class Pass : ItemType() {
 }
 
 class Conjured : ItemType() {
-    override fun update(item: Item, localDate: LocalDate): Item {
+    override fun update(item: Item, on: LocalDate): Item {
         requireNotNull(item.sellByDate)
         val degradation = when {
-            localDate.isAfter(item.sellByDate) -> 4
+            on.isAfter(item.sellByDate) -> 4
             else -> 2
         }
         return item.copy(quality = item.quality - degradation)
