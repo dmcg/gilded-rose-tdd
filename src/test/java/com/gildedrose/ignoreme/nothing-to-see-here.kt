@@ -5,7 +5,7 @@ import com.gildedrose.domain.ID
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.Quality
-import com.gildedrose.http.serverFor
+import com.gildedrose.http.serverOn
 import com.gildedrose.pricing.fakeValueElfRoutes
 import org.http4k.routing.reverseProxy
 
@@ -20,7 +20,7 @@ fun main() {
         "webuyanymagicalitem.com" to fakeValueElfRoutes(pricingWithMultiplier(1010)),
     )
 
-    routes.serverFor(8080).start()
+    routes.serverOn(8080).start()
 }
 
 private fun pricingWithMultiplier(multiplier: Int): (ID<Item>, Quality) -> Price? = { id, quality ->

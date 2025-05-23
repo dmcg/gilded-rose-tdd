@@ -1,6 +1,6 @@
 package com.gildedrose.testing
 
-import com.gildedrose.http.serverFor
+import com.gildedrose.http.serverOn
 import com.microsoft.playwright.*
 import com.microsoft.playwright.BrowserType.LaunchOptions
 import org.http4k.core.HttpHandler
@@ -13,7 +13,7 @@ fun runWithPlaywright(
     logic: Page.() -> Unit
 ) {
     val actualLaunchOptions = launchOptions ?: LaunchOptions()
-    val server = handler.serverFor(port = 0)
+    val server = handler.serverOn(port = 0)
     server.start().use {
         val port = server.port()
         Playwright.create().use { playwright ->

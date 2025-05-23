@@ -1,6 +1,6 @@
 import com.gildedrose.App
 import com.gildedrose.config.DbConfig
-import com.gildedrose.http.serverFor
+import com.gildedrose.http.serverOn
 import com.gildedrose.routes
 import org.http4k.config.Environment
 import org.http4k.config.Environment.Companion.ENV
@@ -9,7 +9,7 @@ import org.http4k.config.Environment.Companion.JVM_PROPERTIES
 fun main() {
     App(dbConfig)
         .routes
-        .serverFor(port = 80)
+        .serverOn(port = 80)
         .start()
 }
 
