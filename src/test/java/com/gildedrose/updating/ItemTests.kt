@@ -14,7 +14,7 @@ class ItemTests {
         val testItem = item("banana", null, 50)
         assertEquals(
             item("banana", null, 50),
-            testItem.copy(quality = testItem.quality.plus(1))
+            testItem.copy(quality = testItem.quality + 1)
         )
     }
 
