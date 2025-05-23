@@ -14,10 +14,10 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType =
         name.contains("Aged Brie", ignoreCase = true) -> Brie()
         name.contains("Backstage Pass", ignoreCase = true) -> Pass()
         name.startsWith("Conjured", ignoreCase = true) -> Conjured()
-        else -> Standard()
+        else -> Standard
     }
 
-class Standard : ItemType {
+object Standard : ItemType {
     override fun update(item: Item, on: LocalDate): Item {
         requireNotNull(item.sellByDate)
         val degradation = when {
