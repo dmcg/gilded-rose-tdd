@@ -2,6 +2,8 @@ package com.gildedrose.updating
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
+import com.gildedrose.domain.add
+import com.gildedrose.domain.subtract
 import java.time.LocalDate
 
 abstract class ItemType {
@@ -73,11 +75,3 @@ class Conjured : ItemType() {
     }
 }
 
-fun add(quality: Quality, value: Int): Quality {
-    val qualityCap = quality.value.value.coerceAtLeast(50)
-    return Quality((quality.value + value).coerceIn(0, qualityCap))
-        ?: error("tried to create a negative int")
-}
-
-fun subtract(quality: Quality, value: Int): Quality =
-    add(quality, -value)

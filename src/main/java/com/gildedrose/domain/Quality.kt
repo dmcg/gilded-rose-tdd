@@ -15,3 +15,12 @@ value class Quality(
 
     override fun toString() = value.toString()
 }
+
+fun add(quality: Quality, value: Int): Quality {
+    val qualityCap = quality.value.value.coerceAtLeast(50)
+    return Quality((quality.value + value).coerceIn(0, qualityCap))
+        ?: error("tried to create a negative int")
+}
+
+fun subtract(quality: Quality, value: Int): Quality =
+    add(quality, -value)
