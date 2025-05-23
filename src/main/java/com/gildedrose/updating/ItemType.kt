@@ -8,13 +8,14 @@ abstract class ItemType {
     abstract fun update(item: Item, localDate: LocalDate): Item
 }
 
-fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
-    sellByDate == null -> Undated()
-    name.contains("Aged Brie", ignoreCase = true) -> Brie()
-    name.contains("Backstage Pass", ignoreCase = true) -> Pass()
-    name.startsWith("Conjured", ignoreCase = true) -> Conjured()
-    else -> Standard()
-}
+fun typeFor(sellByDate: LocalDate?, name: String): ItemType =
+    when {
+        sellByDate == null -> Undated()
+        name.contains("Aged Brie", ignoreCase = true) -> Brie()
+        name.contains("Backstage Pass", ignoreCase = true) -> Pass()
+        name.startsWith("Conjured", ignoreCase = true) -> Conjured()
+        else -> Standard()
+    }
 
 class Standard : ItemType() {
     override fun update(item: Item, localDate: LocalDate): Item {
@@ -80,5 +81,3 @@ fun add(quality: Quality, value: Int): Quality {
 
 fun subtract(quality: Quality, value: Int): Quality =
     add(quality, -value)
-
-
