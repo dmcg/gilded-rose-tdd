@@ -14,14 +14,14 @@ import java.net.URI
 import java.time.Instant
 
 fun main() {
-    App(dbConfig)
+    App()
         .routes
         .serverOn(port = 80)
         .start()
 }
 
 fun App(
-    dbConfig: DbConfig,
+    dbConfig: DbConfig = DbConfig(JVM_PROPERTIES overrides ENV overrides localEnv),
     features: Features = Features(),
     valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
     clock: () -> Instant = Instant::now,
@@ -39,5 +39,3 @@ private val localEnv = Environment.from(
     "db.username" to "gilded",
     "db.password" to "rose"
 )
-
-val dbConfig = DbConfig(JVM_PROPERTIES overrides ENV overrides localEnv)
