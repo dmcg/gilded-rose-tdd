@@ -26,9 +26,9 @@ val App.routes: HttpHandler
         .then(
             routes(
                 "/" bind GET to ::listHandler,
-                "/error" bind GET to { error("deliberate") },
+                "/add-item" bind POST to ::addHandler,
                 "/delete-items" bind POST to ::deleteHandler,
-                "/add-item" bind POST to ::addHandler
+                "/error" bind GET to { error("deliberate") },
             )
         )
 
