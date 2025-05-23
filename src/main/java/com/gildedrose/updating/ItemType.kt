@@ -2,7 +2,6 @@ package com.gildedrose.updating
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
-import com.gildedrose.domain.plus
 import com.gildedrose.domain.subtract
 import java.time.LocalDate
 
