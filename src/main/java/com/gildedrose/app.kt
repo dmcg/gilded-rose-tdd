@@ -16,10 +16,10 @@ import java.time.ZoneId
 
 data class App(
     val items: Items<TXContext>,
-    val features: Features = Features(),
+    val pricing: (Item) -> Price?,
     val clock: () -> Instant = Instant::now,
     val analytics: Analytics = stdOutAnalytics,
-    val pricing: (Item) -> Price?
+    val features: Features = Features()
 ) {
     private val stock = Stock(items, londonZoneId)
 

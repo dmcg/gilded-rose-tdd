@@ -28,10 +28,10 @@ fun App(
     analytics: Analytics = stdOutAnalytics
 ) = App(
     DbItems(dbConfig.toDslContext()),
-    features,
+    valueElfClient(valueElfUri),
     clock,
     analytics,
-    valueElfClient(valueElfUri)
+    features
 )
 
 private val localEnv = Environment.from(
