@@ -19,8 +19,8 @@ value class Quality(
             ?: error("tried to create a negative int")
     }
 
+    operator fun minus(value: Int): Quality =
+        this + -value
+
     override fun toString() = value.toString()
 }
-
-fun subtract(quality: Quality, value: Int): Quality =
-    quality + -value

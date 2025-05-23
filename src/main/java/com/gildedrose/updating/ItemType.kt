@@ -2,7 +2,6 @@ package com.gildedrose.updating
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
-import com.gildedrose.domain.subtract
 import java.time.LocalDate
 
 abstract class ItemType {
@@ -25,7 +24,7 @@ class Standard : ItemType() {
             localDate.isAfter(item.sellByDate) -> 2
             else -> 1
         }
-        return item.copy(quality = subtract(item.quality, degradation))
+        return item.copy(quality = item.quality - degradation)
     }
 }
 
@@ -70,7 +69,7 @@ class Conjured : ItemType() {
             localDate.isAfter(item.sellByDate) -> 4
             else -> 2
         }
-        return item.copy(quality = subtract(item.quality, degradation))
+        return item.copy(quality = item.quality - degradation)
     }
 }
 
