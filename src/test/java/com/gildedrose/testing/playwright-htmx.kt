@@ -13,7 +13,7 @@ fun runWithPlaywright(
     logic: Page.() -> Unit
 ) {
     val actualLaunchOptions = launchOptions ?: LaunchOptions()
-    val server = serverFor(port = 0, handler)
+    val server = handler.serverFor(port = 0)
     server.start().use {
         val port = server.port()
         Playwright.create().use { playwright ->

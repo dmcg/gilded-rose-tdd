@@ -7,8 +7,10 @@ import org.http4k.config.Environment.Companion.ENV
 import org.http4k.config.Environment.Companion.JVM_PROPERTIES
 
 fun main() {
-    val app = App(dbConfig)
-    serverFor(port = 80, app.routes).start()
+    App(dbConfig)
+        .routes
+        .serverFor(port = 80)
+        .start()
 }
 
 private val localEnv = Environment.from(
