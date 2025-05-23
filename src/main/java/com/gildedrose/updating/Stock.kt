@@ -25,22 +25,14 @@ class Stock(
         val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
         if (daysOutOfDate <= 0L) return Success(loadedStockList)
 
-        val updatedStockList = loadedStockList.updated(
-            now,
-            daysOutOfDate.toInt(),
-            LocalDate.ofInstant(now, zoneId)
+        val updatedStockList = loadedStockList.copy(
+            lastModified = now,
+            items = loadedStockList.items.map {
+                it.itemUpdate(daysOutOfDate.toInt(), LocalDate.ofInstant(now, zoneId))
+            }
         )
         return items.save(updatedStockList)
     }
-
-    private fun StockList.updated(
-        now: Instant,
-        daysOutOfDate: Int,
-        localDate: LocalDate
-    ): StockList = copy(
-        lastModified = now,
-        items = items.map { it.itemUpdate(daysOutOfDate, localDate) }
-    )
 }
 
 fun Item.updatedBy(days: Int, on: LocalDate): Item {
