@@ -23,17 +23,14 @@ class Stock(
     fun loadAndUpdateStockList(now: Instant): Result4k<StockList, StockListLoadingError> =
         items.load().flatMap { loadedStockList ->
             val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
-            when {
-                daysOutOfDate > 0L -> {
-                    val updatedStockList = loadedStockList.updated(
-                        now,
-                        daysOutOfDate.toInt(),
-                        LocalDate.ofInstant(now, zoneId)
-                    )
-                    items.save(updatedStockList)
-                }
-
-                else -> Success(loadedStockList)
+            if (daysOutOfDate <= 0L) Success(loadedStockList)
+            else {
+                val updatedStockList = loadedStockList.updated(
+                    now,
+                    daysOutOfDate.toInt(),
+                    LocalDate.ofInstant(now, zoneId)
+                )
+                items.save(updatedStockList)
             }
         }
 
