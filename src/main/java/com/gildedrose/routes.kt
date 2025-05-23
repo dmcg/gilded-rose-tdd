@@ -32,6 +32,14 @@ val App.routes: HttpHandler
             )
         )
 
+private fun App.listHandler(
+    request: Request
+): Response {
+    val now = this.clock()
+    val stockListResult = this.loadStockList(now)
+    return render(stockListResult, now, londonZoneId, this.features, request.isHtmx)
+}
+
 internal fun App.addHandler(request: Request): Response {
     val idLens = FormField.nonBlankString().map { ID<Item>(it) }.required("new-itemId")
     val nameLens = FormField.string().required("new-itemName")
@@ -64,14 +72,6 @@ fun FormField.nonBlankString(): BiDiLensSpec<WebForm, NonBlankString> =
     map(BiDiMapping<String, NonBlankString>({ s: String ->
         NonBlankString(s) ?: throw IllegalArgumentException("String cannot be blank")
     }, { it.toString() }))
-
-private fun App.listHandler(
-    request: Request
-): Response {
-    val now = this.clock()
-    val stockListResult = this.loadStockList(now)
-    return render(stockListResult, now, londonZoneId, this.features, request.isHtmx)
-}
 
 private fun App.deleteHandler(
     request: Request
