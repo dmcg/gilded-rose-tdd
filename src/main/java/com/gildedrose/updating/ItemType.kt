@@ -28,7 +28,7 @@ object Standard : ItemType {
     }
 }
 
-val undated = ItemType { item, on -> item }
+val undated = ItemType { item, _ -> item }
 
 class Brie : ItemType {
     override fun update(item: Item, on: LocalDate): Item {
