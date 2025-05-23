@@ -13,6 +13,7 @@ import dev.forkhandles.result4k.resultFrom
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 typealias StockLoadingResult = Result<StockList, StockListLoadingError>
@@ -20,9 +21,9 @@ typealias StockLoadingResult = Result<StockList, StockListLoadingError>
 class PricedStockListLoader(
     private val loading: context(TXContext) (Instant) -> StockLoadingResult,
     pricing: (Item) -> Price?,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val threadPool: ExecutorService = Executors.newFixedThreadPool(30)
 ) {
-    private val threadPool = Executors.newFixedThreadPool(30)
     private val retryingPricing: (Item) -> Price? =
         pricing.wrappedWith(retry(1, reporter = ::reportException))
 
