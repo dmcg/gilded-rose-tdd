@@ -38,7 +38,7 @@ class Stock(
 fun Item.updatedBy(days: Int, on: LocalDate): Item {
     val itemType = typeFor(sellByDate, name)
     val dates = (1 - days).rangeTo(0).map { on.plusDays(it.toLong()) }
-    return dates.fold(this, itemType::update)
+    return dates.fold(this, itemType::invoke)
 }
 
 internal fun Instant.daysTo(that: Instant, zone: ZoneId): Long =

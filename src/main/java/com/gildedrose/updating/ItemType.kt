@@ -5,7 +5,7 @@ import com.gildedrose.domain.Quality
 import java.time.LocalDate
 
 fun interface ItemType {
-    fun update(item: Item, on: LocalDate): Item
+    operator fun invoke(item: Item, on: LocalDate): Item
 }
 
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType =
@@ -18,7 +18,7 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType =
     }
 
 object Standard : ItemType {
-    override fun update(item: Item, on: LocalDate): Item {
+    override fun invoke(item: Item, on: LocalDate): Item {
         requireNotNull(item.sellByDate)
         val degradation = when {
             on.isAfter(item.sellByDate) -> 2
@@ -31,7 +31,7 @@ object Standard : ItemType {
 val undated = ItemType { item, _ -> item }
 
 class Brie : ItemType {
-    override fun update(item: Item, on: LocalDate): Item {
+    override fun invoke(item: Item, on: LocalDate): Item {
         requireNotNull(item.sellByDate)
         val improvement = when {
             on.isAfter(item.sellByDate) -> 2
@@ -42,7 +42,7 @@ class Brie : ItemType {
 }
 
 class Pass : ItemType {
-    override fun update(item: Item, on: LocalDate): Item {
+    override fun invoke(item: Item, on: LocalDate): Item {
         requireNotNull(item.sellByDate)
         val daysUntilSellBy = item.sellByDate.toEpochDay() - on.toEpochDay()
         return if (daysUntilSellBy < 0) {
@@ -59,7 +59,7 @@ class Pass : ItemType {
 }
 
 class Conjured : ItemType {
-    override fun update(item: Item, on: LocalDate): Item {
+    override fun invoke(item: Item, on: LocalDate): Item {
         requireNotNull(item.sellByDate)
         val degradation = when {
             on.isAfter(item.sellByDate) -> 4
