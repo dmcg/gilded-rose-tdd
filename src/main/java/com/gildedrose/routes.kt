@@ -8,6 +8,8 @@ import com.gildedrose.http.catchAll
 import com.gildedrose.http.reportHttpTransactions
 import com.gildedrose.rendering.render
 import org.http4k.core.*
+import org.http4k.core.Method.GET
+import org.http4k.core.Method.POST
 import org.http4k.core.body.form
 import org.http4k.filter.ServerFilters
 import org.http4k.lens.*
@@ -16,7 +18,6 @@ import org.http4k.routing.bind
 import org.http4k.routing.routes
 import java.time.Duration
 
-
 val App.routes: HttpHandler
     get() = ServerFilters.RequestTracing()
         .then(reportHttpTransactions(Duration.ofSeconds(1), analytics))
@@ -24,10 +25,10 @@ val App.routes: HttpHandler
         .then(ResponseErrors.reportTo(analytics))
         .then(
             routes(
-                "/" bind Method.GET to ::listHandler,
-                "/error" bind Method.GET to { error("deliberate") },
-                "/delete-items" bind Method.POST to ::deleteHandler,
-                "/add-item" bind Method.POST to ::addHandler
+                "/" bind GET to ::listHandler,
+                "/error" bind GET to { error("deliberate") },
+                "/delete-items" bind POST to ::deleteHandler,
+                "/add-item" bind POST to ::addHandler
             )
         )
 
