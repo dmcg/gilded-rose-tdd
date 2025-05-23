@@ -2,7 +2,7 @@ package com.gildedrose.updating
 
 import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
-import com.gildedrose.domain.add
+import com.gildedrose.domain.plus
 import com.gildedrose.domain.subtract
 import java.time.LocalDate
 
@@ -43,7 +43,7 @@ class Brie : ItemType() {
             localDate.isAfter(item.sellByDate) -> 2
             else -> 1
         }
-        return item.copy(quality = add(item.quality, improvement))
+        return item.copy(quality = item.quality.plus(improvement))
     }
 }
 
@@ -59,7 +59,7 @@ class Pass : ItemType() {
                 daysUntilSellBy < 10 -> 2
                 else -> 1
             }
-            item.copy(quality = add(item.quality, improvement))
+            item.copy(quality = item.quality.plus(improvement))
         }
     }
 }
