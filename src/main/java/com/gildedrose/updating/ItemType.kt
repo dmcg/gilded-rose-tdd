@@ -12,18 +12,16 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType =
         name.contains("Aged Brie", ignoreCase = true) -> Brie()
         name.contains("Backstage Pass", ignoreCase = true) -> Pass()
         name.startsWith("Conjured", ignoreCase = true) -> Conjured()
-        else -> Standard
+        else -> ::standard
     }
 
-object Standard : ItemType {
-    override fun invoke(item: Item, on: LocalDate): Item {
-        requireNotNull(item.sellByDate)
-        val degradation = when {
-            on.isAfter(item.sellByDate) -> 2
-            else -> 1
-        }
-        return item.copy(quality = item.quality - degradation)
+private fun standard(item: Item, on: LocalDate): Item {
+    requireNotNull(item.sellByDate)
+    val degradation = when {
+        on.isAfter(item.sellByDate) -> 2
+        else -> 1
     }
+    return item.copy(quality = item.quality - degradation)
 }
 
 val undated: ItemType = { item, _ -> item }
