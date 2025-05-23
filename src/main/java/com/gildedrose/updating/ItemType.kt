@@ -9,9 +9,9 @@ typealias ItemType = (Item, LocalDate) -> Item
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType =
     when {
         sellByDate == null -> ::undated
-        name.contains("Aged Brie", ignoreCase = true) -> Brie()
-        name.contains("Backstage Pass", ignoreCase = true) -> Pass()
-        name.startsWith("Conjured", ignoreCase = true) -> Conjured()
+        name.contains("Aged Brie", ignoreCase = true) -> ::Brie
+        name.contains("Backstage Pass", ignoreCase = true) -> ::Pass
+        name.startsWith("Conjured", ignoreCase = true) -> ::Conjured
         else -> ::standard
     }
 
@@ -27,42 +27,36 @@ private fun standard(item: Item, on: LocalDate): Item {
 @Suppress("unused")
 private fun undated(item: Item, on: LocalDate) = item
 
-class Brie : ItemType {
-    override fun invoke(item: Item, on: LocalDate): Item {
-        requireNotNull(item.sellByDate)
+fun Brie(item: Item, on: LocalDate): Item {
+    requireNotNull(item.sellByDate)
+    val improvement = when {
+        on.isAfter(item.sellByDate) -> 2
+        else -> 1
+    }
+    return item.copy(quality = item.quality + improvement)
+}
+
+fun Pass(item: Item, on: LocalDate): Item {
+    requireNotNull(item.sellByDate)
+    val daysUntilSellBy = item.sellByDate.toEpochDay() - on.toEpochDay()
+    return if (daysUntilSellBy < 0) {
+        item.copy(quality = Quality.ZERO)
+    } else {
         val improvement = when {
-            on.isAfter(item.sellByDate) -> 2
+            daysUntilSellBy < 5 -> 3
+            daysUntilSellBy < 10 -> 2
             else -> 1
         }
-        return item.copy(quality = item.quality + improvement)
+        item.copy(quality = item.quality + improvement)
     }
 }
 
-class Pass : ItemType {
-    override fun invoke(item: Item, on: LocalDate): Item {
-        requireNotNull(item.sellByDate)
-        val daysUntilSellBy = item.sellByDate.toEpochDay() - on.toEpochDay()
-        return if (daysUntilSellBy < 0) {
-            item.copy(quality = Quality.ZERO)
-        } else {
-            val improvement = when {
-                daysUntilSellBy < 5 -> 3
-                daysUntilSellBy < 10 -> 2
-                else -> 1
-            }
-            item.copy(quality = item.quality + improvement)
-        }
+fun Conjured(item: Item, on: LocalDate): Item {
+    requireNotNull(item.sellByDate)
+    val degradation = when {
+        on.isAfter(item.sellByDate) -> 4
+        else -> 2
     }
-}
-
-class Conjured : ItemType {
-    override fun invoke(item: Item, on: LocalDate): Item {
-        requireNotNull(item.sellByDate)
-        val degradation = when {
-            on.isAfter(item.sellByDate) -> 4
-            else -> 2
-        }
-        return item.copy(quality = item.quality - degradation)
-    }
+    return item.copy(quality = item.quality - degradation)
 }
 
