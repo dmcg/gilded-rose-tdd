@@ -32,9 +32,7 @@ val App.routes: HttpHandler
             )
         )
 
-private fun App.listHandler(
-    request: Request
-): Response {
+private fun App.listHandler(request: Request): Response {
     val now = this.clock()
     val stockListResult = this.loadStockList(now)
     return render(stockListResult, now, londonZoneId, this.features, request.isHtmx)
