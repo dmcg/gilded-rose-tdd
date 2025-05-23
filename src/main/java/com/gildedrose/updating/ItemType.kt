@@ -4,7 +4,7 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
 import java.time.LocalDate
 
-interface ItemType {
+fun interface ItemType {
     fun update(item: Item, on: LocalDate): Item
 }
 
@@ -28,9 +28,7 @@ object Standard : ItemType {
     }
 }
 
-val undated = object : ItemType {
-    override fun update(item: Item, on: LocalDate) = item
-}
+val undated = ItemType { item, on -> item }
 
 class Brie : ItemType {
     override fun update(item: Item, on: LocalDate): Item {
