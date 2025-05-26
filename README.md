@@ -35,7 +35,7 @@ Run src/test/java/populate-main.kt
 Run src/main/java/main.kt
 
 
-### 47 refactorings in 45 minutes references
+## 47 refactorings in 45 minutes references
 
 - [47 refactorings in 45 minutes](https://www.youtube.com/watch?v=XJ9fq-PYCWk&t=26390s) at KotlinConf 2025
 - [Refactoring to Expressive Kotlin](https://www.youtube.com/watch?v=p5WylVjtzBQ) at KotlinConf 2024
