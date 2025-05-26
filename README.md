@@ -42,3 +42,6 @@ Run src/main/java/main.kt
 - [Pairing with Duncan](https://www.youtube.com/@PairingWithDuncan) YouTube channel
 - [Tidy First?](https://www.oreilly.com/library/view/tidy-first/9781098151232) book by Kent Beck
 - [Quick Fix](https://github.com/dkandalov/quick-fix) plugin for IntelliJ
+- [Keyboard Shortcuts Presenter](https://gist.github.com/dkandalov/54839566c1de9e6012c93bcb87309306) mini-plugin for IntelliJ
+- [Refactorings counter](https://gist.github.com/dkandalov/cd7e987ac171d18d79637f6d6c66bea0) mini-plugin for IntelliJ
+- [Convert secondary constructor to top-level function](https://gist.github.com/dkandalov/176103506770b8b12a9b67e006dd35bc) mini-plugin for IntelliJ
