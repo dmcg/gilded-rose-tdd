@@ -2,6 +2,7 @@ package com.gildedrose.updating
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.time.*
 
 class DaysToTests {
@@ -67,8 +68,8 @@ class DaysToTests {
         Assertions.assertEquals(0, time("2022-03-27T23:00:01Z").daysTo(time("2022-03-28T00:00:00Z"), london))
     }
 
-    // slow running @Test
-    @Suppress("unused")
+    @Test
+    @EnabledIfSystemProperty(named = "run-slow-tests", matches = "true")
     fun `throw things at it`() {
         val zoneIds = listOf(
             ZoneId.of("Europe/London"),
