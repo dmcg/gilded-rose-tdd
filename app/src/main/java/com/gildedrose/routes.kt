@@ -75,9 +75,9 @@ private fun App<*>.listHandler(
 private fun App<*>.deleteHandler(
     request: Request
 ): Response {
-    val itemIds = request.form().map<Parameter, String> { it.first }
-        .mapNotNull<String, ID<Item>> { ID<Item>(it) }
-        .toSet<ID<Item>>()
+    val itemIds = request.form().map { it.first }
+        .mapNotNull { ID<Item>(it) }
+        .toSet()
     deleteItemsWithIds(itemIds)
     return when {
         request.isHtmx -> listHandler(request)
