@@ -61,9 +61,11 @@ data class App<TX>(
     ) {
         items.inTransaction {
             stock.loadAndUpdateStockList(now).map { stockList ->
-                val newItems = stockList.items.filterNot { it.id in itemIds }
-                if (newItems != stockList.items) {
-                    items.save(StockList(now, newItems))
+                val updatedStockList = StockList(now,
+                    stockList.items.filterNot { it.id in itemIds }
+                )
+                if (updatedStockList.items != stockList.items) {
+                    items.save(updatedStockList)
                 }
             }
         }
@@ -75,8 +77,10 @@ data class App<TX>(
     ) {
         items.inTransaction {
             stock.loadAndUpdateStockList(now).map { stockList ->
-                val newItems = stockList.items + newItem
-                items.save(StockList(now, newItems))
+                val updatedStockList = StockList(now,
+                    stockList.items + newItem
+                )
+                items.save(updatedStockList)
             }
         }
     }
