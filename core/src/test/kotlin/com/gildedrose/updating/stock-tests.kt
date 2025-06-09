@@ -155,10 +155,10 @@ class LoadingAndUpdatingStockTests {
 
     @Test
     fun `sanity check`() {
-        for (i in 1..10) {
+        repeat(10) {
             `parallel execution`()
         }
     }
 }
 
-val londonZone = ZoneId.of("Europe/London")
+private val londonZone = ZoneId.of("Europe/London")
