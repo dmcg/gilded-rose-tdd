@@ -1,11 +1,10 @@
 package com.gildedrose.updating
 
-import com.gildedrose.domain.Item
-import com.gildedrose.domain.StockList
-import com.gildedrose.domain.StockListLoadingError
+import com.gildedrose.domain.*
 import com.gildedrose.testing.InMemoryItems
 import com.gildedrose.testing.item
 import com.gildedrose.testing.oct29
+import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.asSuccess
 import dev.forkhandles.result4k.onFailure
@@ -17,6 +16,7 @@ import java.util.concurrent.Callable
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.Executors
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import java.time.Instant.parse as t
 
 class LoadingAndUpdatingStockTests {
@@ -32,13 +32,14 @@ class LoadingAndUpdatingStockTests {
         val firstInstantOfNextDay = t("2021-02-10T00:00:00Z")
 
         // When
-        val (result, nextState) = doLoadAndUpdate(initialStockList, firstInstantOfNextDay)
+        val (result, nextState, savedStockList) = doLoadAndUpdate(initialStockList, firstInstantOfNextDay)
 
         // Then
         val expectedUpdatedResult = StockList(firstInstantOfNextDay, someItems.withQualityDecreasedBy(1))
         assertAll(
             { assertEquals(expectedUpdatedResult.asSuccess(), result) },
-            { assertEquals(expectedUpdatedResult, nextState) }
+            { assertEquals(expectedUpdatedResult, nextState) },
+            { assertEquals(expectedUpdatedResult, savedStockList) }
         )
     }
 
@@ -47,12 +48,13 @@ class LoadingAndUpdatingStockTests {
         val initialStockList = StockList(t("2021-02-09T00:00:00Z"), someItems)
         val lastInstantOfSameDay = t("2021-02-09T23:59:59.9999Z")
 
-        val (result, nextState) = doLoadAndUpdate(initialStockList, lastInstantOfSameDay)
+        val (result, nextState, savedStockList) = doLoadAndUpdate(initialStockList, lastInstantOfSameDay)
 
         val expectedNotUpdatedResult = initialStockList
         assertAll(
             { assertEquals(expectedNotUpdatedResult.asSuccess(), result) },
-            { assertEquals(expectedNotUpdatedResult, nextState) }
+            { assertEquals(expectedNotUpdatedResult, nextState) },
+            { assertNull(savedStockList) }
         )
     }
 
@@ -83,21 +85,31 @@ class LoadingAndUpdatingStockTests {
 private data class DoLoadAndUpdateOutcome(
     val result: Result4k<StockList, StockListLoadingError>,
     val nextState: StockList,
+    val savedStockList: StockList? = null
 )
 
 private fun doLoadAndUpdate(
     initialStockList: StockList,
     now: Instant,
 ): DoLoadAndUpdateOutcome {
-    val items = InMemoryItems(initialStockList)
-    val stock = Stock(items, zoneId = londonZone)
-    val result = items.inTransaction {
+    val inMemoryItems = InMemoryItems(initialStockList)
+    val sensingItems = object : Items<NoTX> by inMemoryItems {
+        var savedStockList: StockList? = null
+        context(NoTX)
+        override fun save(stockList: StockList): Result<StockList, StockListLoadingError.IOError> {
+            return inMemoryItems.save(stockList).also {
+                savedStockList = stockList
+            }
+        }
+    }
+    val stock = Stock(sensingItems, zoneId = londonZone)
+    val result = sensingItems.inTransaction {
         stock.loadAndUpdateStockList(now)
     }
-    val nextState = items.inTransaction {
-        items.load().onFailure { error("Should not fail") }
+    val nextState = sensingItems.inTransaction {
+        inMemoryItems.load().onFailure { error("Should not fail") }
     }
-    return DoLoadAndUpdateOutcome(result, nextState)
+    return DoLoadAndUpdateOutcome(result, nextState, sensingItems.savedStockList)
 }
 
 internal fun List<Item>.withQualityDecreasedBy(qualityChange: Int): List<Item> =
