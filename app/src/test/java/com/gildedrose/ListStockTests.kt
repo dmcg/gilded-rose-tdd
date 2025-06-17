@@ -3,8 +3,6 @@ package com.gildedrose
 import com.gildedrose.domain.*
 import com.gildedrose.rendering.render
 import com.gildedrose.testing.fake
-import com.gildedrose.testing.item
-import com.gildedrose.testing.withPriceResult
 import com.natpryce.hamkrest.assertion.assertThat
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
@@ -21,7 +19,6 @@ import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 import java.time.Instant.parse as t
-import java.time.LocalDate.parse as localDate
 
 class ListStockTests {
 
@@ -30,17 +27,9 @@ class ListStockTests {
 
     @Test
     fun `list stock`() {
-        val pricedStockList = PricedStockList(
-            lastModified,
-            listOf(
-                item("banana", localDate("2022-02-08"), 42).withPriceResult(Price(666)),
-                item("kumquat", localDate("2022-02-10"), 101).withPriceResult(null),
-                item("undated", null, 50).withPriceResult(Price(999))
-            )
-        )
-        val fixture = Fixture(pricedStockList)
+        val fixture = aSampleFixture(lastModified)
         val app = fixture.createApp(now = sameDayAsLastModified)
-        val expectedPricedStocklist = Success(pricedStockList)
+        val expectedPricedStocklist = Success(fixture.originalPricedStockList)
         assertEquals(
             expectedPricedStocklist,
             app.loadStockList()

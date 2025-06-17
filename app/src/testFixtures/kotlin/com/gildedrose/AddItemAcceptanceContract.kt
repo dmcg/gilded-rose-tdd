@@ -1,11 +1,8 @@
 package com.gildedrose
 
 import com.gildedrose.domain.Item
-import com.gildedrose.domain.Price
-import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
 import com.gildedrose.testing.item
-import com.gildedrose.testing.withPriceResult
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.LocalDate
@@ -15,13 +12,7 @@ abstract class AddItemAcceptanceContract(
 ) {
     private val lastModified = Instant.parse("2022-02-09T12:00:00Z")
     protected val sameDayAsLastModified = Instant.parse("2022-02-09T23:59:59Z")
-    private val pricedStockList = PricedStockList(
-        lastModified,
-        listOf(
-            item("banana", LocalDate.parse("2022-02-08"), 42).withPriceResult(Price(666)),
-        )
-    )
-    protected val fixture = Fixture(pricedStockList)
+    protected val fixture = aSampleFixture(lastModified)
     protected val app = fixture.createApp(now = sameDayAsLastModified)
 
     @Test
