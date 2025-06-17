@@ -38,7 +38,7 @@ class ListStockTests {
                 item("undated", null, 50).withPriceResult(Price(999))
             )
         )
-        val fixture = Fixture(pricedStockList).apply { init() }
+        val fixture = Fixture(pricedStockList)
         val app = App(
             items = fixture.items,
             pricing = fixture::pricing,

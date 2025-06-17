@@ -22,7 +22,7 @@ abstract class AddItemAcceptanceContract(
             item("banana", LocalDate.parse("2022-02-08"), 42).withPriceResult(Price(666)),
         )
     )
-    protected val fixture = Fixture(pricedStockList, InMemoryItems()).apply { init() }
+    protected val fixture = Fixture(pricedStockList, InMemoryItems())
     protected val app = App(
         items = fixture.items,
         pricing = fixture::pricing,
