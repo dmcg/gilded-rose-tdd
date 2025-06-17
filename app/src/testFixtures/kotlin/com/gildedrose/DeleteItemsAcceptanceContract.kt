@@ -25,7 +25,7 @@ abstract class DeleteItemsAcceptanceContract(
             item("undated", null, 50).withPriceResult(Price(999))
         )
     )
-    private val fixture = Fixture(pricedStockList, InMemoryItems()).apply { init() }
+    private val fixture = Fixture(pricedStockList, InMemoryItems())
     private val app = App(
         items = fixture.items,
         pricing = fixture::pricing,

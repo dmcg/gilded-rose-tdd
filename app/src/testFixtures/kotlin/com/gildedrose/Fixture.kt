@@ -16,7 +16,7 @@ data class Fixture(
         items = originalPricedStockList.map { item -> item.withNoPrice() }
     )
 
-    fun init() {
+    init {
         items.transactionally { save(originalStockList) }
     }
 
