@@ -18,17 +18,15 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
+import java.time.Instant
 import java.time.Instant.parse as t
 
 class ListStockTests {
 
-    private val lastModified = t("2022-02-09T12:00:00Z")
-    private val sameDayAsLastModified = t("2022-02-09T23:59:59Z")
-
     @Test
     fun `list stock`() {
-        val fixture = aSampleFixture(lastModified)
-        val app = fixture.createApp(now = sameDayAsLastModified)
+        val fixture = aSampleFixture(stockListLastModified = t("2022-02-09T12:00:00Z"))
+        val app = fixture.createApp(now = t("2022-02-09T23:59:59Z"))
         val expectedPricedStocklist = Success(fixture.originalPricedStockList)
         assertEquals(
             expectedPricedStocklist,
@@ -59,7 +57,7 @@ class ListStockTests {
         val app = App(
             items = itemsThatFails,
             pricing = { throw NotImplementedError() },
-            clock = { sameDayAsLastModified },
+            clock = Instant::now,
             analytics = events::add
         )
 
