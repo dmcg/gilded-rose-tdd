@@ -39,11 +39,7 @@ class ListStockTests {
             )
         )
         val fixture = Fixture(pricedStockList)
-        val app = App(
-            items = fixture.items,
-            pricing = fixture::pricing,
-            clock = { sameDayAsLastModified }
-        )
+        val app = fixture.createApp(now = sameDayAsLastModified)
         val expectedPricedStocklist = Success(pricedStockList)
         assertEquals(
             expectedPricedStocklist,
