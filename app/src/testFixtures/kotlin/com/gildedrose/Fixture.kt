@@ -6,6 +6,7 @@ import com.gildedrose.testing.InMemoryItems
 import com.gildedrose.testing.withNoPrice
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.valueOrNull
+import java.time.Instant
 import kotlin.test.assertEquals
 
 data class Fixture(
@@ -20,7 +21,9 @@ data class Fixture(
         items.transactionally { save(originalStockList) }
     }
 
-    fun pricing(item: Item): Price? =
+    fun createApp(now: Instant) = App(items, pricing = ::pricing, clock = { now })
+
+    private fun pricing(item: Item): Price? =
         originalPricedStockList.find { it.withNoPrice() == item }?.price?.valueOrNull()
 
     fun checkStockListIs(stockList: StockList) {

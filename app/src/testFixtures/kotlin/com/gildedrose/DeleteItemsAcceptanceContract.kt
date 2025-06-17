@@ -26,11 +26,7 @@ abstract class DeleteItemsAcceptanceContract(
         )
     )
     private val fixture = Fixture(pricedStockList, InMemoryItems())
-    private val app = App(
-        items = fixture.items,
-        pricing = fixture::pricing,
-        clock = { sameDayAsLastModified }
-    )
+    private val app = fixture.createApp(now = sameDayAsLastModified)
 
     @Test
     fun `delete items`() {

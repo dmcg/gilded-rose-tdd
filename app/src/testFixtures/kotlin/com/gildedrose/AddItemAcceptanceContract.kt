@@ -4,7 +4,6 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Price
 import com.gildedrose.domain.PricedStockList
 import com.gildedrose.domain.StockList
-import com.gildedrose.testing.InMemoryItems
 import com.gildedrose.testing.item
 import com.gildedrose.testing.withPriceResult
 import org.junit.jupiter.api.Test
@@ -22,13 +21,8 @@ abstract class AddItemAcceptanceContract(
             item("banana", LocalDate.parse("2022-02-08"), 42).withPriceResult(Price(666)),
         )
     )
-    protected val fixture = Fixture(pricedStockList, InMemoryItems())
-    protected val app = App(
-        items = fixture.items,
-        pricing = fixture::pricing,
-        clock = { sameDayAsLastModified },
-        features = Features()
-    )
+    protected val fixture = Fixture(pricedStockList)
+    protected val app = fixture.createApp(now = sameDayAsLastModified)
 
     @Test
     fun `add item`() {
