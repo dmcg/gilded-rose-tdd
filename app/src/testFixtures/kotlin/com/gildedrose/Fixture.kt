@@ -14,17 +14,19 @@ import kotlin.test.assertEquals
 
 data class Fixture(
     val originalPricedStockList: PricedStockList,
+    val now: Instant,
     val items: Items<NoTX> = InMemoryItems()
 ) {
     val originalStockList = StockList(originalPricedStockList.lastModified,
         items = originalPricedStockList.map { item -> item.withNoPrice() }
     )
 
+    val app = App(items, pricing = ::pricing, clock = { now })
+    val routes = app.routes
+
     init {
         items.transactionally { save(originalStockList) }
     }
-
-    fun createApp(now: Instant) = App(items, pricing = ::pricing, clock = { now })
 
     private fun pricing(item: Item): Price? =
         originalPricedStockList.find { it.withNoPrice() == item }?.price?.valueOrNull()
@@ -37,7 +39,7 @@ data class Fixture(
     }
 }
 
-fun aSampleFixture(stockListLastModified: Instant) = Fixture(
+fun aSampleFixture(stockListLastModified: Instant, now: Instant) = Fixture(
     PricedStockList(
         stockListLastModified,
         listOf(
@@ -45,7 +47,8 @@ fun aSampleFixture(stockListLastModified: Instant) = Fixture(
             item("kumquat", parse("2022-02-10"), 101).withPriceResult(null),
             item("undated", null, 50).withPriceResult(Price(999))
         )
-    )
+    ),
+    now
 )
 
 

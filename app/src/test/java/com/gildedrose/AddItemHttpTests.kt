@@ -24,9 +24,10 @@ import java.time.Instant
 class AddItemHttpTests : AddItemAcceptanceContract(
     doAdd = ::addItemWithHttp
 ) {
-    private val lastModified = Instant.parse("2022-02-09T12:00:00Z")
-    private val sameDayAsLastModified = Instant.parse("2022-02-09T23:59:59Z")
-    val fixture = aSampleFixture(lastModified)
+    private val fixture = aSampleFixture(
+        stockListLastModified = Instant.parse("2022-02-09T12:00:00Z"),
+        now = Instant.parse("2022-02-09T23:59:59Z")
+    )
 
     @Test
     fun validations() {
@@ -35,7 +36,7 @@ class AddItemHttpTests : AddItemAcceptanceContract(
             .form("new-itemName", "new name")
             .form("new-itemSellBy", "2023-07-23")
             .form("new-itemQuality", "99")
-        Given(fixture, now = sameDayAsLastModified)
+        Given(fixture)
             .Then {
                 assertThat(
                     routes(goodPost.formWithout("new-itemId")),
@@ -82,10 +83,10 @@ class AddItemHttpTests : AddItemAcceptanceContract(
             .form("new-itemName", "new name")
             .form("new-itemSellBy", "2023-07-23")
             .form("new-itemQuality", "1.0")
-        Given(fixture, now = sameDayAsLastModified)
+        Given(fixture)
             .Then {
                 assertThat(
-                    addHandler(postWithTwoMissingFields),
+                    app.addHandler(postWithTwoMissingFields),
                     hasStatus(Status.BAD_REQUEST) and
                         hasAttachedError(
                             NewItemFailedEvent("[formData 'new-itemId' is required, formData 'new-itemQuality' must be integer]")

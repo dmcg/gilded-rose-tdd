@@ -19,25 +19,28 @@ import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 import java.time.Instant
+import kotlin.test.assertTrue
 import java.time.Instant.parse as t
 
 class ListStockTests {
 
     @Test
     fun `list stock`() {
-        val fixture = aSampleFixture(stockListLastModified = t("2022-02-09T12:00:00Z"))
-        val app = fixture.createApp(now = t("2022-02-09T23:59:59Z"))
-        val expectedPricedStocklist = Success(fixture.originalPricedStockList)
-        assertEquals(
-            expectedPricedStocklist,
-            app.loadStockList()
-        )
-        val response = app.routes(Request(GET, "/"))
-        expectThat(response) {
-            status.isEqualTo(OK)
-            bodyString.isEqualTo(
-                app.expectedRenderingFor(expectedPricedStocklist)
+        with(aSampleFixture(
+            stockListLastModified = t("2022-02-09T12:00:00Z"),
+            now = t("2022-02-09T23:59:59Z"))
+        ) {
+            val expectedPricedStocklist = Success(originalPricedStockList)
+            assertEquals(
+                expectedPricedStocklist,
+                app.loadStockList()
             )
+            expectThat(routes(Request(GET, "/"))) {
+                status.isEqualTo(OK)
+                bodyString.isEqualTo(
+                    app.expectedRenderingFor(expectedPricedStocklist)
+                )
+            }
         }
     }
 
@@ -65,11 +68,18 @@ class ListStockTests {
             Failure(expectedError),
             app.loadStockList()
         )
-        assertThat(app.routes(Request(GET, "/")), hasStatus(INTERNAL_SERVER_ERROR))
+        assertTrue(
+            events.isEmpty()
+        )
+        assertThat(
+            app.routes(Request(GET, "/")),
+            hasStatus(INTERNAL_SERVER_ERROR)
+        )
         assertEquals(
             expectedError,
             events.first()
         )
+        println(events)
     }
 }
 
