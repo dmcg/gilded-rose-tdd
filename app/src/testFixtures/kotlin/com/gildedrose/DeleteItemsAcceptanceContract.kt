@@ -8,12 +8,12 @@ import java.time.Instant
 
 abstract class DeleteItemsAcceptanceContract(
     val doDelete: (App<*>, Set<Item>) -> Unit
-)
-{
-    private val lastModified = Instant.parse("2022-02-09T12:00:00Z")
-    private val sameDayAsLastModified = Instant.parse("2022-02-09T23:59:59Z")
-    private val fixture = aSampleFixture(lastModified)
-    private val app = fixture.createApp(now = sameDayAsLastModified)
+) {
+    private val fixture = aSampleFixture(
+        stockListLastModified = Instant.parse("2022-02-09T12:00:00Z"),
+        now = Instant.parse("2022-02-09T23:59:59Z")
+    )
+    private val app = fixture.app
 
     @Test
     fun `delete items`() {
@@ -25,7 +25,7 @@ abstract class DeleteItemsAcceptanceContract(
         )
         fixture.checkStockListIs(
             StockList(
-                sameDayAsLastModified,
+                fixture.now,
                 listOf(fixture.originalStockList[1])
             )
         )
