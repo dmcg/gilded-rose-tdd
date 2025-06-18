@@ -1,10 +1,8 @@
 package com.gildedrose
 
 import com.gildedrose.domain.Item
-import com.gildedrose.domain.StockList
 import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.http.ResponseErrors.attachedError
-import com.gildedrose.testing.item
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
@@ -20,22 +18,15 @@ import org.http4k.hamkrest.hasBody
 import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Test
+import java.time.Instant
 
 
 class AddItemHttpTests : AddItemAcceptanceContract(
     doAdd = ::addItemWithHttp
 ) {
-    @Test
-    fun `add item with blank date via http`() {
-        val newItem = item("new-id", "new name", null, 99)
-        addItemWithHttp(app, newItem)
-        fixture.checkStockListIs(
-            StockList(
-                sameDayAsLastModified,
-                fixture.originalStockList + newItem
-            )
-        )
-    }
+    private val lastModified = Instant.parse("2022-02-09T12:00:00Z")
+    private val sameDayAsLastModified = Instant.parse("2022-02-09T23:59:59Z")
+    val fixture = aSampleFixture(lastModified)
 
     @Test
     fun validations() {
@@ -44,42 +35,45 @@ class AddItemHttpTests : AddItemAcceptanceContract(
             .form("new-itemName", "new name")
             .form("new-itemSellBy", "2023-07-23")
             .form("new-itemQuality", "99")
-        assertThat(
-            app.routes(goodPost.formWithout("new-itemId")),
-            hasStatus(Status.BAD_REQUEST)
-        )
-        assertThat(
-            app.routes(goodPost.replacingForm("new-itemId", "")),
-            hasStatus(Status.BAD_REQUEST)
-        )
-        assertThat(
-            app.routes(goodPost.formWithout("new-itemName")),
-            hasStatus(Status.BAD_REQUEST)
-        )
-        assertThat(
-            app.routes(goodPost.replacingForm("new-itemName", "")),
-            hasStatus(Status.BAD_REQUEST)
-        )
-        assertThat(
-            app.routes(goodPost.replacingForm("new-itemSellBy", "2023-00-99")),
-            hasStatus(Status.BAD_REQUEST)
-        )
-        assertThat(
-            app.routes(goodPost.formWithout("new-itemQuality")),
-            hasStatus(Status.BAD_REQUEST)
-        )
-        assertThat(
-            app.routes(goodPost.replacingForm("new-itemQuality", "")),
-            hasStatus(Status.BAD_REQUEST)
-        )
-        assertThat(
-            app.routes(goodPost.replacingForm("new-itemQuality", "-1")),
-            hasStatus(Status.BAD_REQUEST)
-        )
-        assertThat(
-            app.routes(goodPost.replacingForm("new-itemQuality", "1.0")),
-            hasStatus(Status.BAD_REQUEST)
-        )
+        Given(fixture, now = sameDayAsLastModified)
+            .Then {
+                assertThat(
+                    routes(goodPost.formWithout("new-itemId")),
+                    hasStatus(Status.BAD_REQUEST)
+                )
+                assertThat(
+                    routes(goodPost.replacingForm("new-itemId", "")),
+                    hasStatus(Status.BAD_REQUEST)
+                )
+                assertThat(
+                    routes(goodPost.formWithout("new-itemName")),
+                    hasStatus(Status.BAD_REQUEST)
+                )
+                assertThat(
+                    routes(goodPost.replacingForm("new-itemName", "")),
+                    hasStatus(Status.BAD_REQUEST)
+                )
+                assertThat(
+                    routes(goodPost.replacingForm("new-itemSellBy", "2023-00-99")),
+                    hasStatus(Status.BAD_REQUEST)
+                )
+                assertThat(
+                    routes(goodPost.formWithout("new-itemQuality")),
+                    hasStatus(Status.BAD_REQUEST)
+                )
+                assertThat(
+                    routes(goodPost.replacingForm("new-itemQuality", "")),
+                    hasStatus(Status.BAD_REQUEST)
+                )
+                assertThat(
+                    routes(goodPost.replacingForm("new-itemQuality", "-1")),
+                    hasStatus(Status.BAD_REQUEST)
+                )
+                assertThat(
+                    routes(goodPost.replacingForm("new-itemQuality", "1.0")),
+                    hasStatus(Status.BAD_REQUEST)
+                )
+            }
     }
 
     @Test
@@ -88,13 +82,16 @@ class AddItemHttpTests : AddItemAcceptanceContract(
             .form("new-itemName", "new name")
             .form("new-itemSellBy", "2023-07-23")
             .form("new-itemQuality", "1.0")
-        assertThat(
-            app.addHandler(postWithTwoMissingFields),
-            hasStatus(Status.BAD_REQUEST) and
-                hasAttachedError(
-                    NewItemFailedEvent("[formData 'new-itemId' is required, formData 'new-itemQuality' must be integer]")
+        Given(fixture, now = sameDayAsLastModified)
+            .Then {
+                assertThat(
+                    addHandler(postWithTwoMissingFields),
+                    hasStatus(Status.BAD_REQUEST) and
+                        hasAttachedError(
+                            NewItemFailedEvent("[formData 'new-itemId' is required, formData 'new-itemQuality' must be integer]")
+                        )
                 )
-        )
+            }
     }
 }
 
