@@ -1,9 +1,7 @@
 package com.gildedrose.updating
 
 import com.gildedrose.domain.*
-import com.gildedrose.testing.InMemoryItems
-import com.gildedrose.testing.item
-import com.gildedrose.testing.oct29
+import com.gildedrose.testing.*
 import dev.forkhandles.result4k.*
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -155,7 +153,3 @@ internal fun List<Item>.withQualityDecreasedBy(qualityChange: Int): List<Item> =
     map { it.copy(quality = it.quality - qualityChange) }
 
 private val londonZone = ZoneId.of("Europe/London")
-
-private inline fun <T, R> T.When(block: (T).(T) -> R): R = block(this)
-private inline fun <T, R> T.Then(block: (T) -> R): R = this.let(block)
-
