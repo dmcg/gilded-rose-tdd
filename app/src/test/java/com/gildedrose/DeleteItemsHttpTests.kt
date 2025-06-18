@@ -11,10 +11,10 @@ import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
 
 class DeleteItemsHttpTests : DeleteItemsAcceptanceContract(
-    doDelete = ::deleteWithHttp
+    delete = Fixture::deleteWithHttp
 )
 
-private fun deleteWithHttp(app: App<*>, toDelete: Set<Item>) {
+private fun Fixture.deleteWithHttp(toDelete: Set<Item>) {
     val request = Request(Method.POST, "/delete-items")
         .header("HX-Request", "True")
         .withDeleteForm(toDelete)
@@ -26,10 +26,10 @@ private fun deleteWithHttp(app: App<*>, toDelete: Set<Item>) {
 }
 
 class DeleteItemsHttpWithNoHtmxTests : DeleteItemsAcceptanceContract(
-    doDelete = ::deleteWithHttpNoHtmx
+    delete = Fixture::deleteWithHttpNoHtmx
 )
 
-private fun deleteWithHttpNoHtmx(app: App<*>, toDelete: Set<Item>) {
+private fun Fixture.deleteWithHttpNoHtmx(toDelete: Set<Item>) {
     val request = Request(Method.POST, "/delete-items")
         .withDeleteForm(toDelete)
     val response = app.routes(request)

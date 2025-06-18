@@ -6,7 +6,7 @@ import com.gildedrose.testing.InMemoryItems
 import com.gildedrose.testing.item
 import com.gildedrose.testing.withNoPrice
 import com.gildedrose.testing.withPriceResult
-import dev.forkhandles.result4k.Success
+import dev.forkhandles.result4k.onFailure
 import dev.forkhandles.result4k.valueOrNull
 import java.time.Instant
 import java.time.LocalDate.parse
@@ -31,10 +31,12 @@ data class Fixture(
     private fun pricing(item: Item): Price? =
         originalPricedStockList.find { it.withNoPrice() == item }?.price?.valueOrNull()
 
-    fun checkStockListIs(stockList: StockList) {
+    fun currentStockList() = items.transactionally { load() }.onFailure { error("Unable to load stock: $it") }
+
+    fun checkCurrentSockListIs(stockList: StockList) {
         assertEquals(
-            Success(stockList),
-            this.items.transactionally { load() }
+            stockList,
+            currentStockList()
         )
     }
 }

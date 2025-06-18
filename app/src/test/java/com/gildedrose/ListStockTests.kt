@@ -2,6 +2,7 @@ package com.gildedrose
 
 import com.gildedrose.domain.*
 import com.gildedrose.rendering.render
+import com.gildedrose.testing.Given
 import com.gildedrose.testing.fake
 import com.natpryce.hamkrest.assertion.assertThat
 import dev.forkhandles.result4k.Failure
@@ -22,23 +23,33 @@ import java.time.Instant
 import kotlin.test.assertTrue
 import java.time.Instant.parse as t
 
+
 class ListStockTests {
 
     @Test
-    fun `list stock`() {
-        with(aSampleFixture(
+    fun `list stock directly`() {
+        Given(aSampleFixture(
             stockListLastModified = t("2022-02-09T12:00:00Z"),
             now = t("2022-02-09T23:59:59Z"))
-        ) {
-            val expectedPricedStocklist = Success(originalPricedStockList)
-            assertEquals(
-                expectedPricedStocklist,
-                app.loadStockList()
-            )
-            expectThat(routes(Request(GET, "/"))) {
+        ).When {
+            app.loadStockList()
+        }.Then { result ->
+            expectThat(originalStockList).isEqualTo(currentStockList())
+        }
+    }
+
+    @Test
+    fun `list stock http`() {
+        Given(aSampleFixture(
+            stockListLastModified = t("2022-02-09T12:00:00Z"),
+            now = t("2022-02-09T23:59:59Z"))
+        ).When {
+            routes(Request(GET, "/"))
+        }.Then {
+            expectThat(it) {
                 status.isEqualTo(OK)
                 bodyString.isEqualTo(
-                    app.expectedRenderingFor(expectedPricedStocklist)
+                    app.expectedRenderingFor(Success(originalPricedStockList))
                 )
             }
         }

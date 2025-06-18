@@ -3,6 +3,7 @@ package com.gildedrose
 import com.gildedrose.domain.Item
 import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.http.ResponseErrors.attachedError
+import com.gildedrose.testing.Given
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat

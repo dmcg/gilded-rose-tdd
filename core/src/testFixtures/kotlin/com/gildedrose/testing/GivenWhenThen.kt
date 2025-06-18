@@ -2,7 +2,10 @@ package com.gildedrose.testing
 
 @JvmInline
 value class Given<F>(val fixture: F) {
-    fun <R> When(block: (F).(F) -> R): WhenThenState<F, R> = WhenThenState(fixture, fixture.block(fixture))
+    fun <R> When(block: (F).(F) -> R): WhenThenState<F, R>
+        = WhenThenState(fixture, fixture.block(fixture))
+    fun <R> Then(block: (F).(F) -> R): WhenThenState<F, R>
+        = WhenThenState(fixture, fixture.block(fixture))
 }
 
 data class WhenThenState<F, R>(
