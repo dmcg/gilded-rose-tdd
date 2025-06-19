@@ -22,13 +22,13 @@ class LoadingAndUpdatingStockTests {
     fun `updates stock if last modified yesterday`() {
         val lastModified = t("2021-02-09T23:59:59Z")
         val firstInstantOfNextDay = t("2021-02-10T00:00:00Z")
+        val expectedUpdatedResult = StockList(firstInstantOfNextDay, someItems.withQualityDecreasedBy(1))
 
         Given(StockList(lastModified, someItems), now = firstInstantOfNextDay)
             .When_ {
                 doLoadAndUpdate()
             }
             .Then { outcome ->
-                val expectedUpdatedResult = StockList(firstInstantOfNextDay, someItems.withQualityDecreasedBy(1))
                 assertEquals(
                     Outcome(
                         result = expectedUpdatedResult.asSuccess(),
@@ -46,12 +46,13 @@ class LoadingAndUpdatingStockTests {
         val lastModified = t("2021-02-09T00:00:00Z")
         val lastInstantOfSameDay = t("2021-02-09T23:59:59.9999Z")
         val initialStockList = StockList(lastModified, someItems)
+        val expectedNotUpdatedResult = initialStockList
+
         Given(initialStockList, now = lastInstantOfSameDay)
             .When_ {
                 doLoadAndUpdate()
             }
             .Then { outcome ->
-                val expectedNotUpdatedResult = initialStockList
                 assertEquals(
                     Outcome(
                         result = expectedNotUpdatedResult.asSuccess(),
@@ -69,6 +70,7 @@ class LoadingAndUpdatingStockTests {
         val lastInstantOfSameDay = t("2021-02-09T23:59:59.9999Z")
         val initialStockList = StockList(lastModified, someItems)
         val loadingError = StockListLoadingError.IOError("deliberate")
+
         Given(initialStockList, lastInstantOfSameDay, loadingError)
             .When_ {
                 doLoadAndUpdate()
