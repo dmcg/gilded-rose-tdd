@@ -24,7 +24,7 @@ class LoadingAndUpdatingStockTests {
         val firstInstantOfNextDay = t("2021-02-10T00:00:00Z")
 
         Given(StockList(lastModified, someItems), now = firstInstantOfNextDay)
-            .When {
+            .When_ {
                 doLoadAndUpdate()
             }
             .Then { outcome ->
@@ -47,7 +47,7 @@ class LoadingAndUpdatingStockTests {
         val lastInstantOfSameDay = t("2021-02-09T23:59:59.9999Z")
         val initialStockList = StockList(lastModified, someItems)
         Given(initialStockList, now = lastInstantOfSameDay)
-            .When {
+            .When_ {
                 doLoadAndUpdate()
             }
             .Then { outcome ->
@@ -70,7 +70,7 @@ class LoadingAndUpdatingStockTests {
         val initialStockList = StockList(lastModified, someItems)
         val loadingError = StockListLoadingError.IOError("deliberate")
         Given(initialStockList, lastInstantOfSameDay, loadingError)
-            .When {
+            .When_ {
                 doLoadAndUpdate()
             }
             .Then { outcome ->

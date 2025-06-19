@@ -2,8 +2,8 @@ package com.gildedrose
 
 import com.gildedrose.domain.Item
 
-class AddItemTests : AddItemAcceptanceContract(::addItemDirectly)
+class AddItemTests : AddItemAcceptanceContract(Fixture::addItemDirectly)
 
-private fun addItemDirectly(app: App<*>, newItem: Item) {
+private fun Fixture.addItemDirectly(newItem: Item) {
     app.addItem(newItem)
 }

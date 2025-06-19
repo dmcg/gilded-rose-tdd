@@ -24,7 +24,7 @@ import java.time.Instant
 
 
 class AddItemHttpTests : AddItemAcceptanceContract(
-    doAdd = ::addItemWithHttp
+    add = Fixture::addItemWithHttp
 ) {
     private val fixture = aSampleFixture(
         stockListLastModified = Instant.parse("2022-02-09T12:00:00Z"),
@@ -98,8 +98,8 @@ class AddItemHttpTests : AddItemAcceptanceContract(
     }
 }
 
-private fun addItemWithHttp(app: App<*>, newItem: Item) {
-    val response = app.routes(
+private fun Fixture.addItemWithHttp(newItem: Item) {
+    val response = routes(
         postFormToAddItemsRoute().withFormFor(newItem)
     )
     assertThat(
@@ -109,11 +109,11 @@ private fun addItemWithHttp(app: App<*>, newItem: Item) {
 }
 
 class AddItemHttpNoHtmxTests : AddItemAcceptanceContract(
-    doAdd = ::addItemWithHttpNoHtmx
+    add = Fixture::addItemWithHttpNoHtmx
 )
 
-private fun addItemWithHttpNoHtmx(app: App<*>, newItem: Item) {
-    val response = app.routes(
+private fun Fixture.addItemWithHttpNoHtmx(newItem: Item) {
+    val response = routes(
         postFormToAddItemsRoute(withHTMX = false)
             .withFormFor(newItem)
     )

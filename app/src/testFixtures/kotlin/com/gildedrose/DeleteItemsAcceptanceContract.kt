@@ -4,7 +4,7 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
 import com.gildedrose.testing.Given
 import com.gildedrose.testing.Then
-import com.gildedrose.testing.When_
+import com.gildedrose.testing.When
 import com.gildedrose.testing.item
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -22,7 +22,7 @@ abstract class DeleteItemsAcceptanceContract(
                 stockListLastModified = lastModified,
                 now = sameDayAsLastModified
             )
-        ).When_ {
+        ).When {
             delete(
                 setOf(
                     originalStockList[0],
@@ -46,7 +46,7 @@ abstract class DeleteItemsAcceptanceContract(
                 stockListLastModified = lastModified,
                 now = sameDayAsLastModified
             )
-        ).When_ {
+        ).When {
             delete(emptySet())
         }.Then {
             checkStockListIs(originalStockList)
@@ -60,7 +60,7 @@ abstract class DeleteItemsAcceptanceContract(
                 stockListLastModified = lastModified,
                 now = sameDayAsLastModified
             )
-        ).When_ {
+        ).When {
             delete(setOf(item("no-such", "not in stock", null, 0)))
         }.Then {
             checkStockListIs(originalStockList)
