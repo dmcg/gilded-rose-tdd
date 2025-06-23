@@ -1,18 +1,16 @@
 package com.gildedrose.browserTests
 
 import com.gildedrose.AddItemAcceptanceContract
-import com.gildedrose.App
+import com.gildedrose.Fixture
 import com.gildedrose.domain.Item
 import com.gildedrose.routes
 import java.time.format.DateTimeFormatter
 
 private const val showRunning = showBrowserTests
 
-class AddItemBrowserTests : AddItemAcceptanceContract(
-    doAdd = ::addWithPlaywright
-)
+class AddItemBrowserTests : AddItemAcceptanceContract(Fixture::addWithPlaywright)
 
-private fun addWithPlaywright(app: App<*>, newItem: Item) {
+private fun Fixture.addWithPlaywright(newItem: Item) {
     runWithPlaywright(
         app.routes,
         launchOptions = launchOptions(showRunning)
