@@ -21,7 +21,6 @@ class LoadingAndUpdatingStockTests {
     fun `updates stock if last modified yesterday`() {
         val lastModified = t("2021-02-09T23:59:59Z")
         val firstInstantOfNextDay = t("2021-02-10T00:00:00Z")
-        val expectedUpdatedResult = StockList(firstInstantOfNextDay, someItems.withQualityDecreasedBy(1))
 
         Given(
             Fixture(
@@ -31,6 +30,7 @@ class LoadingAndUpdatingStockTests {
         ).When {
             doLoadAndUpdate()
         }.Then { outcome ->
+            val expectedUpdatedResult = StockList(firstInstantOfNextDay, someItems.withQualityDecreasedBy(1))
             assertEquals(
                 Outcome(
                     result = expectedUpdatedResult.asSuccess(),
@@ -47,7 +47,6 @@ class LoadingAndUpdatingStockTests {
     fun `does not update stock if last modified today`() {
         val lastModified = t("2021-02-09T00:00:00Z")
         val lastInstantOfSameDay = t("2021-02-09T23:59:59.9999Z")
-        val expectedNotUpdatedResult = StockList(lastModified, someItems)
 
         Given(
             Fixture(
@@ -57,6 +56,7 @@ class LoadingAndUpdatingStockTests {
         ).When {
             doLoadAndUpdate()
         }.Then { outcome ->
+            val expectedNotUpdatedResult = StockList(lastModified, someItems)
             assertEquals(
                 Outcome(
                     result = expectedNotUpdatedResult.asSuccess(),
@@ -117,7 +117,7 @@ private data class Fixture(
                 }
             }
         }
-        val stock = Stock(sensingItems, zoneId = londonZone)
+        val stock = Stock(sensingItems, zoneId = ZoneId.of("Europe/London"))
         val result = sensingItems.inTransaction {
             stock.loadAndUpdateStockList(now)
         }
@@ -137,8 +137,6 @@ private data class Outcome(
 
 internal fun List<Item>.withQualityDecreasedBy(qualityChange: Int): List<Item> =
     map { it.copy(quality = it.quality - qualityChange) }
-
-private val londonZone = ZoneId.of("Europe/London")
 
 private fun <F> Given(fixture: F) = fixture
 private fun <F, R> F.When(block: (F).(F) -> R): R = block(this)
