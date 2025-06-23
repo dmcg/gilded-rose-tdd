@@ -19,18 +19,15 @@ class LoadingAndUpdatingStockTests {
 
     @Test
     fun `updates stock if last modified yesterday`() {
-        val lastModified = t("2021-02-09T23:59:59Z")
-        val firstInstantOfNextDay = t("2021-02-10T00:00:00Z")
-
         Given(
             Fixture(
-                StockList(lastModified, someItems),
-                now = firstInstantOfNextDay
+                StockList(t("2021-02-09T23:59:59Z"), someItems),
+                now = t("2021-02-10T00:00:00Z")
             )
         ).When {
-            doLoadAndUpdate()
+            loadAndUpdate()
         }.Then { outcome ->
-            val expectedUpdatedResult = StockList(firstInstantOfNextDay, someItems.withQualityDecreasedBy(1))
+            val expectedUpdatedResult = StockList(now, initialStockList.items.withQualityDecreasedBy(1))
             assertEquals(
                 Outcome(
                     result = expectedUpdatedResult.asSuccess(),
@@ -45,18 +42,15 @@ class LoadingAndUpdatingStockTests {
 
     @Test
     fun `does not update stock if last modified today`() {
-        val lastModified = t("2021-02-09T00:00:00Z")
-        val lastInstantOfSameDay = t("2021-02-09T23:59:59.9999Z")
-
         Given(
             Fixture(
-                StockList(lastModified, someItems),
-                now = lastInstantOfSameDay
+                StockList(t("2021-02-09T00:00:00Z"), someItems),
+                now = t("2021-02-09T23:59:59.9999Z")
             )
         ).When {
-            doLoadAndUpdate()
+            loadAndUpdate()
         }.Then { outcome ->
-            val expectedNotUpdatedResult = StockList(lastModified, someItems)
+            val expectedNotUpdatedResult = initialStockList
             assertEquals(
                 Outcome(
                     result = expectedNotUpdatedResult.asSuccess(),
@@ -69,23 +63,54 @@ class LoadingAndUpdatingStockTests {
     }
 
     @Test
-    fun `returns error in loading stock`() {
-        val lastModified = t("2021-02-09T00:00:00Z")
-        val initialStockList = StockList(lastModified, someItems)
-        val loadingError = StockListLoadingError.IOError("deliberate")
-
+    fun `load before and after midnight`() {
         Given(
             Fixture(
-                initialStockList = initialStockList,
-                now = lastModified,
-                loadingFailsWith = loadingError
+                StockList(t("2021-02-09T00:00:00Z"), someItems),
+                now = t("2021-02-09T23:59:59.9999Z")
             )
         ).When {
-            doLoadAndUpdate()
+            loadAndUpdate()
+        }.Then { outcome ->
+            val expectedNotUpdatedResult = initialStockList
+            assertEquals(
+                Outcome(
+                    result = expectedNotUpdatedResult.asSuccess(),
+                    savedState = expectedNotUpdatedResult,
+                    savedStockList = null
+                ),
+                outcome
+            )
+        }.When {
+            now = t("2021-02-10T00:00:00Z")
+            loadAndUpdate()
+        }.Then {outcome ->
+            val expectedUpdatedResult = StockList(now, initialStockList.items.withQualityDecreasedBy(1))
+            assertEquals(
+                Outcome(
+                    result = expectedUpdatedResult.asSuccess(),
+                    savedState = expectedUpdatedResult,
+                    savedStockList = expectedUpdatedResult
+                ),
+                outcome
+            )
+        }
+    }
+
+    @Test
+    fun `returns error in loading stock`() {
+        Given(
+            Fixture(
+                initialStockList = StockList(t("2021-02-09T00:00:00Z"), someItems),
+                now = t("2021-02-09T00:00:00Z"),
+                loadingError = StockListLoadingError.IOError("deliberate")
+            )
+        ).When {
+            loadAndUpdate()
         }.Then { outcome ->
             assertEquals(
                 Outcome(
-                    result = loadingError.asFailure(),
+                    result = loadingError!!.asFailure(),
                     savedState = initialStockList,
                     savedStockList = null
                 ),
@@ -97,17 +122,17 @@ class LoadingAndUpdatingStockTests {
 
 private data class Fixture(
     val initialStockList: StockList,
-    val now: Instant,
-    val loadingFailsWith: StockListLoadingError? = null,
+    var now: Instant,
+    val loadingError: StockListLoadingError? = null,
 ) {
-    fun doLoadAndUpdate(): Outcome {
+    fun loadAndUpdate(): Outcome {
         val inMemoryItems = InMemoryItems(initialStockList)
         val sensingItems = object : Items<NoTX> by inMemoryItems {
             var savedStockList: StockList? = null
 
             context(NoTX)
             override fun load(): Result<StockList, StockListLoadingError> {
-                return loadingFailsWith?.asFailure() ?: inMemoryItems.load()
+                return loadingError?.asFailure() ?: inMemoryItems.load()
             }
 
             context(NoTX)
@@ -138,7 +163,18 @@ private data class Outcome(
 internal fun List<Item>.withQualityDecreasedBy(qualityChange: Int): List<Item> =
     map { it.copy(quality = it.quality - qualityChange) }
 
-private fun <F> Given(fixture: F) = fixture
-private fun <F, R> F.When(block: (F).(F) -> R): R = block(this)
-private fun <F, R> F.Then(block: (F) -> R): R = this.let(block)
+@JvmInline
+value class Given<F>(val fixture: F) {
+    fun <R> When(block: (F).(F) -> R): WhenThenState<F, R> = WhenThenState(fixture, fixture.block(fixture))
+}
+
+data class WhenThenState<F, R>(
+    val fixture: F,
+    val result: R
+) {
+    fun <R2> Then(block: (F).(R) -> R2): WhenThenState<F, R2> =
+        WhenThenState(this.fixture, this.fixture.block(this.result))
+    fun <R2> When(function: (F).(F) -> R2): WhenThenState<F, R2> =
+        WhenThenState(this.fixture, this.fixture.function(this.fixture))
+}
 
