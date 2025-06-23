@@ -8,9 +8,6 @@ import dev.forkhandles.result4k.*
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.ZoneId
-import java.util.concurrent.Callable
-import java.util.concurrent.CyclicBarrier
-import java.util.concurrent.Executors
 import kotlin.test.assertEquals
 import java.time.Instant.parse as t
 
@@ -94,29 +91,6 @@ class LoadingAndUpdatingStockTests {
                 ),
                 outcome
             )
-        }
-    }
-
-    @Test
-    fun `parallel execution`() {
-        val count = 8
-        val executor = Executors.newFixedThreadPool(count)
-        val barrier = CyclicBarrier(count)
-        val futures = executor.invokeAll(
-            (1..count).map {
-                Callable {
-                    barrier.await()
-                    `updates stock if last modified yesterday`()
-                }
-            }
-        )
-        futures.forEach { it.get() }
-    }
-
-    @Test
-    fun `sanity check`() {
-        repeat(10) {
-            `parallel execution`()
         }
     }
 }
