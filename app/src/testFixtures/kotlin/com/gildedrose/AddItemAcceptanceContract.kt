@@ -17,14 +17,13 @@ abstract class AddItemAcceptanceContract(
     @Test
     fun `add item`() {
         val newItem = item("new-id", "new name", localDate("2023-07-23"), 99)
-        val timeOfRequest = sameDayAsLastModified
         Given(
-            aSampleFixture(stockListLastModified, now = timeOfRequest)
+            aSampleFixture(stockListLastModified, now = sameDayAsLastModified)
         ).When {
             add(newItem)
         }.Then {
             checkCurrentSockListIs(
-                StockList(timeOfRequest, originalStockList + newItem)
+                StockList(now, originalStockList + newItem)
             )
         }
     }
@@ -38,7 +37,7 @@ abstract class AddItemAcceptanceContract(
             add(newItem)
         }.Then {
             checkCurrentSockListIs(
-                StockList(sameDayAsLastModified, originalStockList + newItem)
+                StockList(now, originalStockList + newItem)
             )
         }
     }
