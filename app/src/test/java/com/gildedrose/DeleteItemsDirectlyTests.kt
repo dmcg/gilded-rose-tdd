@@ -3,10 +3,13 @@ package com.gildedrose
 import com.gildedrose.domain.Item
 
 class DeleteItemsDirectlyTests : DeleteItemsAcceptanceContract(
-    delete= Fixture::deleteDirectly
+    alison = DirectActor()
 )
 
-private fun Fixture.deleteDirectly(toDelete: Set<Item>) {
-    val ids = toDelete.map { it.id }.toSet()
-    app.deleteItemsWithIds(ids)
+class DirectActor : Actor() {
+    override fun delete(fixture: Fixture, items: Set<Item>) {
+        val ids = items.map { it.id }.toSet()
+        fixture.app.deleteItemsWithIds(ids)
+    }
 }
+
