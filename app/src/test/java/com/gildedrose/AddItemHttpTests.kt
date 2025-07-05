@@ -1,6 +1,5 @@
 package com.gildedrose
 
-import com.gildedrose.domain.Item
 import com.gildedrose.foundation.AnalyticsEvent
 import com.gildedrose.http.ResponseErrors.attachedError
 import com.gildedrose.testing.Given
@@ -9,21 +8,18 @@ import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.has
-import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.body.form
 import org.http4k.core.body.toBody
-import org.http4k.hamkrest.hasBody
-import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Test
 import java.time.Instant
 
 
 class AddItemHttpTests : AddItemAcceptanceContract(
-    Fixture::addItemWithHttp
+    alison = HttpActor()
 ) {
     private val fixture = aSampleFixture(
         stockListLastModified = Instant.parse("2022-02-09T12:00:00Z"),
@@ -97,30 +93,9 @@ class AddItemHttpTests : AddItemAcceptanceContract(
     }
 }
 
-private fun Fixture.addItemWithHttp(newItem: Item) {
-    val response = app.routes(
-        postFormToAddItemsRoute().withFormFor(newItem)
-    )
-    assertThat(
-        response,
-        hasStatus(Status.OK) and hasJustATableElementBody()
-    )
-}
-
 class AddItemHttpNoHtmxTests : AddItemAcceptanceContract(
-    Fixture::addItemWithHttpNoHtmx
+    alison = HttpNoHtmxActor()
 )
-
-private fun Fixture.addItemWithHttpNoHtmx(newItem: Item) {
-    val response = app.routes(
-        postFormToAddItemsRoute(withHTMX = false)
-            .withFormFor(newItem)
-    )
-    assertThat(
-        response,
-        hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
-    )
-}
 
 private fun Request.formWithout(parameterName: String): Request =
     body(form().filter { it.first != parameterName }.toBody())
@@ -134,17 +109,3 @@ private fun hasAttachedError(event: AnalyticsEvent): Matcher<Response> =
         { response -> response.attachedError },
         equalTo(event)
     )
-
-private fun Request.withFormFor(newItem: Item): Request {
-    return form("new-itemId", newItem.id.toString())
-        .form("new-itemName", newItem.name.toString())
-        .form("new-itemSellBy", newItem.sellByDate?.toString() ?: "")
-        .form("new-itemQuality", newItem.quality.toString())
-}
-
-private fun postFormToAddItemsRoute(withHTMX: Boolean = true) =
-    Request(Method.POST, "/add-item").header("Content-Type", "application/x-www-form-urlencoded").run {
-        if (withHTMX) header("HX-Request", "true") else this
-    }
-
-fun hasJustATableElementBody() = hasBody(Regex("""\A\s*<table>.*</table>\s*\z""", RegexOption.DOT_MATCHES_ALL))

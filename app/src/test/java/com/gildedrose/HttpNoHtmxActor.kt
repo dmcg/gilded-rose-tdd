@@ -19,4 +19,14 @@ class HttpNoHtmxActor : Actor() {
             hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
         )
     }
+
+    override fun add(fixture: Fixture, item: Item) {
+        val request = postFormToAddItemsRoute(withHTMX = false)
+            .addFormFor(item)
+        val response = fixture.routes(request)
+        assertThat(
+            response,
+            hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
+        )
+    }
 }

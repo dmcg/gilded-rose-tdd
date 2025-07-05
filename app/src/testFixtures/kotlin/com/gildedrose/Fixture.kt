@@ -43,6 +43,10 @@ data class Fixture(
     fun Actor.deletes(items: Set<Item>) {
         this@deletes.delete(this@Fixture, items)
     }
+
+    fun Actor.adds(item: Item) {
+        this@adds.add(this@Fixture, item)
+    }
 }
 
 fun aSampleFixture(stockListLastModified: Instant, now: Instant) = Fixture(

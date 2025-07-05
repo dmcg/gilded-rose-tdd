@@ -19,4 +19,14 @@ class HttpActor : Actor() {
             hasStatus(Status.OK) and hasJustATableElementBody()
         )
     }
+
+    override fun add(fixture: Fixture, item: Item) {
+        val request = postFormToAddItemsRoute()
+            .addFormFor(item)
+        val response = fixture.app.routes(request)
+        assertThat(
+            response,
+            hasStatus(Status.OK) and hasJustATableElementBody()
+        )
+    }
 }
