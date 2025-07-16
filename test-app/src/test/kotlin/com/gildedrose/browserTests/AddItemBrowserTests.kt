@@ -1,6 +1,7 @@
 package com.gildedrose.browserTests
 
 import com.gildedrose.AddItemAcceptanceContract
+import com.gildedrose.BrowserActor
 import com.gildedrose.Fixture
 import com.gildedrose.domain.Item
 import com.gildedrose.routes
@@ -8,11 +9,23 @@ import java.time.format.DateTimeFormatter
 
 private const val showRunning = showBrowserTests
 
-class AddItemBrowserTests : AddItemAcceptanceContract(Fixture::addWithPlaywright)
+class TestBrowserActor : BrowserActor() {
+    override fun adds(fixture: Fixture, item: Item) {
+        addWithPlaywright(fixture, item)
+    }
 
-private fun Fixture.addWithPlaywright(newItem: Item) {
+    override fun deletes(fixture: Fixture, items: Set<Item>) {
+        deleteWithPlaywright(fixture, items)
+    }
+}
+
+class AddItemBrowserTests : AddItemAcceptanceContract(
+    actor = TestBrowserActor()
+)
+
+private fun addWithPlaywright(fixture: Fixture, newItem: Item) {
     runWithPlaywright(
-        app.routes,
+        fixture.app.routes,
         launchOptions = launchOptions(showRunning)
     ) {
         inputNamed("new-itemId").fill(newItem.id.toString())
@@ -25,6 +38,22 @@ private fun Fixture.addWithPlaywright(newItem: Item) {
 
         waitingForHtmx {
             submitButtonNamed("Add").click()
+        }
+        checkReloadsTheSame()
+    }
+}
+
+private fun deleteWithPlaywright(fixture: Fixture, toDelete: Set<Item>) {
+    runWithPlaywright(
+        fixture.app.routes,
+        launchOptions = launchOptions(showRunning)
+    ) {
+        toDelete.forEach {
+            checkBoxNamed(it.id.toString()).click()
+        }
+        waitingForHtmx {
+            acceptNextDialog()
+            submitButtonNamed("Delete").click()
         }
         checkReloadsTheSame()
     }

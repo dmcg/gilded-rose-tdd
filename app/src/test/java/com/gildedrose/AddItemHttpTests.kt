@@ -23,7 +23,7 @@ import java.time.Instant
 
 
 class AddItemHttpTests : AddItemAcceptanceContract(
-    Fixture::addItemWithHttp
+    actor = TestHtmxHttpActor()
 ) {
     private val fixture = aSampleFixture(
         stockListLastModified = Instant.parse("2022-02-09T12:00:00Z"),
@@ -97,29 +97,54 @@ class AddItemHttpTests : AddItemAcceptanceContract(
     }
 }
 
-private fun Fixture.addItemWithHttp(newItem: Item) {
-    val response = app.routes(
-        postFormToAddItemsRoute().withFormFor(newItem)
-    )
-    assertThat(
-        response,
-        hasStatus(Status.OK) and hasJustATableElementBody()
-    )
+class TestHtmxHttpActor : HtmxHttpActor() {
+    override fun adds(fixture: Fixture, item: Item) {
+        val response = fixture.app.routes(
+            postFormToAddItemsRoute().withFormFor(item)
+        )
+        assertThat(
+            response,
+            hasStatus(Status.OK) and hasJustATableElementBody()
+        )
+    }
+
+    override fun deletes(fixture: Fixture, items: Set<Item>) {
+        val request = Request(Method.POST, "/delete-items")
+            .header("HX-Request", "True")
+            .withDeleteForm(items)
+        val response = fixture.app.routes(request)
+        assertThat(
+            response,
+            hasStatus(Status.OK) and hasJustATableElementBody()
+        )
+    }
 }
 
 class AddItemHttpNoHtmxTests : AddItemAcceptanceContract(
-    Fixture::addItemWithHttpNoHtmx
+    actor = TestNoHtmxHttpActor()
 )
 
-private fun Fixture.addItemWithHttpNoHtmx(newItem: Item) {
-    val response = app.routes(
-        postFormToAddItemsRoute(withHTMX = false)
-            .withFormFor(newItem)
-    )
-    assertThat(
-        response,
-        hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
-    )
+class TestNoHtmxHttpActor : NoHtmxHttpActor() {
+    override fun adds(fixture: Fixture, item: Item) {
+        val response = fixture.app.routes(
+            postFormToAddItemsRoute(withHTMX = false)
+                .withFormFor(item)
+        )
+        assertThat(
+            response,
+            hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
+        )
+    }
+
+    override fun deletes(fixture: Fixture, items: Set<Item>) {
+        val request = Request(Method.POST, "/delete-items")
+            .withDeleteForm(items)
+        val response = fixture.app.routes(request)
+        assertThat(
+            response,
+            hasStatus(Status.SEE_OTHER) and hasHeader("Location", "/")
+        )
+    }
 }
 
 private fun Request.formWithout(parameterName: String): Request =
@@ -140,6 +165,12 @@ private fun Request.withFormFor(newItem: Item): Request {
         .form("new-itemName", newItem.name.toString())
         .form("new-itemSellBy", newItem.sellByDate?.toString() ?: "")
         .form("new-itemQuality", newItem.quality.toString())
+}
+
+private fun Request.withDeleteForm(
+    toDelete: Set<Item>
+) = toDelete.fold(this) { acc, item ->
+    acc.form(item.id.toString(), "on")
 }
 
 private fun postFormToAddItemsRoute(withHTMX: Boolean = true) =

@@ -1,6 +1,5 @@
 package com.gildedrose
 
-import com.gildedrose.domain.Item
 import com.gildedrose.domain.StockList
 import com.gildedrose.testing.Given
 import com.gildedrose.testing.item
@@ -9,7 +8,7 @@ import java.time.Instant.parse as t
 import java.time.LocalDate.parse as localDate
 
 abstract class AddItemAcceptanceContract(
-    private val add: (Fixture).(Item) -> Unit,
+    val actor: Actor,
 ) {
     private val stockListLastModified = t("2022-02-09T12:00:00Z")
     private val sameDayAsLastModified = t("2022-02-09T23:59:59Z")
@@ -20,7 +19,7 @@ abstract class AddItemAcceptanceContract(
         Given(
             aSampleFixture(stockListLastModified, now = sameDayAsLastModified)
         ).When {
-            add(newItem)
+            actor.adds(this, newItem)
         }.Then {
             checkCurrentSockListIs(
                 StockList(now, originalStockList + newItem)
@@ -34,7 +33,7 @@ abstract class AddItemAcceptanceContract(
         Given(
             aSampleFixture(stockListLastModified, now = sameDayAsLastModified)
         ).When {
-            add(newItem)
+            actor.adds(this, newItem)
         }.Then {
             checkCurrentSockListIs(
                 StockList(now, originalStockList + newItem)
