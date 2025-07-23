@@ -17,7 +17,7 @@ class Stock<TX>(
     val items: Items<TX>,
     private val zoneId: ZoneId,
 ) {
-    context(TX)
+    context(_: TX)
     fun loadAndUpdateStockList(
         now: Instant,
     ): Result4k<StockList, StockListLoadingError> =

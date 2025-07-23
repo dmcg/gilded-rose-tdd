@@ -35,29 +35,29 @@ abstract class ValueElfContract(
         val client = valueElfClient(uri, handler)
     }
 
-    context(Fixture)
     @Test
-    fun `returns price when there is one`() {
-        assertEquals(expectedPrice, client(aFoundItem))
+    fun `returns price when there is one`(fixture: Fixture) {
+        assertEquals(
+            fixture.expectedPrice,
+            fixture.client(fixture.aFoundItem)
+        )
     }
 
-    context(Fixture)
     @Test
-    fun `returns null when no price`() {
-        assertEquals(null, client(aNotFoundItem))
+    fun `returns null when no price`(fixture: Fixture) {
+        assertEquals(null, fixture.client(fixture.aNotFoundItem))
     }
 
-    context(Fixture)
     @Test
-    fun `returns BAD_REQUEST for invalid query strings`() {
-        val request = Request(Method.GET, uri.toString())
+    fun `returns BAD_REQUEST for invalid query strings`(fixture: Fixture) {
+        val request = Request(Method.GET, fixture.uri.toString())
         val returnsBadRequest: Matcher<Response> = hasStatus(BAD_REQUEST)
-        check(request, returnsBadRequest)
-        check(request.query("id", "some-id"), returnsBadRequest)
-        check(request.query("id", ""), returnsBadRequest)
-        check(request.query("id", "some-id").query("quality", ""), returnsBadRequest)
-        check(request.query("id", "some-id").query("quality", "nan"), returnsBadRequest)
-        check(request.query("id", "some-id").query("quality", "-1"), returnsBadRequest)
+        fixture.check(request, returnsBadRequest)
+        fixture.check(request.query("id", "some-id"), returnsBadRequest)
+        fixture.check(request.query("id", ""), returnsBadRequest)
+        fixture.check(request.query("id", "some-id").query("quality", ""), returnsBadRequest)
+        fixture.check(request.query("id", "some-id").query("quality", "nan"), returnsBadRequest)
+        fixture.check(request.query("id", "some-id").query("quality", "-1"), returnsBadRequest)
     }
 }
 

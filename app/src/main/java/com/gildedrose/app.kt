@@ -43,7 +43,7 @@ data class App<TX>(
     private val stock = Stock(items, londonZoneId)
 
     private val pricedLoader = PricedStockListLoader<TX>(
-        loading = stock::loadAndUpdateStockList,
+        loading = { stock.loadAndUpdateStockList(it) },
         pricing = pricing,
         analytics = analytics
     )

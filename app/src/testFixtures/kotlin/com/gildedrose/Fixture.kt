@@ -1,7 +1,6 @@
 package com.gildedrose
 
 import com.gildedrose.domain.*
-import com.gildedrose.foundation.magic
 import com.gildedrose.testing.InMemoryItems
 import com.gildedrose.testing.item
 import com.gildedrose.testing.withNoPrice
@@ -64,5 +63,5 @@ fun aSampleFixture(stockListLastModified: Instant, now: Instant) = Fixture(
 
 private fun <R, TX : TXContext> Items<TX>.transactionally(f: context(TX) Items<TX>.() -> R): R =
     inTransaction {
-        f(magic(), this)
+        f(this)
     }

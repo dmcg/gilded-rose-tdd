@@ -29,7 +29,7 @@ class DbItems(
             block(txContext)
         }
 
-    context(DbTxContext)
+    context(tx: DbTxContext)
     override fun save(
         stockList: StockList,
     ): Result<StockList, StockListLoadingError.IOError> {
@@ -39,7 +39,7 @@ class DbItems(
         }
         toSave.forEach<Item> { item ->
             with(ITEMS) {
-                dslContext.insertInto(ITEMS)
+                tx.dslContext.insertInto(ITEMS)
                     .set(ID, item.id.toString())
                     .set(MODIFIED, stockList.lastModified)
                     .set(NAME, item.name.toString())
@@ -51,10 +51,10 @@ class DbItems(
         return Success(stockList)
     }
 
-    context(DbTxContext)
+    context(tx: DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> {
         val stockList = with(ITEMS) {
-            val records = dslContext.select(
+            val records = tx.dslContext.select(
                 ID,
                 MODIFIED,
                 NAME,

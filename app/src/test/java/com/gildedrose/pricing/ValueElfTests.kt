@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import java.net.URI
 
-@Suppress("JUnitMalformedDeclaration") // confused by the Fixture receivers
 @EnabledIfSystemProperty(named = "run-external-tests", matches = "true")
 class ValueElfTests : ValueElfContract(
     Fixture(
@@ -21,31 +20,29 @@ class ValueElfTests : ValueElfContract(
         expectedPrice = Price(709)!!
     )
 ) {
-    context(Fixture)
     @Test
-    fun `fails sometimes`() {
+    fun `fails sometimes`(fixture: Fixture) {
         val result: List<Result<Price?, Exception>> = (1..500).map {
             resultFrom {
-                client.invoke(aFoundItem)
+                fixture.client.invoke(fixture.aFoundItem)
             }
         }
         val (successes, failures) = result.partition { it is Success }
-        assertTrue(successes.all { it is Success && it.value == expectedPrice })
+        assertTrue(successes.all { it is Success && it.value == fixture.expectedPrice })
         val successRatio = successes.size / failures.size.toDouble()
         println("Successes = ${successes.size}, failures = ${failures.size}, ratio = $successRatio")
     }
 
-    context(Fixture)
     @Test
-    fun `retry prevents failure`() {
-        val retryingClient = retry(1, function = { it: Item -> client(it) })
+    fun `retry prevents failure`(fixture: Fixture) {
+        val retryingClient = retry(1, function = { it: Item -> fixture.client(it) })
         val result: List<Result<Price?, Exception>> = (1..500).map {
             resultFrom {
-                retryingClient.invoke(aFoundItem)
+                retryingClient.invoke(fixture.aFoundItem)
             }
         }
         val (successes, failures) = result.partition { it is Success }
-        assertTrue(successes.all { it is Success && it.value == expectedPrice })
+        assertTrue(successes.all { it is Success && it.value == fixture.expectedPrice })
         assertTrue(failures.isEmpty())
     }
 }

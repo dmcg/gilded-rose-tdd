@@ -19,9 +19,9 @@ interface Items<TX> {
 
     fun <R> inTransaction(block: context(TX) () -> R): R
 
-    context(TX) fun save(
+    context(_: TX) fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError>
 
-    context(TX) fun load(): Result<StockList, StockListLoadingError>
+    context(_: TX) fun load(): Result<StockList, StockListLoadingError>
 }

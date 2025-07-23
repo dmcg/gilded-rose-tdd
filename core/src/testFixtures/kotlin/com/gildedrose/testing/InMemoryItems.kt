@@ -16,14 +16,14 @@ class InMemoryItems(
 
     override fun <R> inTransaction(block: context(NoTX) () -> R) = block(NoTX)
 
-    context(NoTX) override fun save(
+    context(_: NoTX) override fun save(
         stockList: StockList
     ): Result<StockList, StockListLoadingError.IOError> {
         this@InMemoryItems.stockList.set(stockList)
         return Success(stockList)
     }
 
-    context(NoTX) override fun load(): Result<StockList, StockListLoadingError> {
+    context(_: NoTX) override fun load(): Result<StockList, StockListLoadingError> {
         return Success(stockList.get())
     }
 }

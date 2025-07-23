@@ -131,12 +131,12 @@ private data class Fixture(
         val sensingItems = object : Items<NoTX> by inMemoryItems {
             var savedStockList: StockList? = null
 
-            context(NoTX)
+            context(_: NoTX)
             override fun load(): Result<StockList, StockListLoadingError> {
                 return loadingError?.asFailure() ?: inMemoryItems.load()
             }
 
-            context(NoTX)
+            context(_:  NoTX)
             override fun save(stockList: StockList): Result<StockList, StockListLoadingError.IOError> {
                 return inMemoryItems.save(stockList).also {
                     savedStockList = stockList

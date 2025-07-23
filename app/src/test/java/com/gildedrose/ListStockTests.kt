@@ -62,7 +62,7 @@ class ListStockTests {
         val itemsThatFails = object : Items<NoTX> by fake() {
             override fun <R> inTransaction(block: context(NoTX) () -> R) = block(NoTX)
 
-            context(NoTX) override fun load(): Result<StockList, StockListLoadingError> {
+            context(_: NoTX) override fun load(): Result<StockList, StockListLoadingError> {
                 return Failure(expectedError)
             }
         }

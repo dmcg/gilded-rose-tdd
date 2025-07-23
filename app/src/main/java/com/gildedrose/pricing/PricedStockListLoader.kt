@@ -22,9 +22,9 @@ class PricedStockListLoader<TX>(
     private val retryingPricing: (Item) -> Price? =
         pricing.wrappedWith(retry(1, reporter = ::reportException))
 
-    context(TX)
+    context(_: TX)
     fun load(now: Instant): Result<PricedStockList, StockListLoadingError> =
-        loading(magic<TX>(),now).map {
+        loading(now).map {
             it.pricedBy(retryingPricing)
         }
 

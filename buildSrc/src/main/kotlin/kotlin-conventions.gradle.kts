@@ -27,7 +27,6 @@ java {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
-        suppressWarnings = true // TODO 2024-11-13 DMCG remove me
+        freeCompilerArgs.add("-Xcontext-parameters")
     }
 }
