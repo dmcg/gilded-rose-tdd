@@ -2,6 +2,7 @@ package com.gildedrose.persistence
 
 import com.gildedrose.db.tables.Items.ITEMS
 import com.gildedrose.domain.*
+import com.gildedrose.persistence.DbTxContext.Companion.dslContext
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.jooq.Configuration
@@ -12,7 +13,12 @@ import org.jooq.impl.DSL.max
 import java.time.Instant
 import java.time.LocalDate
 
-class DbTxContext(val dslContext: DSLContext) : TXContext()
+class DbTxContext(val dslContext: DSLContext) : TXContext() {
+    companion object {
+        context(tx: DbTxContext)
+        val dslContext get() = tx.dslContext
+    }
+}
 
 class DbItems(
     dslContext: DSLContext,
@@ -26,7 +32,7 @@ class DbItems(
             block(txContext)
         }
 
-    context(tx: DbTxContext)
+    context(_: DbTxContext)
     override fun save(
         stockList: StockList,
     ): Result<StockList, StockListLoadingError.IOError> {
@@ -36,7 +42,7 @@ class DbItems(
         }
         toSave.forEach { item ->
             with(ITEMS) {
-                tx.dslContext.insertInto(ITEMS)
+                dslContext.insertInto(ITEMS)
                     .set(ID, item.id.toString())
                     .set(MODIFIED, stockList.lastModified)
                     .set(NAME, item.name.toString())
@@ -48,10 +54,10 @@ class DbItems(
         return Success(stockList)
     }
 
-    context(tx: DbTxContext)
+    context(_: DbTxContext)
     override fun load(): Result<StockList, StockListLoadingError> {
         val stockList = with(ITEMS) {
-            val records = tx.dslContext.select(
+            val records = dslContext.select(
                 ID,
                 MODIFIED,
                 NAME,
@@ -91,4 +97,3 @@ private fun Record5<String, Instant, String, Int, LocalDate>.toItem() =
         sellByDate = this[ITEMS.SELLBYDATE],
         quality = Quality(this[ITEMS.QUALITY]) ?: error("Invalid quality")
     )
-
