@@ -18,13 +18,10 @@ class DbItems(
     dslContext: DSLContext,
 ) : Items<DbTxContext> {
 
-    private val forInTransaction = object {
-        @Suppress("UnnecessaryVariable")
-        val untransactionalDSLContext = dslContext
-    }
+    private val untransactionalDSLContext = dslContext
 
     override fun <R> inTransaction(block: context(DbTxContext) () -> R): R =
-        forInTransaction.untransactionalDSLContext.transactionResult { trx: Configuration ->
+        untransactionalDSLContext.transactionResult { trx: Configuration ->
             val txContext = DbTxContext(trx.dsl())
             block(txContext)
         }
@@ -37,7 +34,7 @@ class DbItems(
             stockList.items.isEmpty() -> listOf(sentinelItem)
             else -> stockList.items
         }
-        toSave.forEach<Item> { item ->
+        toSave.forEach { item ->
             with(ITEMS) {
                 tx.dslContext.insertInto(ITEMS)
                     .set(ID, item.id.toString())
