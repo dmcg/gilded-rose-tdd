@@ -5,4 +5,7 @@ import com.gildedrose.domain.Item
 abstract class Actor {
     abstract fun delete(fixture: Fixture, items: Set<Item>)
     abstract fun add(fixture: Fixture, item: Item)
+    open fun edit(fixture: Fixture, item: Item) {
+        throw UnsupportedOperationException("Edit not implemented for this Actor")
+    }
 }

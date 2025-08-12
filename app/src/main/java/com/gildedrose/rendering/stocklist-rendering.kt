@@ -73,23 +73,26 @@ fun renderHtml(
             id = "new-item-form"
         }
         form {
-            method = FormMethod.post
-            action = "/delete-items"
-            attributes["hx-post"] = "/delete-items"
-            attributes["hx-target"] = "table"
-            attributes["hx-swap"] = "outerHTML"
-            attributes["hx-confirm"] = "Are you sure you want to delete the items?"
-            input {
-                type = InputType.submit
-                value = "Delete"
+            button {
+                type = ButtonType.submit
+                attributes["hx-post"] = "/delete-items"
+                attributes["hx-target"] = "table"
+                attributes["hx-swap"] = "outerHTML"
+                attributes["hx-confirm"] = "Are you sure you want to delete the items?"
                 attributes["aria-label"] = "Delete selected items"
+                +"Delete"
             }
             renderTable(stockList.items, now, zoneId)
         }
     }
 }
 
-private fun FlowContent.renderTable(items: List<PricedItem>, now: Instant, zoneId: ZoneId) {
+private fun FlowContent.renderTable(
+    items: List<PricedItem>,
+    now: Instant,
+    zoneId: ZoneId,
+    editingId: String? = null,
+) {
     table {
         tr {
             th { +"" }
@@ -99,6 +102,7 @@ private fun FlowContent.renderTable(items: List<PricedItem>, now: Instant, zoneI
             th { +"Sell By Days" }
             th { +"Quality" }
             th { +"Price" }
+            th { +"Edit" }
         }
         tr {
             td { +"" }
@@ -151,27 +155,103 @@ private fun FlowContent.renderTable(items: List<PricedItem>, now: Instant, zoneI
                     attributes["aria-label"] = "Add new item"
                 }
             }
+            td { +"" }
         }
         items.forEach { item ->
-            tr {
-                td {
-                    input(type = InputType.checkBox, name = item.id.toString()) {
-                        attributes["aria-label"] = "Select item"
+            if (item.id.toString() == editingId) {
+                tr {
+                    td { +"" }
+                    td { +item.id.toString() }
+                    td {
+                        input {
+                            type = InputType.text
+                            name = "edit-itemName"
+                            required = true
+                            size = "20"
+                            value = item.name.value
+                            attributes["aria-label"] = "Edit item name"
+                        }
+                    }
+                    td {
+                        input {
+                            type = InputType.date
+                            name = "edit-itemSellBy"
+                            attributes["aria-label"] = "Edit item sell by date"
+                            item.sellByDate?.let { value = it.toString() }
+                        }
+                    }
+                    td { +"" }
+                    td {
+                        style = "text-align: right"
+                        input {
+                            type = InputType.number
+                            name = "edit-itemQuality"
+                            required = true
+                            min = "0"
+                            size = "3"
+                            value = item.quality.toString()
+                            attributes["aria-label"] = "Edit item quality"
+                        }
+                    }
+                    td {
+                        // hidden id so hx-include will submit it
+                        input {
+                            type = InputType.hidden
+                            name = "edit-itemId"
+                            value = item.id.toString()
+                        }
+                        input(type = InputType.submit) {
+                            value = "Save"
+                            style = "width: 100%"
+                            attributes["aria-label"] = "Save changes"
+                            attributes["hx-post"] = "/edit-item"
+                            attributes["hx-target"] = "table"
+                            attributes["hx-swap"] = "outerHTML"
+                            attributes["hx-include"] = "closest tr"
+                        }
+                    }
+                    td {
+                        a(href = "#") {
+                            attributes["hx-get"] = "/"
+                            attributes["hx-target"] = "table"
+                            attributes["hx-swap"] = "outerHTML"
+                            attributes["aria-label"] = "Cancel edit"
+                            +"Cancel"
+                        }
                     }
                 }
-                td { +item.id.toString() }
-                td { +item.name.value }
-                td { +if (item.sellByDate == null) "" else dateFormat.format(item.sellByDate) }
-                td { style = "text-align: right"; +item.daysUntilSellBy(LocalDate.ofInstant(now, zoneId)).toString() }
-                td { style = "text-align: right"; +item.quality.toString() }
-                td { style = "text-align: right"; +when (val price = item.price) {
-                    is Success -> price.value?.toString().orEmpty()
-                    is Failure -> "error"
-                } }
+            } else {
+                tr {
+                    td {
+                        input(type = InputType.checkBox, name = item.id.toString()) {
+                            attributes["aria-label"] = "Select item"
+                        }
+                    }
+                    td { +item.id.toString() }
+                    td { +item.name.value }
+                    td { +if (item.sellByDate == null) "" else dateFormat.format(item.sellByDate) }
+                    td { style = "text-align: right"; +item.daysUntilSellBy(LocalDate.ofInstant(now, zoneId)).toString() }
+                    td { style = "text-align: right"; +item.quality.toString() }
+                    td { style = "text-align: right"; +when (val price = item.price) {
+                        is Success -> price.value?.toString().orEmpty()
+                        is Failure -> "error"
+                    } }
+                    td {
+                        a(href = "#") {
+                            attributes["hx-get"] = "/edit/${item.id}"
+                            attributes["hx-target"] = "table"
+                            attributes["hx-swap"] = "outerHTML"
+                            +"Edit"
+                        }
+                    }
+                }
             }
         }
     }
 }
+
+internal fun renderTableHtml(items: List<PricedItem>, now: Instant, zoneId: ZoneId, editingId: String? = null): String =
+    partial { renderTable(items, now, zoneId, editingId) }
 
 private fun partial(block: FlowContent.() -> Unit): String {
     val writer = StringWriter()

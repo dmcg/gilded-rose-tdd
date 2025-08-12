@@ -46,6 +46,10 @@ data class Fixture(
     fun Actor.adds(item: Item) {
         this@adds.add(this@Fixture, item)
     }
+
+    fun Actor.edits(item: Item) {
+        this@edits.edit(this@Fixture, item)
+    }
 }
 
 fun aSampleFixture(stockListLastModified: Instant, now: Instant) = Fixture(

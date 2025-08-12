@@ -11,4 +11,8 @@ class DirectActor : Actor() {
     override fun add(fixture: Fixture, item: Item) {
         fixture.app.addItem(item)
     }
+
+    override fun edit(fixture: Fixture, item: Item) {
+        fixture.app.editItem(item)
+    }
 }

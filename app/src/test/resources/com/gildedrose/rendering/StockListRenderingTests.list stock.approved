@@ -6,7 +6,7 @@
   <body>
     <h1>29 October 2021</h1>
     <form method="post" action="/add-item" hx-post="/add-item" hx-target="table" hx-swap="outerHTML" id="new-item-form"></form>
-    <form method="post" action="/delete-items" hx-post="/delete-items" hx-target="table" hx-swap="outerHTML" hx-confirm="Are you sure you want to delete the items?"><input type="submit" value="Delete" aria-label="Delete selected items">
+    <form><button type="submit" hx-post="/delete-items" hx-target="table" hx-swap="outerHTML" hx-confirm="Are you sure you want to delete the items?" aria-label="Delete selected items">Delete</button>
       <table>
         <tr>
           <th></th>
@@ -16,6 +16,7 @@
           <th>Sell By Days</th>
           <th>Quality</th>
           <th>Price</th>
+          <th>Edit</th>
         </tr>
         <tr>
           <td></td>
@@ -25,6 +26,7 @@
           <td></td>
           <td style="text-align: right"><input form="new-item-form" type="number" name="new-itemQuality" required="required" min="0" size="3" aria-label="New item quality"></td>
           <td><input type="submit" form="new-item-form" value="Add" style="width: 100%" aria-label="Add new item"></td>
+          <td></td>
         </tr>
         <tr>
           <td><input type="checkbox" name="B1" aria-label="Select item"></td>
@@ -34,6 +36,7 @@
           <td style="text-align: right">-1</td>
           <td style="text-align: right">42</td>
           <td style="text-align: right">£1.00</td>
+          <td><a href="#" hx-get="/edit/B1" hx-target="table" hx-swap="outerHTML">Edit</a></td>
         </tr>
         <tr>
           <td><input type="checkbox" name="K1" aria-label="Select item"></td>
@@ -43,6 +46,7 @@
           <td style="text-align: right">1</td>
           <td style="text-align: right">101</td>
           <td style="text-align: right">error</td>
+          <td><a href="#" hx-get="/edit/K1" hx-target="table" hx-swap="outerHTML">Edit</a></td>
         </tr>
         <tr>
           <td><input type="checkbox" name="U1" aria-label="Select item"></td>
@@ -52,6 +56,7 @@
           <td style="text-align: right">0</td>
           <td style="text-align: right">50</td>
           <td style="text-align: right"></td>
+          <td><a href="#" hx-get="/edit/U1" hx-target="table" hx-swap="outerHTML">Edit</a></td>
         </tr>
       </table>
     </form>

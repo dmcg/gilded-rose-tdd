@@ -7,6 +7,8 @@ import com.gildedrose.http.ResponseErrors.withError
 import com.gildedrose.http.catchAll
 import com.gildedrose.http.reportHttpTransactions
 import com.gildedrose.rendering.render
+import dev.forkhandles.result4k.map
+import dev.forkhandles.result4k.recover
 import org.http4k.core.*
 import org.http4k.core.body.form
 import org.http4k.filter.ServerFilters
@@ -27,7 +29,9 @@ val App<*>.routes: HttpHandler
                 "/" bind Method.GET to ::listHandler,
                 "/error" bind Method.GET to { error("deliberate") },
                 "/delete-items" bind Method.POST to ::deleteHandler,
-                "/add-item" bind Method.POST to ::addHandler
+                "/add-item" bind Method.POST to ::addHandler,
+                "/edit/{id}" bind Method.GET to ::editRowHandler,
+                "/edit-item" bind Method.POST to ::editHandler
             )
         )
 
@@ -79,6 +83,36 @@ private fun App<*>.deleteHandler(
         .mapNotNull { ID<Item>(it) }
         .toSet()
     deleteItemsWithIds(itemIds)
+    return when {
+        request.isHtmx -> listHandler(request)
+        else -> Response(Status.SEE_OTHER).header("Location", "/")
+    }
+}
+
+internal fun App<*>.editRowHandler(request: Request): Response {
+    val id = request.uri.path.substringAfterLast('/')
+    val now = clock()
+    val stockListResult = loadStockList(now)
+    return stockListResult.map { priced ->
+        val tableHtml = com.gildedrose.rendering.renderTableHtml(priced.items, now, londonZoneId, editingId = id)
+        Response(Status.OK).body(tableHtml)
+    }.recover { error ->
+        Response(Status.INTERNAL_SERVER_ERROR).withError(error)
+    }
+}
+
+internal fun App<*>.editHandler(request: Request): Response {
+    val idLens = FormField.nonBlankString().map { ID<Item>(it) }.required("edit-itemId")
+    val nameLens = FormField.nonBlankString().required("edit-itemName")
+    val sellByLens = FormField.localDate().optional("edit-itemSellBy")
+    val qualityLens = FormField.nonNegativeInt().map { Quality(it) }.required("edit-itemQuality")
+    val formBody = Body.webForm(Validator.Feedback, idLens, nameLens, sellByLens, qualityLens).toLens()
+    val form: WebForm = formBody(request)
+    if (form.errors.isNotEmpty())
+        return Response(Status.BAD_REQUEST).withError(NewItemFailedEvent(form.errors.toString()))
+
+    val item = Item(idLens(form), nameLens(form), sellByLens(form), qualityLens(form))
+    editItem(updatedItem = item)
     return when {
         request.isHtmx -> listHandler(request)
         else -> Response(Status.SEE_OTHER).header("Location", "/")

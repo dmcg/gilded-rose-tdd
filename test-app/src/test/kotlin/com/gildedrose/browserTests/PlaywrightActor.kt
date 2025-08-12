@@ -19,7 +19,7 @@ class PlaywrightActor(private val showRunning: Boolean) : Actor() {
             }
             waitingForHtmx {
                 acceptNextDialog()
-                submitButtonNamed("Delete").click()
+                buttonNamed("Delete").click()
             }
 
             checkReloadsTheSame()
@@ -40,7 +40,7 @@ class PlaywrightActor(private val showRunning: Boolean) : Actor() {
             inputNamed("new-itemQuality").fill(item.quality.toString())
 
             waitingForHtmx {
-                submitButtonNamed("Add").click()
+                buttonNamed("Add").click()
             }
             checkReloadsTheSame()
         }

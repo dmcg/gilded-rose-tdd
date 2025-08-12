@@ -84,4 +84,21 @@ data class App<TX>(
             }
         }
     }
+
+    fun editItem(
+        updatedItem: Item,
+        now: Instant = clock(),
+    ) {
+        items.inTransaction {
+            stock.loadAndUpdateStockList(now).map { stockList ->
+                val updatedItems = stockList.items.map { existing ->
+                    if (existing.id == updatedItem.id) updatedItem else existing
+                }
+                val updatedStockList = StockList(now, updatedItems)
+                if (updatedStockList.items != stockList.items) {
+                    items.save(updatedStockList)
+                }
+            }
+        }
+    }
 }

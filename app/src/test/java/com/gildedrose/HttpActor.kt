@@ -6,6 +6,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Status
+import org.http4k.core.body.form
 import org.http4k.hamkrest.hasStatus
 
 class HttpActor : Actor() {
@@ -23,6 +24,22 @@ class HttpActor : Actor() {
     override fun add(fixture: Fixture, item: Item) {
         val request = postFormToAddItemsRoute()
             .addFormFor(item)
+        val response = fixture.app.routes(request)
+        assertThat(
+            response,
+            hasStatus(Status.OK) and hasJustATableElementBody()
+        )
+    }
+
+    override fun edit(fixture: Fixture, item: Item) {
+        // Simulate direct save via HTMX without page reload
+        val request = Request(Method.POST, "/edit-item")
+            .header("HX-Request", "True")
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .form("edit-itemId", item.id.toString())
+            .form("edit-itemName", item.name.value)
+            .form("edit-itemSellBy", item.sellByDate?.toString() ?: "")
+            .form("edit-itemQuality", item.quality.toString())
         val response = fixture.app.routes(request)
         assertThat(
             response,

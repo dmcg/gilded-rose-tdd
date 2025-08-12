@@ -3,6 +3,7 @@ package com.gildedrose.browserTests
 import com.gildedrose.http.serverFor
 import com.microsoft.playwright.*
 import com.microsoft.playwright.BrowserType.LaunchOptions
+import com.microsoft.playwright.options.AriaRole
 import org.http4k.core.HttpHandler
 import kotlin.test.assertEquals
 
@@ -60,8 +61,8 @@ fun Page.waitingForHtmx(action: Page.() -> Unit) {
 fun Page.inputNamed(name: String): Locator =
     locator("""input[name="$name"]""")
 
-fun Page.submitButtonNamed(name: String): Locator =
-    locator("""input[value="$name"][type="submit"]""")
+fun Page.buttonNamed(name: String): Locator =
+    getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName(name))
 
 fun Page.checkBoxNamed(name: String): Locator =
     locator("""input[name="$name"][type="checkbox"]""")
@@ -69,5 +70,5 @@ fun Page.checkBoxNamed(name: String): Locator =
 
 private fun String.withNoEmptyClassAttributes() = replace(""" class=""""", "")
 private fun String.normalised(): String {
-    return this.lines().filter { it.isNotBlank() }.map { it.trim() }.joinToString("\n")
+    return lines().filter { it.isNotBlank() }.joinToString("\n") { it.trim() }
 }
