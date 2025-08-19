@@ -8,4 +8,7 @@ abstract class Actor {
     open fun edit(fixture: Fixture, item: Item) {
         throw UnsupportedOperationException("Edit not implemented for this Actor")
     }
+    open fun editAndThenCancel(fixture: Fixture, item: Item) {
+        throw UnsupportedOperationException("EditsButThenCancels not implemented for this Actor")
+    }
 }

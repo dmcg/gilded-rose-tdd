@@ -47,6 +47,22 @@ class PlaywrightActor(private val showRunning: Boolean) : Actor() {
     }
 
     override fun edit(fixture: Fixture, item: Item) {
+        performEditOperation(fixture, item) {
+            waitingForHtmx {
+                locator("input[type=submit][value=Save]").click()
+            }
+        }
+    }
+
+    override fun editAndThenCancel(fixture: Fixture, item: Item) {
+        performEditOperation(fixture, item) {
+            waitingForHtmx {
+                locator("a:has-text('Cancel')").click()
+            }
+        }
+    }
+
+    private fun performEditOperation(fixture: Fixture, item: Item, action: Page.() -> Unit) {
         runWithPlaywright(
             fixture.app.routes,
             launchOptions = launchOptions(showRunning)
@@ -69,9 +85,10 @@ class PlaywrightActor(private val showRunning: Boolean) : Actor() {
             } ?: inputNamed("edit-itemSellBy").clear()
             inputNamed("edit-itemQuality").fill(item.quality.toString())
 
-            waitingForHtmx {
-                buttonNamed("Save").click()
-            }
+            // Execute the specific action (Save or Cancel)
+            action()
+            // Wait a bit more for HTMX classes to settle
+            waitForTimeout(100.0)
             checkReloadsTheSame()
         }
     }
