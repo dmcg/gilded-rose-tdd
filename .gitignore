@@ -16,3 +16,4 @@ build/
 /stock.tsv
 google-api-key.txt
 /attic/
+/.kotlin/
