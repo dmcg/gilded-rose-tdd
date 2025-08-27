@@ -67,16 +67,14 @@ class PlaywrightActor(private val showRunning: Boolean) : Actor() {
                 editButtonFor(item).click()
             }
 
-            // Fill in the edit form fields
             inputNamed("edit-itemName").fill(item.name.toString())
+            inputNamed("edit-itemSellBy").clear()
             item.sellByDate?.let {
-                inputNamed("edit-itemSellBy").clear()
                 inputNamed("edit-itemSellBy")
                     .pressSequentially(it.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-            } ?: inputNamed("edit-itemSellBy").clear()
+            }
             inputNamed("edit-itemQuality").fill(item.quality.toString())
 
-            // Execute the specific action (Save or Cancel)
             waitingForHtmx {
                 action()
             }
