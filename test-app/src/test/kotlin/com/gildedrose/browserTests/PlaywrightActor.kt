@@ -54,7 +54,7 @@ class PlaywrightActor(private val showRunning: Boolean) : Actor() {
 
     override fun editAndThenCancel(fixture: Fixture, item: Item) {
         performEditOperationAnd(fixture, item) {
-            locator("a:has-text('Cancel')").click()
+            buttonNamed("Cancel").click()
         }
     }
 
@@ -89,4 +89,4 @@ private fun Page.checkBoxFor(
 
 private fun Page.editButtonFor(
     item: Item,
-): Locator = locator("tr:has-text('${item.id}') a:has-text('Edit')")
+): Locator = locator("tr:has-text('${item.id}') button:has-text('Edit')")

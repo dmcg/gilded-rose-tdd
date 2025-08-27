@@ -211,7 +211,7 @@ private fun FlowContent.renderTable(
                         }
                     }
                     td {
-                        a(href = "#") {
+                        button(type = ButtonType.button) {
                             attributes["hx-get"] = "/"
                             attributes["hx-target"] = "table"
                             attributes["hx-swap"] = "outerHTML"
@@ -237,7 +237,7 @@ private fun FlowContent.renderTable(
                         is Failure -> "error"
                     } }
                     td {
-                        a(href = "#") {
+                        button(type = ButtonType.button) {
                             attributes["hx-get"] = "/edit/${item.id}"
                             attributes["hx-target"] = "table"
                             attributes["hx-swap"] = "outerHTML"
