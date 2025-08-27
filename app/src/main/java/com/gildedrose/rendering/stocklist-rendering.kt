@@ -57,8 +57,8 @@ fun renderHtml(
     head {
         title("Gilded Rose")
         script {
-            src = "https://unpkg.com/htmx.org@1.9.4"
-            integrity = "sha384-zUfuhFKKZCbHTY6aRR46gxiqszMk5tcHjsVFxnUo8VMus4kHGVdIYVbOYYNlKmHV"
+            src = "https://unpkg.com/htmx.org@2.0.6"
+            integrity = "sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm"
             attributes["crossorigin"] = "anonymous"
         }
     }
