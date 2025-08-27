@@ -47,34 +47,25 @@ class PlaywrightActor(private val showRunning: Boolean) : Actor() {
     }
 
     override fun edit(fixture: Fixture, item: Item) {
-        performEditOperation(fixture, item) {
-            waitingForHtmx {
-                locator("input[type=submit][value=Save]").click()
-            }
+        performEditOperationAnd(fixture, item) {
+            buttonNamed("Save").click()
         }
     }
 
     override fun editAndThenCancel(fixture: Fixture, item: Item) {
-        performEditOperation(fixture, item) {
-            waitingForHtmx {
-                locator("a:has-text('Cancel')").click()
-            }
+        performEditOperationAnd(fixture, item) {
+            locator("a:has-text('Cancel')").click()
         }
     }
 
-    private fun performEditOperation(fixture: Fixture, item: Item, action: Page.() -> Unit) {
+    private fun performEditOperationAnd(fixture: Fixture, item: Item, action: Page.() -> Unit) {
         runWithPlaywright(
             fixture.app.routes,
             launchOptions = launchOptions(showRunning)
         ) {
-            // Check if the edit button exists (item exists in the table)
-            val editButton = editButtonFor(item)
-            if (editButton.count() == 0) {
-                error("Cannot edit item '${item.name}' because it doesn't exist in the table.")
+            waitingForHtmx {
+                editButtonFor(item).click()
             }
-
-            // Find and click the edit button for the specific item
-            editButton.click()
 
             // Fill in the edit form fields
             inputNamed("edit-itemName").fill(item.name.toString())
@@ -86,18 +77,18 @@ class PlaywrightActor(private val showRunning: Boolean) : Actor() {
             inputNamed("edit-itemQuality").fill(item.quality.toString())
 
             // Execute the specific action (Save or Cancel)
-            action()
-            // Wait a bit more for HTMX classes to settle
-            waitForTimeout(100.0)
+            waitingForHtmx {
+                action()
+            }
             checkReloadsTheSame()
         }
     }
 }
 
 private fun Page.checkBoxFor(
-    item: Item
+    item: Item,
 ): Locator = checkBoxNamed(item.id.toString())
 
 private fun Page.editButtonFor(
-    item: Item
+    item: Item,
 ): Locator = locator("tr:has-text('${item.id}') a:has-text('Edit')")

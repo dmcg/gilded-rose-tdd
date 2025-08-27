@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 
 
 class EditItemsBrowserTests : EditItemAcceptanceContract(
-    alison = PlaywrightActor(false)
+    alison = PlaywrightActor(showBrowserTests)
 ) {
     @Test
     fun `edit but cancel existing item`() {
