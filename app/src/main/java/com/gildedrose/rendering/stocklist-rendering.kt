@@ -56,6 +56,14 @@ fun renderHtml(
     lang = "en"
     head {
         title("Gilded Rose")
+        meta {
+            name = "viewport"
+            content = "width=device-width, initial-scale=1"
+        }
+        link(rel = "stylesheet", href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css") {
+            attributes["integrity"] = "sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+            attributes["crossorigin"] = "anonymous"
+        }
         script {
             src = "https://unpkg.com/htmx.org@2.0.6"
             integrity = "sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm"
@@ -63,24 +71,27 @@ fun renderHtml(
         }
     }
     body {
-        h1 { +dateFormat.format(LocalDate.ofInstant(now, zoneId)) }
-        form {
-            method = FormMethod.post
-            action = "/add-item"
-            attributes["hx-post"] = "/add-item"
-            attributes["hx-target"] = "table"
-            attributes["hx-swap"] = "outerHTML"
-            id = "new-item-form"
-        }
-        form {
-            button {
-                type = ButtonType.submit
-                attributes["hx-post"] = "/delete-items"
+        div(classes = "container my-4") {
+            h1(classes = "h3 mb-3") { +dateFormat.format(LocalDate.ofInstant(now, zoneId)) }
+            form {
+                method = FormMethod.post
+                action = "/add-item"
+                attributes["hx-post"] = "/add-item"
                 attributes["hx-target"] = "table"
                 attributes["hx-swap"] = "outerHTML"
-                attributes["hx-confirm"] = "Are you sure you want to delete the items?"
-                attributes["aria-label"] = "Delete selected items"
-                +"Delete"
+                id = "new-item-form"
+            }
+            form(classes = "mb-3 text-end") {
+                button(classes = "btn btn-danger") {
+                    type = ButtonType.submit
+                    attributes["hx-post"] = "/delete-items"
+                    attributes["hx-target"] = "table"
+                    attributes["hx-swap"] = "outerHTML"
+                    attributes["hx-confirm"] = "Are you sure you want to delete the items?"
+                    attributes["hx-include"] = "table input[type='checkbox']:checked"
+                    attributes["aria-label"] = "Delete selected items"
+                    +"Delete"
+                }
             }
             renderTable(stockList.items, now, zoneId)
         }
@@ -93,7 +104,7 @@ private fun FlowContent.renderTable(
     zoneId: ZoneId,
     editingId: String? = null,
 ) {
-    table {
+    table(classes = "table table-striped table-hover table-bordered table-sm align-middle") {
         tr {
             th { +"" }
             th { +"ID" }
@@ -113,6 +124,7 @@ private fun FlowContent.renderTable(
                     name = "new-itemId"
                     required = true
                     size = "5"
+                    attributes["class"] = "form-control form-control-sm"
                     attributes["aria-label"] = "New item id"
                 }
             }
@@ -123,6 +135,7 @@ private fun FlowContent.renderTable(
                     name = "new-itemName"
                     required = true
                     size = "20"
+                    attributes["class"] = "form-control form-control-sm"
                     attributes["aria-label"] = "New item name"
                 }
             }
@@ -131,12 +144,13 @@ private fun FlowContent.renderTable(
                     form = "new-item-form"
                     type = InputType.date
                     name = "new-itemSellBy"
+                    attributes["class"] = "form-control form-control-sm"
                     attributes["aria-label"] = "New item sell by date"
                 }
             }
             td { +"" }
             td {
-                style = "text-align: right"
+                attributes["class"] = "text-end"
                 input {
                     form = "new-item-form"
                     type = InputType.number
@@ -144,6 +158,7 @@ private fun FlowContent.renderTable(
                     required = true
                     min = "0"
                     size = "3"
+                    attributes["class"] = "form-control form-control-sm"
                     attributes["aria-label"] = "New item quality"
                 }
             }
@@ -151,7 +166,7 @@ private fun FlowContent.renderTable(
                 input(type = InputType.submit) {
                     form = "new-item-form"
                     value = "Add"
-                    style = "width: 100%"
+                    attributes["class"] = "btn btn-primary w-100 btn-sm"
                     attributes["aria-label"] = "Add new item"
                 }
             }
@@ -169,6 +184,7 @@ private fun FlowContent.renderTable(
                             required = true
                             size = "20"
                             value = item.name.value
+                            attributes["class"] = "form-control form-control-sm"
                             attributes["aria-label"] = "Edit item name"
                         }
                     }
@@ -176,13 +192,14 @@ private fun FlowContent.renderTable(
                         input {
                             type = InputType.date
                             name = "edit-itemSellBy"
+                            attributes["class"] = "form-control form-control-sm"
                             attributes["aria-label"] = "Edit item sell by date"
                             item.sellByDate?.let { value = it.toString() }
                         }
                     }
                     td { +"" }
                     td {
-                        style = "text-align: right"
+                        attributes["class"] = "text-end"
                         input {
                             type = InputType.number
                             name = "edit-itemQuality"
@@ -190,6 +207,7 @@ private fun FlowContent.renderTable(
                             min = "0"
                             size = "3"
                             value = item.quality.toString()
+                            attributes["class"] = "form-control form-control-sm"
                             attributes["aria-label"] = "Edit item quality"
                         }
                     }
@@ -202,7 +220,7 @@ private fun FlowContent.renderTable(
                         }
                         input(type = InputType.submit) {
                             value = "Save"
-                            style = "width: 100%"
+                            attributes["class"] = "btn btn-primary w-100 btn-sm"
                             attributes["aria-label"] = "Save changes"
                             attributes["hx-post"] = "/edit-item"
                             attributes["hx-target"] = "table"
@@ -211,7 +229,7 @@ private fun FlowContent.renderTable(
                         }
                     }
                     td {
-                        button(type = ButtonType.button) {
+                        button(type = ButtonType.button, classes = "btn btn-outline-secondary btn-sm w-100") {
                             attributes["hx-get"] = "/"
                             attributes["hx-target"] = "table"
                             attributes["hx-swap"] = "outerHTML"
@@ -224,20 +242,30 @@ private fun FlowContent.renderTable(
                 tr {
                     td {
                         input(type = InputType.checkBox, name = item.id.toString()) {
+                            attributes["class"] = "form-check-input"
                             attributes["aria-label"] = "Select item"
                         }
                     }
                     td { +item.id.toString() }
                     td { +item.name.value }
                     td { +if (item.sellByDate == null) "" else dateFormat.format(item.sellByDate) }
-                    td { style = "text-align: right"; +item.daysUntilSellBy(LocalDate.ofInstant(now, zoneId)).toString() }
-                    td { style = "text-align: right"; +item.quality.toString() }
-                    td { style = "text-align: right"; +when (val price = item.price) {
-                        is Success -> price.value?.toString().orEmpty()
-                        is Failure -> "error"
-                    } }
                     td {
-                        button(type = ButtonType.button) {
+                        attributes["class"] = "text-end"
+                        +item.daysUntilSellBy(LocalDate.ofInstant(now, zoneId)).toString()
+                    }
+                    td {
+                        attributes["class"] = "text-end"
+                        +item.quality.toString()
+                    }
+                    td {
+                        attributes["class"] = "text-end"
+                        +when (val price = item.price) {
+                            is Success -> price.value?.toString().orEmpty()
+                            is Failure -> "error"
+                        }
+                    }
+                    td {
+                        button(type = ButtonType.button, classes = "btn btn-secondary btn-sm w-100") {
                             attributes["hx-get"] = "/edit/${item.id}"
                             attributes["hx-target"] = "table"
                             attributes["hx-swap"] = "outerHTML"

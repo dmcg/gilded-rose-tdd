@@ -18,4 +18,4 @@ internal fun Request.addFormFor(newItem: Item): Request {
         .form("new-itemQuality", newItem.quality.toString())
 }
 
-fun hasJustATableElementBody() = hasBody(Regex("""\A\s*<table>.*</table>\s*\z""", RegexOption.DOT_MATCHES_ALL))
+fun hasJustATableElementBody() = hasBody(Regex("""\A\s*<table .*</table>\s*\z""", RegexOption.DOT_MATCHES_ALL))
