@@ -47,14 +47,14 @@ registerAction("Toggle refactorings counter", keyStroke = "meta alt shift F9") {
 fun createBalloon(counter: Int) =
     JBPopupFactory.getInstance()
         .createHtmlTextBalloonBuilder(
-            /* htmlContent = */ "<span style='font-size: 32pt; font-weight:bold'>Refactoring counter: $counter</span>",
+            /* htmlContent = */ "<span style='font-size: 32pt; font-weight:bold'>Refactorings: $counter</span>",
             /* icon = */ null,
             /* fillColor = */ JBColor.background(),
             /* listener = */ null
         )
         .setBorderColor(JBColor.gray)
-        .setFadeoutTime(3000) // We could use this to make popup disappear after a time-out
-        .setAnimationCycle(50)
+        .setFadeoutTime(-1) // We could use this to make popup disappear after a time-out
+        .setAnimationCycle(0)
         .setCloseButtonEnabled(false)
         .setHideOnClickOutside(false)
         .setDisposable(pluginDisposable)
@@ -172,7 +172,6 @@ class NotificationBalloon(private val parentDisposable: Disposable) {
     private var balloonText: String? = null
 
     fun showShortcut(keyStroke: String, actionDescription: String, project: Project) {
-        balloon?.let(Disposer::dispose)
         val text = "$keyStroke - $actionDescription"
         if (balloon1 == null || balloon1!!.wasFadedOut()) {
             balloon1 = createBalloon(actionDescription).showIn(project)
@@ -220,7 +219,7 @@ class NotificationBalloon(private val parentDisposable: Disposable) {
     private fun Balloon.showIn(project: Project, relativeToBalloon: Balloon? = null) = apply {
         if (relativeToBalloon == null) {
             val component = project.currentEditor?.component ?: return@apply
-            val point = Point(component.width - preferredSize.width / 2, 100)
+            val point = Point(component.width - preferredSize.width / 2, 170)
             show(RelativePoint(component, point), Balloon.Position.atLeft)
         } else {
             val component = (relativeToBalloon as BalloonImpl).component ?: return@apply
