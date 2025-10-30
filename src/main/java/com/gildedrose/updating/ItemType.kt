@@ -8,7 +8,7 @@ typealias ItemType = (Item, LocalDate) -> Item
 
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
     sellByDate == null -> ::undated
-    name.contains("Aged Brie", ignoreCase = true) -> Brie()
+    name.contains("Aged Brie", ignoreCase = true) -> ::brie
     name.contains("Backstage Pass", ignoreCase = true) -> Pass()
     name.startsWith("Conjured", ignoreCase = true) -> Conjured()
     else -> Standard()
@@ -17,16 +17,12 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
 @Suppress("unused")
 fun undated(item: Item, on: LocalDate): Item = item
 
-class Brie : ItemType {
-    override fun invoke(item: Item, localDate: LocalDate): Item {
-        requireNotNull(item.sellByDate)
-        val improvement = when {
-            localDate.isAfter(item.sellByDate) -> 2
-            else -> 1
-        }
-        return item.copy(quality = item.quality + improvement)
-    }
+fun brie(item: Item, on: LocalDate): Item {
+    requireNotNull(item.sellByDate)
+    val improvement = if (on.isAfter(item.sellByDate)) 2 else 1
+    return item.copy(quality = item.quality + improvement)
 }
+
 
 class Pass : ItemType {
     override fun invoke(item: Item, localDate: LocalDate): Item {
