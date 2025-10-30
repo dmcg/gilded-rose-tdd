@@ -9,7 +9,7 @@ fun main() {
     serverFor(port = 80, app.routes).start()
 }
 
-val environment = Environment.JVM_PROPERTIES overrides
+private val environment = Environment.JVM_PROPERTIES overrides
     Environment.ENV overrides
     Environment.from(
         "jdbc.url" to "jdbc:h2:/tmp/gilded-rose.db",
