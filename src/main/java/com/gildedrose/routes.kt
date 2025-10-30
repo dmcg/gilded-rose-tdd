@@ -25,16 +25,14 @@ val App.routes: HttpHandler
         .then(ResponseErrors.reportTo(analytics))
         .then(
             routes(
-                "/" bind GET to ::listHandler,
+                "/" bind GET to { request: Request -> listHandler(request) },
                 "/add-item" bind POST to ::addHandler,
                 "/delete-items" bind POST to ::deleteHandler,
                 "/error" bind GET to { error("deliberate") },
             )
         )
 
-private fun App.listHandler(
-    request: Request
-): Response {
+private fun App.listHandler(request: Request): Response {
     val now = this.clock()
     val stockListResult = this.loadStockList(now)
     return render(stockListResult, now, londonZoneId, this.features, request.isHtmx)
