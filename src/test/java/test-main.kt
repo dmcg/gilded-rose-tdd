@@ -1,4 +1,3 @@
-import com.gildedrose.App
 import com.gildedrose.config.Features
 import com.gildedrose.http.serverOn
 import com.gildedrose.routes

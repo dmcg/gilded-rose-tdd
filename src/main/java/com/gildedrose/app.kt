@@ -1,36 +1,18 @@
 package com.gildedrose
 
-import com.gildedrose.config.DbConfig
 import com.gildedrose.config.Features
 import com.gildedrose.domain.*
 import com.gildedrose.foundation.Analytics
 import com.gildedrose.foundation.loggingAnalytics
-import com.gildedrose.persistence.DbItems
 import com.gildedrose.persistence.Items
 import com.gildedrose.persistence.StockListLoadingError
 import com.gildedrose.persistence.TXContext
 import com.gildedrose.pricing.PricedStockListLoader
-import com.gildedrose.pricing.valueElfClient
 import com.gildedrose.updating.Stock
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.map
-import java.net.URI
 import java.time.Instant
 import java.time.ZoneId
-
-fun App(
-    dbConfig: DbConfig,
-    valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
-    clock: () -> Instant = Instant::now,
-    analytics: Analytics = stdOutAnalytics,
-    features: Features = Features()
-) = App(
-    DbItems(dbConfig.toDslContext()),
-    valueElfClient(valueElfUri),
-    clock,
-    analytics,
-    features
-)
 
 data class App(
     val items: Items<TXContext>,
