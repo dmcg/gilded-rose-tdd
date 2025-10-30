@@ -23,4 +23,4 @@ operator fun Quality.plus(value: Int): Quality {
 }
 
 fun subtract(quality: Quality, value: Int): Quality =
-    quality.plus(-value)
+    quality + -value
