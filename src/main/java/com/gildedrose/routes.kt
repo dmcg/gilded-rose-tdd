@@ -25,7 +25,7 @@ val App.routes: HttpHandler
         .then(ResponseErrors.reportTo(analytics))
         .then(
             routes(
-                "/" bind GET to { request: Request -> listHandler(request) },
+                "/" bind GET to ::listHandler,
                 "/add-item" bind POST to ::addHandler,
                 "/delete-items" bind POST to ::deleteHandler,
                 "/error" bind GET to { error("deliberate") },
