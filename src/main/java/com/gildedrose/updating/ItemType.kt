@@ -7,17 +7,15 @@ import java.time.LocalDate
 typealias ItemType = (Item, LocalDate) -> Item
 
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
-    sellByDate == null -> undated()
+    sellByDate == null -> ::undated
     name.contains("Aged Brie", ignoreCase = true) -> Brie()
     name.contains("Backstage Pass", ignoreCase = true) -> Pass()
     name.startsWith("Conjured", ignoreCase = true) -> Conjured()
     else -> Standard()
 }
 
-fun undated(): ItemType {
-    fun foo(item: Item, on: LocalDate): Item = item
-    return ::foo
-}
+@Suppress("unused")
+fun undated(item: Item, on: LocalDate): Item = item
 
 class Brie : ItemType {
     override fun invoke(item: Item, localDate: LocalDate): Item {
