@@ -25,14 +25,12 @@ class Stock(
         val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
 
         if (daysOutOfDate <= 0L) return Success(loadedStockList)
-        else {
-            val updatedStockList = loadedStockList.updated(
-                now,
-                daysOutOfDate.toInt(),
-                LocalDate.ofInstant(now, zoneId)
-            )
-            return items.save(updatedStockList)
-        }
+        val updatedStockList = loadedStockList.updated(
+            now,
+            daysOutOfDate.toInt(),
+            LocalDate.ofInstant(now, zoneId)
+        )
+        return items.save(updatedStockList)
     }
 
     private fun StockList.updated(
