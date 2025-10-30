@@ -9,14 +9,12 @@ fun interface ItemType {
 }
 
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
-    sellByDate == null -> Undated()
+    sellByDate == null -> Undated
     name.contains("Aged Brie", ignoreCase = true) -> Brie()
     name.contains("Backstage Pass", ignoreCase = true) -> Pass()
     name.startsWith("Conjured", ignoreCase = true) -> Conjured()
     else -> Standard()
 }
-
-fun Undated() = Undated
 
 object Undated : ItemType {
     override fun invoke(item: Item, localDate: LocalDate): Item {
