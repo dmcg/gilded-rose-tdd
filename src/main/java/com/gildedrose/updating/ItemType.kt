@@ -16,11 +16,7 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
     else -> Standard()
 }
 
-val Undated = object : ItemType {
-    override fun invoke(item: Item, localDate: LocalDate): Item {
-        return item
-    }
-}
+val Undated = ItemType { item, _ -> item }
 
 class Brie : ItemType {
     override fun invoke(item: Item, localDate: LocalDate): Item {
