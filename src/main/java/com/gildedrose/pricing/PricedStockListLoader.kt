@@ -33,10 +33,7 @@ class PricedStockListLoader(
             val pricedItems = runBlocking(threadPool.asCoroutineDispatcher()) {
                 stockList.items.parallelMapCoroutines { it.pricedBy(retryingPricing) }
             }
-            PricedStockList(
-                lastModified = stockList.lastModified,
-                items = pricedItems
-            )
+            PricedStockList(stockList.lastModified, pricedItems)
         }
 
     private fun Item.pricedBy(
