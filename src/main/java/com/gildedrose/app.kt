@@ -27,10 +27,10 @@ data class App(
 ) {
     constructor(
         dbConfig: DbConfig,
-        features: Features = Features(),
         valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
         clock: () -> Instant = Instant::now,
-        analytics: Analytics = stdOutAnalytics
+        analytics: Analytics = stdOutAnalytics,
+        features: Features = Features()
     ) : this(
         DbItems(dbConfig.toDslContext()),
         valueElfClient(valueElfUri),
