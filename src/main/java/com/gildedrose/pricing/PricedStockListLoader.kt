@@ -29,13 +29,14 @@ class PricedStockListLoader(
 
     context(TXContext)
     fun load(now: Instant): Result<PricedStockList, StockListLoadingError> =
-        loading(magic(), now).map {
-            runBlocking(threadPool.asCoroutineDispatcher()) {
-                PricedStockList(
-                    lastModified = it.lastModified,
-                    items = it.items.parallelMapCoroutines { it.pricedBy(retryingPricing) }
-                )
+        loading(magic(), now).map { stockList ->
+            val pricedItems = runBlocking(threadPool.asCoroutineDispatcher()) {
+                stockList.items.parallelMapCoroutines { it.pricedBy(retryingPricing) }
             }
+            PricedStockList(
+                lastModified = stockList.lastModified,
+                items = pricedItems
+            )
         }
 
     private fun Item.pricedBy(
