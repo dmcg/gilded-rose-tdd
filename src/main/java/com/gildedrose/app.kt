@@ -18,6 +18,20 @@ import java.net.URI
 import java.time.Instant
 import java.time.ZoneId
 
+fun App(
+    dbConfig: DbConfig,
+    valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
+    clock: () -> Instant = Instant::now,
+    analytics: Analytics = stdOutAnalytics,
+    features: Features = Features()
+) = App(
+    DbItems(dbConfig.toDslContext()),
+    valueElfClient(valueElfUri),
+    clock,
+    analytics,
+    features
+)
+
 data class App(
     val items: Items<TXContext>,
     val pricing: (Item) -> Price?,
@@ -25,20 +39,6 @@ data class App(
     val analytics: Analytics = stdOutAnalytics,
     val features: Features = Features()
 ) {
-    constructor(
-        dbConfig: DbConfig,
-        valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
-        clock: () -> Instant = Instant::now,
-        analytics: Analytics = stdOutAnalytics,
-        features: Features = Features()
-    ) : this(
-        DbItems(dbConfig.toDslContext()),
-        valueElfClient(valueElfUri),
-        clock,
-        analytics,
-        features
-    )
-
     private val stock = Stock(items, londonZoneId)
 
     private val pricedLoader = PricedStockListLoader(
