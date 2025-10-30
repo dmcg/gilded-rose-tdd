@@ -1,4 +1,5 @@
 
+import com.gildedrose.App
 import com.gildedrose.config.DbConfig
 import com.gildedrose.config.Features
 import com.gildedrose.foundation.Analytics
@@ -14,18 +15,18 @@ import java.net.URI
 import java.time.Instant
 
 fun main() {
-    App(dbConfig).routes
+    App().routes
         .serverOn(port = 80)
         .start()
 }
 
 fun App(
-    dbConfig: DbConfig,
+    dbConfig: DbConfig = DbConfig(JVM_PROPERTIES.overrides(ENV).overrides(localEnv)),
     valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
     clock: () -> Instant = Instant::now,
     analytics: Analytics = stdOutAnalytics,
     features: Features = Features()
-) = com.gildedrose.App(
+) = App(
     DbItems(dbConfig.toDslContext()),
     valueElfClient(valueElfUri),
     clock,
@@ -38,4 +39,3 @@ private val localEnv = Environment.from(
     "db.username" to "gilded",
     "db.password" to "rose"
 )
-val dbConfig = DbConfig(JVM_PROPERTIES.overrides(ENV).overrides(localEnv))
