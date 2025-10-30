@@ -18,9 +18,6 @@ import java.net.URI
 import java.time.Instant
 import java.time.ZoneId
 
-val stdOutAnalytics = loggingAnalytics(::println)
-val londonZoneId = ZoneId.of("Europe/London")
-
 data class App(
     val items: Items<TXContext>,
     val features: Features = Features(),
@@ -75,3 +72,6 @@ data class App(
         }
     }
 }
+
+val stdOutAnalytics = loggingAnalytics(::println)
+val londonZoneId: ZoneId = ZoneId.of("Europe/London")
