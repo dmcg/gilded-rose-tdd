@@ -1,4 +1,4 @@
-import com.intellij.ide.ui.UISettings
+import com.intellij.ide.ui.UISettingsUtils
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
@@ -27,24 +27,24 @@ var balloon: Balloon? = null
 
 registerAction("Increment refactorings counter", keyStroke = "meta alt shift F12") {
     balloon?.let(Disposer::dispose)
-    balloon = createBalloon(++counter).showIn(it.project)
+    balloon = createCounterBalloon(++counter).showIn(it.project)
 }
 
 registerAction("Decrement refactorings counter", keyStroke = "meta alt shift F11") {
     balloon?.let(Disposer::dispose)
     counter = (counter - 1).coerceAtLeast(0)
-    balloon = createBalloon(counter).showIn(it.project)
+    balloon = createCounterBalloon(counter).showIn(it.project)
 }
 
 registerAction("Toggle refactorings counter", keyStroke = "meta alt shift F9") {
     if (balloon == null || balloon!!.wasFadedOut()) {
-        balloon = createBalloon(counter).showIn(it.project)
+        balloon = createCounterBalloon(counter).showIn(it.project)
     } else {
         balloon!!.hide()
     }
 }
 
-fun createBalloon(counter: Int) =
+fun createCounterBalloon(counter: Int) =
     JBPopupFactory.getInstance()
         .createHtmlTextBalloonBuilder(
             /* htmlContent = */ "<span style='font-size: 32pt; font-weight:bold'>Refactorings: $counter</span>",
@@ -223,7 +223,7 @@ class NotificationBalloon(private val parentDisposable: Disposable) {
             show(RelativePoint(component, point), Balloon.Position.atLeft)
         } else {
             val component = (relativeToBalloon as BalloonImpl).component ?: return@apply
-            val gap = if (UISettings.getInstance().presentationMode) 60 else 40
+            val gap = (UISettingsUtils.getInstance().currentIdeScale * 40).toInt()
             val point = Point(-preferredSize.width / 2 + gap, component.height / 2)
             show(RelativePoint(component, point), Balloon.Position.atLeft)
         }
