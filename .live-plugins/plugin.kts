@@ -68,10 +68,8 @@ fun createCounterBalloon(counter: Int) =
 
 fun Balloon.showIn(project: Project?) = apply {
     val component = project?.currentEditor?.component ?: return@apply
-    show(
-        RelativePoint(component, Point(component.width, 100)),
-        Balloon.Position.above
-    )
+    val point = Point(component.width - preferredSize.width / 2, 100)
+    show(RelativePoint(component, point), Balloon.Position.atLeft)
 }
 
 ////////////////////////////////////////////////////////////
