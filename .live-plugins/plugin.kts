@@ -1,3 +1,4 @@
+
 import com.intellij.ide.ui.UISettingsUtils
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
@@ -10,17 +11,19 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.IconLoader
 import com.intellij.platform.ide.impl.presentationAssistant.getWinKeyText
 import com.intellij.platform.ide.impl.presentationAssistant.getWinModifiersText
 import com.intellij.ui.BalloonImpl
 import com.intellij.ui.JBColor
 import com.intellij.ui.awt.RelativePoint
+import com.intellij.util.IconUtil
 import liveplugin.currentEditor
 import liveplugin.registerAction
 import liveplugin.show
-import java.awt.Point
+import java.awt.*
 import java.awt.event.KeyEvent
-import javax.swing.KeyStroke
+import javax.swing.*
 
 var counter = 0
 var balloon: Balloon? = null
@@ -28,6 +31,8 @@ var balloon: Balloon? = null
 registerAction("Increment refactorings counter", keyStroke = "meta alt shift F12") {
     balloon?.let(Disposer::dispose)
     balloon = createCounterBalloon(++counter).showIn(it.project)
+    shortcutsBalloon.hide()
+    showAnimatedKodee(relativeTo = (balloon as BalloonImpl).component)
 }
 
 registerAction("Decrement refactorings counter", keyStroke = "meta alt shift F11") {
@@ -83,7 +88,8 @@ fun Balloon.showIn(project: Project?) = apply {
 // - there is no way include shortcuts, e.g. text editor navigation
 // - displayed text cannot be customised, e.g. remove "Move Caret " prefix
 
-ShortcutsPresenter(NotificationBalloon(pluginDisposable), pluginDisposable).init()
+val shortcutsBalloon = NotificationBalloon(pluginDisposable)
+ShortcutsPresenter(shortcutsBalloon, pluginDisposable).init()
 
 class ShortcutsPresenter(
     private val notificationBalloon: NotificationBalloon,
@@ -93,13 +99,13 @@ class ShortcutsPresenter(
     private val actionManager = ActionManager.getInstance()!!
 
     fun init() = apply {
-        ApplicationManager.getApplication().messageBus.connect(parentDisposable)
-            .subscribe(AnActionListener.TOPIC, object : AnActionListener {
-                override fun beforeActionPerformed(action: AnAction, event: AnActionEvent) {
-                    val project = event.project ?: return
-                    val lastKeyStroke = (event.inputEvent as? KeyEvent)?.let(KeyStroke::getKeyStrokeForEvent) ?: return
-                    val actionId = actionManager.getId(action)
-                    val actionDescription = event.presentation.text
+        // Create a strongly-typed listener instance to satisfy Topic generic constraints
+        val listener: AnActionListener = object : AnActionListener {
+            override fun beforeActionPerformed(action: AnAction, event: AnActionEvent) {
+                val project = event.project ?: return
+                val lastKeyStroke = (event.inputEvent as? KeyEvent)?.let(KeyStroke::getKeyStrokeForEvent) ?: return
+                val actionId = actionManager.getId(action)
+                val actionDescription = event.presentation.text
                         ?.replace("Move Caret to ", "")
                         ?.replace("Move Caret ", "")
                         ?.replace(" in Text Component", "")
@@ -108,7 +114,9 @@ class ShortcutsPresenter(
                     if (showActionId) show(actionId)
                     notificationBalloon.showShortcut(lastKeyStroke.toPresentableString(), actionDescription, project)
                 }
-            })
+        }
+        ApplicationManager.getApplication().messageBus.connect(parentDisposable)
+            .subscribe(AnActionListener.TOPIC as com.intellij.util.messages.Topic<AnActionListener>, listener)
     }
 
     // Not using: MacKeymapUtil.getKeyStrokeText(this, "+", false)
@@ -186,6 +194,11 @@ class NotificationBalloon(private val parentDisposable: Disposable) {
         }
     }
 
+    fun hide() {
+        balloon1?.hide()
+        balloon2?.hide()
+    }
+
     @Suppress("unused") // The color used by the built-in shortcuts presenter (in case I want to use it)
     private val blue4 = JBColor.namedColor("ColorPalette.Blue4")
     private val backgroundColor = JBColor.background()
@@ -227,3 +240,95 @@ class NotificationBalloon(private val parentDisposable: Disposable) {
         }
     }
 }
+
+fun showAnimatedKodee(relativeTo: JComponent? = null) {
+    if (relativeTo == null) return
+    val wrapper = SlidingWrapper(JLabel(kodeeIcons.random()))
+
+    val balloon = JBPopupFactory.getInstance().createBalloonBuilder(wrapper)
+        .setShadow(false)
+        .setHideOnClickOutside(true)
+        .setHideOnKeyOutside(true)
+        .setFillColor(Color(0, 0, 0, 0))
+        .setBorderColor(Color(0, 0, 0, 0))
+        .setAnimationCycle(150)
+        .setFadeoutTime(0)
+        .createBalloon()
+
+    fun animateOffset(
+        from: Int,
+        to: Int,
+        durationMs: Int,
+        onDone: (() -> Unit)? = null
+    ) {
+        val start = System.currentTimeMillis()
+        val delta = to - from
+        val timer = Timer(5, null)
+        timer.addActionListener {
+            val t = ((System.currentTimeMillis() - start).coerceAtMost(durationMs.toLong())).toFloat() / durationMs
+            // ease-out cubic for a smoother slide
+            val ease = 1 - (1 - t) * (1 - t) * (1 - t)
+            val value = from + (delta * ease).toInt()
+            wrapper.setOffsetX(value)
+            if (t >= 1f) {
+                timer.stop()
+                onDone?.invoke()
+            }
+        }
+        timer.start()
+    }
+
+    val point = Point(wrapper.preferredSize.width / 2 + 30, 40)
+    balloon.show(RelativePoint(relativeTo, point), Balloon.Position.below)
+
+    val width = wrapper.preferredSize.width
+    wrapper.setOffsetX(width)
+
+    SwingUtilities.invokeLater {
+        animateOffset(from = width, to = 0, durationMs = 300) {
+            // Pause visible for a moment, then slide out to the left and hide
+            Timer(1000) {
+                animateOffset(from = 0, to = width, durationMs = 300) {
+                    balloon.hide()
+                }
+            }.apply { isRepeats = false }.start()
+        }
+    }
+}
+
+class SlidingWrapper(content: JComponent) : JPanel(BorderLayout()) {
+    private var offsetX = 0
+    init {
+        isOpaque = false
+        add(content, BorderLayout.CENTER)
+    }
+
+    fun setOffsetX(px: Int) {
+        offsetX = px
+        revalidate()
+        repaint()
+    }
+
+    override fun paint(g: Graphics) {
+        val g2 = g.create() as Graphics2D
+        try {
+            g2.translate(offsetX, 0)
+            super.paint(g2)
+        } finally {
+            g2.dispose()
+        }
+    }
+}
+
+val kodeeIcons by lazy {
+    listOf(
+        loadKodeeIcon("Kodee_Assets_Digital_Kodee-greeting.svg"),
+        loadKodeeIcon("Kodee_Assets_Digital_Kodee-in-love.svg"),
+        loadKodeeIcon("Kodee_Assets_Digital_Kodee-jumping copy.svg"),
+        loadKodeeIcon("Kodee_Assets_Digital_Kodee-naughty.svg"),
+    )
+}
+
+fun loadKodeeIcon(name: String) =
+    IconLoader.getIcon(name, this::class.java)
+        .let { IconUtil.scale(it, null, 12f) }
