@@ -331,4 +331,4 @@ val kodeeIcons by lazy {
 
 fun loadKodeeIcon(name: String) =
     IconLoader.getIcon(name, this::class.java)
-        .let { IconUtil.scale(it, null, 12f) }
+        .let { IconUtil.scale(it, null, 12f / (UISettingsUtils.getInstance().currentIdeScale / 1.75f)) }
