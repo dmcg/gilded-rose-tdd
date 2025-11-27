@@ -4,6 +4,11 @@ import com.gildedrose.http.serverFor
 import com.gildedrose.routes
 import org.http4k.config.Environment
 
+fun main() {
+    val app = App(dbConfig = dbConfig)
+    serverFor(port = 80, app.routes).start()
+}
+
 val environment = Environment.JVM_PROPERTIES overrides
     Environment.ENV overrides
     Environment.from(
@@ -13,8 +18,3 @@ val environment = Environment.JVM_PROPERTIES overrides
     )
 
 val dbConfig = DbConfig(environment)
-
-fun main() {
-    val app = App(dbConfig = dbConfig)
-    serverFor(port = 80, app.routes).start()
-}
