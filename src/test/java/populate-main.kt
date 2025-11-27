@@ -8,10 +8,7 @@ import java.time.LocalDate
 import java.util.*
 
 fun main() {
-    App(
-        dbConfig = dbConfig,
-        features = Features(newItemEnabled = true)
-    ).apply {
+    App(features = Features(newItemEnabled = true)).apply {
         val random = Random()
         loadStockList().map { pricedStockList ->
             deleteItemsWithIds(pricedStockList.map { it.id }.toSet())
