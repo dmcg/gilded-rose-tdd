@@ -11,13 +11,7 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
     name.contains("Aged Brie", ignoreCase = true) -> Brie()
     name.contains("Backstage Pass", ignoreCase = true) -> Pass()
     name.startsWith("Conjured", ignoreCase = true) -> Conjured()
-    else -> Standard
-}
-
-object Standard : ItemType {
-    override fun invoke(item: Item, localDate: LocalDate): Item {
-        return standard(item, localDate)
-    }
+    else -> ::standard
 }
 
 private fun standard(item: Item, localDate: LocalDate): Item {
