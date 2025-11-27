@@ -4,7 +4,7 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
 import java.time.LocalDate
 
-interface ItemType {
+fun interface ItemType {
     fun update(item: Item, localDate: LocalDate): Item
 }
 
