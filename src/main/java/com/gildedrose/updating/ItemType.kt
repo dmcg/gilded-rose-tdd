@@ -10,6 +10,8 @@ fun interface ItemTypeToo : ItemType {
 
 typealias ItemType = (item: Item, localDate: LocalDate) -> Item
 
+fun ItemType.asItemTypeToo() = ItemTypeToo(this)
+
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
     sellByDate == null -> ::undated
     name.contains("Aged Brie", ignoreCase = true) -> Brie()
