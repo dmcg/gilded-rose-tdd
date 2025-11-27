@@ -23,6 +23,7 @@ private fun standard(item: Item, localDate: LocalDate): Item {
     return item.copy(quality = item.quality - degradation)
 }
 
+@Suppress("unused")
 fun undated(item: Item, on: LocalDate): Item = item
 
 class Brie : ItemType {
