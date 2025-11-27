@@ -16,4 +16,4 @@ val localEnv = Environment.from(
     "db.username" to "gilded",
     "db.password" to "rose"
 )
-val dbConfig = DbConfig(JVM_PROPERTIES overrides ENV overrides localEnv)
+val dbConfig = DbConfig(JVM_PROPERTIES.overrides(ENV).overrides(localEnv))
