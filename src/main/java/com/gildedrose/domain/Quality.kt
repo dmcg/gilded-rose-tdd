@@ -25,7 +25,3 @@ value class Quality(
     override fun toString() = value.toString()
 }
 
-fun subtract(quality: Quality, value: Int): Quality =
-    quality - value
-
-
