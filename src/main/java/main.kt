@@ -1,3 +1,4 @@
+import com.gildedrose.App
 import com.gildedrose.config.DbConfig
 import com.gildedrose.config.Features
 import com.gildedrose.foundation.Analytics
@@ -24,7 +25,7 @@ fun App(
     clock: () -> Instant = Instant::now,
     analytics: Analytics = stdOutAnalytics,
     features: Features = Features()
-) = com.gildedrose.App(
+) = App(
     DbItems(dbConfig.toDslContext()),
     valueElfClient(valueElfUri),
     clock,
