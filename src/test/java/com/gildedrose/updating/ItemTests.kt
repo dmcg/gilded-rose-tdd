@@ -1,6 +1,6 @@
 package com.gildedrose.updating
 
-import com.gildedrose.domain.add
+import com.gildedrose.domain.plus
 import com.gildedrose.domain.subtract
 import com.gildedrose.item
 import com.gildedrose.oct29
@@ -14,7 +14,7 @@ class ItemTests {
         val testItem = item("banana", null, 50)
         assertEquals(
             item("banana", null, 50),
-            testItem.copy(quality = add(testItem.quality, 1))
+            testItem.copy(quality = testItem.quality.plus(1))
         )
     }
 
