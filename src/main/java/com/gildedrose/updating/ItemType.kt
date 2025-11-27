@@ -25,9 +25,10 @@ private fun standard(item: Item, localDate: LocalDate): Item {
 
 val undated =
     run {
-        fun undated(item: Item, on: LocalDate): Item = item
-        ::undated
+        ::foo
     }
+
+fun foo(item: Item, on: LocalDate): Item = item
 
 class Brie : ItemType {
     override fun invoke(item: Item, localDate: LocalDate): Item {
