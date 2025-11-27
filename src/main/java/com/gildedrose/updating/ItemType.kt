@@ -12,7 +12,7 @@ typealias ItemType = (item: Item, localDate: LocalDate) -> Item
 
 fun ItemType.asItemTypeToo() = ItemTypeToo { item, localDate -> invoke(item, localDate) }
 
-fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
+fun typeFor(sellByDate: LocalDate?, name: String): ItemTypeToo = when {
     sellByDate == null -> ::undated
     name.contains("Aged Brie", ignoreCase = true) -> Brie()
     name.contains("Backstage Pass", ignoreCase = true) -> Pass()
