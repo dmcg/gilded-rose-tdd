@@ -4,6 +4,10 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
 import java.time.LocalDate
 
+fun interface ItemTypeToo : ItemType {
+    override fun invoke(item: Item, localDate: LocalDate): Item
+}
+
 typealias ItemType = (item: Item, localDate: LocalDate) -> Item
 
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
