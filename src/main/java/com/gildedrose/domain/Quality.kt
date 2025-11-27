@@ -23,4 +23,8 @@ value class Quality(
 }
 
 fun subtract(quality: Quality, value: Int): Quality =
-    quality + -value
+    quality - value
+
+operator fun Quality.minus(value: Int): Quality =
+    this + -value
+
