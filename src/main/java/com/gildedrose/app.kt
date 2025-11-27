@@ -47,6 +47,15 @@ data class App(
         analytics = analytics
     )
 
+    fun addItem(newItem: Item, now: Instant = clock()) {
+        items.inTransaction {
+            stock.loadAndUpdateStockList(now).map { stockList ->
+                val newItems = stockList.items + newItem
+                items.save(StockList(now, newItems))
+            }
+        }
+    }
+
     fun loadStockList(now: Instant = clock()): Result<PricedStockList, StockListLoadingError> =
         items.inTransaction {
             pricedLoader.load(now)
@@ -59,15 +68,6 @@ data class App(
                 if (newItems != stockList.items) {
                     items.save(StockList(now, newItems))
                 }
-            }
-        }
-    }
-
-    fun addItem(newItem: Item, now: Instant = clock()) {
-        items.inTransaction {
-            stock.loadAndUpdateStockList(now).map { stockList ->
-                val newItems = stockList.items + newItem
-                items.save(StockList(now, newItems))
             }
         }
     }
