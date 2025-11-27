@@ -1,6 +1,6 @@
 import com.gildedrose.App
 import com.gildedrose.config.Features
-import com.gildedrose.http.serverFor
+import com.gildedrose.http.serverOn
 import com.gildedrose.routes
 
 fun main() {
@@ -9,7 +9,7 @@ fun main() {
         features = Features(newItemEnabled = true)
     ).apply {
         val port = 8088
-        routes.serverFor(port = port).start()
+        routes.serverOn(port = port).start()
         println("Running test-main at http://localhost:$port/")
     }
 }
