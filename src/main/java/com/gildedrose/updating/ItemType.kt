@@ -25,7 +25,7 @@ object Standard : ItemType {
     }
 }
 
-val undated: ItemType = { item, _ -> item }
+val undated = { item: Item, _: LocalDate -> item }
 
 class Brie : ItemType {
     override fun invoke(item: Item, localDate: LocalDate): Item {
