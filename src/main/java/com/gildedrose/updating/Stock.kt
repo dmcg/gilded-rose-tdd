@@ -10,6 +10,7 @@ import com.gildedrose.persistence.TXContext
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.flatMap
+import dev.forkhandles.result4k.onFailure
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -20,8 +21,9 @@ class Stock(
     private val itemUpdate: (Item).(days: Int, on: LocalDate) -> Item = Item::updatedBy
 ) {
     context(TXContext)
-    fun loadAndUpdateStockList(now: Instant): Result4k<StockList, StockListLoadingError> =
-        items.load().flatMap { loadedStockList ->
+    fun loadAndUpdateStockList(now: Instant): Result4k<StockList, StockListLoadingError> {
+        items.load().onFailure { return it }
+        return items.load().flatMap { loadedStockList ->
             val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
             when {
                 daysOutOfDate > 0L -> {
@@ -36,6 +38,7 @@ class Stock(
                 else -> Success(loadedStockList)
             }
         }
+    }
 
     private fun StockList.updated(
         now: Instant,
