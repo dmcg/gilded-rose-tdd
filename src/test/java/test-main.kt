@@ -9,7 +9,7 @@ fun main() {
         features = Features(newItemEnabled = true)
     ).apply {
         val port = 8088
-        serverFor(port = port, routes).start()
+        routes.serverFor(port = port).start()
         println("Running test-main at http://localhost:$port/")
     }
 }

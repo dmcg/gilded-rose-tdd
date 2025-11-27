@@ -20,7 +20,7 @@ fun main() {
         "webuyanymagicalitem.com" to fakeValueElfRoutes(pricingWithMultiplier(1010)),
     )
 
-    serverFor(8080, routes).start()
+    routes.serverFor(8080).start()
 }
 
 private fun pricingWithMultiplier(multiplier: Int): (ID<Item>, Quality) -> Price? = { id, quality ->
