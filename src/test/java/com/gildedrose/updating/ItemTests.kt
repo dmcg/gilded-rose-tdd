@@ -1,6 +1,5 @@
 package com.gildedrose.updating
 
-import com.gildedrose.domain.plus
 import com.gildedrose.domain.subtract
 import com.gildedrose.item
 import com.gildedrose.oct29
