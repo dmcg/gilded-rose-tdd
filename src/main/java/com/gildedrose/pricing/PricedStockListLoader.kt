@@ -28,28 +28,22 @@ class PricedStockListLoader(
 
     context(TXContext)
     fun load(now: Instant): Result<PricedStockList, StockListLoadingError> =
-        loading(magic(),now).map {
-            it.pricedBy(retryingPricing)
+        loading(magic(), now).map { items ->
+            runBlocking(threadPool.asCoroutineDispatcher()) {
+                val pricedItems = items.items.parallelMapCoroutines { item ->
+                    PricedItem(
+                        item,
+                        price = resultFrom {
+                            retryingPricing(item)
+                        }.peekFailure(::reportException)
+                    )
+                }
+                PricedStockList(
+                    lastModified = items.lastModified,
+                    items = pricedItems
+                )
+            }
         }
-
-    private fun StockList.pricedBy(
-        pricing: (Item) -> Price?
-    ): PricedStockList =
-        runBlocking(threadPool.asCoroutineDispatcher()) {
-            PricedStockList(
-                lastModified = lastModified,
-                items = items.parallelMapCoroutines { it.pricedBy(pricing) }
-            )
-        }
-
-    private fun Item.pricedBy(
-        pricing: (Item) -> Price?
-    ) = PricedItem(
-        this,
-        price = resultFrom {
-            pricing(this)
-        }.peekFailure(::reportException)
-    )
 
     private fun reportException(x: Exception) {
         analytics(UncaughtExceptionEvent(x))
