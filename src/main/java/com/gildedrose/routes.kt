@@ -25,12 +25,18 @@ val App.routes: HttpHandler
         .then(ResponseErrors.reportTo(analytics))
         .then(
             routes(
-                "/" bind GET to ::listHandler,
+                "/" bind GET to { request: Request -> listHandler(this, request) },
                 "/add-item" bind POST to ::addHandler,
                 "/delete-items" bind POST to ::deleteHandler,
                 "/error" bind GET to { error("deliberate") },
             )
         )
+
+private fun listHandler(app: App, request: Request): Response {
+    val now = app.clock()
+    val stockListResult = app.loadStockList(now)
+    return render(stockListResult, now, londonZoneId, app.features, request.isHtmx)
+}
 
 internal fun App.addHandler(request: Request): Response {
     val idLens = FormField.nonBlankString().map { ID<Item>(it) }.required("new-itemId")
@@ -45,17 +51,9 @@ internal fun App.addHandler(request: Request): Response {
     val item = Item(idLens(form), nameLens(form), sellByLens(form), qualityLens(form))
     addItem(newItem = item)
     return when {
-        request.isHtmx -> listHandler(request)
+        request.isHtmx -> listHandler(this, request)
         else -> Response(Status.SEE_OTHER).header("Location", "/")
     }
-}
-
-private fun App.listHandler(
-    request: Request
-): Response {
-    val now = this.clock()
-    val stockListResult = this.loadStockList(now)
-    return render(stockListResult, now, londonZoneId, this.features, request.isHtmx)
 }
 
 private fun App.deleteHandler(
@@ -64,7 +62,7 @@ private fun App.deleteHandler(
     val itemIds = request.form().map { it.first }.mapNotNull<String, ID<Item>> { ID(it) }.toSet()
     this.deleteItemsWithIds(itemIds)
     return when {
-        request.isHtmx -> this.listHandler(request)
+        request.isHtmx -> listHandler(this, request)
         else -> Response(Status.SEE_OTHER).header("Location", "/")
     }
 }
