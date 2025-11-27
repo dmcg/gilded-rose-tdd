@@ -16,13 +16,17 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
 
 object Standard : ItemType {
     override fun invoke(item: Item, localDate: LocalDate): Item {
-        requireNotNull(item.sellByDate)
-        val degradation = when {
-            localDate.isAfter(item.sellByDate) -> 2
-            else -> 1
-        }
-        return item.copy(quality = item.quality - degradation)
+        return standard(item, localDate)
     }
+}
+
+private fun standard(item: Item, localDate: LocalDate): Item {
+    requireNotNull(item.sellByDate)
+    val degradation = when {
+        localDate.isAfter(item.sellByDate) -> 2
+        else -> 1
+    }
+    return item.copy(quality = item.quality - degradation)
 }
 
 val undated = { item: Item, _: LocalDate -> item }
