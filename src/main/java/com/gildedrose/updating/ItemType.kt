@@ -18,7 +18,7 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
     name.contains("Backstage Pass", ignoreCase = true) -> Pass()
     name.startsWith("Conjured", ignoreCase = true) -> Conjured()
     else -> ::standard
-}
+}.asItemTypeToo()
 
 private fun standard(item: Item, localDate: LocalDate): Item {
     requireNotNull(item.sellByDate)
