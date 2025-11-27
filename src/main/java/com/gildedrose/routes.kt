@@ -26,9 +26,9 @@ val App.routes: HttpHandler
         .then(
             routes(
                 "/" bind GET to ::listHandler,
-                "/error" bind GET to { error("deliberate") },
+                "/add-item" bind POST to ::addHandler,
                 "/delete-items" bind POST to ::deleteHandler,
-                "/add-item" bind POST to ::addHandler
+                "/error" bind GET to { error("deliberate") },
             )
         )
 
@@ -50,21 +50,6 @@ internal fun App.addHandler(request: Request): Response {
     }
 }
 
-data class NewItemFailedEvent(val message: String) : AnalyticsEvent
-
-fun FormField.nonNegativeInt() =
-    mapWithNewMeta(
-        BiDiMapping<String, NonNegativeInt>(
-            { NonNegativeInt(it.toInt()) ?: throw IllegalArgumentException("Integer cannot be negative") },
-            NonNegativeInt::toString
-        ), IntegerParam
-    )
-
-fun FormField.nonBlankString(): BiDiLensSpec<WebForm, NonBlankString> =
-    map(BiDiMapping<String, NonBlankString>({ s: String ->
-        NonBlankString(s) ?: throw IllegalArgumentException("String cannot be blank")
-    }, { it.toString() }))
-
 private fun App.listHandler(
     request: Request
 ): Response {
@@ -83,6 +68,21 @@ private fun App.deleteHandler(
         else -> Response(Status.SEE_OTHER).header("Location", "/")
     }
 }
+
+data class NewItemFailedEvent(val message: String) : AnalyticsEvent
+
+fun FormField.nonNegativeInt() =
+    mapWithNewMeta(
+        BiDiMapping<String, NonNegativeInt>(
+            { NonNegativeInt(it.toInt()) ?: throw IllegalArgumentException("Integer cannot be negative") },
+            NonNegativeInt::toString
+        ), IntegerParam
+    )
+
+fun FormField.nonBlankString(): BiDiLensSpec<WebForm, NonBlankString> =
+    map(BiDiMapping<String, NonBlankString>({ s: String ->
+        NonBlankString(s) ?: throw IllegalArgumentException("String cannot be blank")
+    }, { it.toString() }))
 
 private val Request.isHtmx: Boolean get() = header("HX-Request") != null
 
