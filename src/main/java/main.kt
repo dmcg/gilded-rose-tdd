@@ -17,4 +17,4 @@ val environment = Environment.JVM_PROPERTIES overrides
         "db.password" to "rose"
     )
 
-val dbConfig = DbConfig(environment)
+val dbConfig: DbConfig by lazy { DbConfig(environment) }
