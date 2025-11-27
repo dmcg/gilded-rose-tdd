@@ -22,12 +22,12 @@ class Stock(
     context(TXContext)
     fun loadAndUpdateStockList(now: Instant): Result4k<StockList, StockListLoadingError> {
         val loadedStockList = items.load().onFailure { return it }
-        val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
-        if (daysOutOfDate <= 0L) return Success(loadedStockList)
+        val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId).toInt()
+        if (daysOutOfDate <= 0) return Success(loadedStockList)
 
         val updatedItems = loadedStockList.items.map {
             it.itemUpdate(
-                daysOutOfDate.toInt(),
+                daysOutOfDate,
                 LocalDate.ofInstant(now, zoneId)
             )
         }
