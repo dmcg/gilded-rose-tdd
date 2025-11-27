@@ -27,7 +27,7 @@ object Standard : ItemType {
     }
 }
 
-class Undated : ItemType {
+fun Undated() = object : ItemType {
     override fun update(item: Item, localDate: LocalDate): Item {
         return item
     }
