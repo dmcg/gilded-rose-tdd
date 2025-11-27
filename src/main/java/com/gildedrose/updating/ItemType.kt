@@ -10,7 +10,7 @@ fun interface ItemTypeToo : ItemType {
 
 typealias ItemType = (item: Item, localDate: LocalDate) -> Item
 
-fun ItemType.asItemTypeToo() = ItemTypeToo(this)
+fun ItemType.asItemTypeToo() = ItemTypeToo { item, localDate -> invoke(item, localDate) }
 
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
     sellByDate == null -> ::undated
