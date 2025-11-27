@@ -23,7 +23,11 @@ private fun standard(item: Item, localDate: LocalDate): Item {
     return item.copy(quality = item.quality - degradation)
 }
 
-val undated = { item: Item, _: LocalDate -> item }
+val undated =
+    run {
+        fun undated(item: Item, on: LocalDate): Item = item
+        ::undated
+    }
 
 class Brie : ItemType {
     override fun invoke(item: Item, localDate: LocalDate): Item {
