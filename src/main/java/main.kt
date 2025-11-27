@@ -18,12 +18,6 @@ fun main() {
         .start()
 }
 
-private val localEnv = Environment.from(
-    "jdbc.url" to "jdbc:h2:/tmp/gilded-rose.db",
-    "db.username" to "gilded",
-    "db.password" to "rose"
-)
-val dbConfig = DbConfig(JVM_PROPERTIES.overrides(ENV).overrides(localEnv))
 fun App(
     dbConfig: DbConfig,
     valueElfUri: URI = URI.create("http://value-elf.com:8080/prices"),
@@ -37,3 +31,10 @@ fun App(
     analytics,
     features
 )
+
+private val localEnv = Environment.from(
+    "jdbc.url" to "jdbc:h2:/tmp/gilded-rose.db",
+    "db.username" to "gilded",
+    "db.password" to "rose"
+)
+val dbConfig = DbConfig(JVM_PROPERTIES.overrides(ENV).overrides(localEnv))
