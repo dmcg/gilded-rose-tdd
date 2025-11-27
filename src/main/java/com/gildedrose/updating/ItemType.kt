@@ -4,11 +4,7 @@ import com.gildedrose.domain.Item
 import com.gildedrose.domain.Quality
 import java.time.LocalDate
 
-typealias 
-
-fun interface ItemType {
-    operator fun invoke(item: Item, localDate: LocalDate): Item
-}
+typealias ItemType = (item: Item, localDate: LocalDate) -> Item
 
 fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
     sellByDate == null -> undated
@@ -29,7 +25,7 @@ object Standard : ItemType {
     }
 }
 
-val undated = ItemType { item, _ -> item }
+val undated: ItemType = { item, _ -> item }
 
 class Brie : ItemType {
     override fun invoke(item: Item, localDate: LocalDate): Item {
