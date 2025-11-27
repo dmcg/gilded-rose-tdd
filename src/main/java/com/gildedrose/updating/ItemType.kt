@@ -30,7 +30,7 @@ class Brie : ItemType() {
             localDate.isAfter(item.sellByDate) -> 2
             else -> 1
         }
-        return item.copy(quality = item.quality.plus(improvement))
+        return item.copy(quality = item.quality + improvement)
     }
 }
 
@@ -46,7 +46,7 @@ class Pass : ItemType() {
                 daysUntilSellBy < 10 -> 2
                 else -> 1
             }
-            item.copy(quality = item.quality.plus(improvement))
+            item.copy(quality = item.quality + improvement)
         }
     }
 }
