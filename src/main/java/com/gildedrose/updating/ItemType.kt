@@ -16,6 +16,17 @@ fun typeFor(sellByDate: LocalDate?, name: String): ItemType = when {
     else -> Standard()
 }
 
+class Standard : ItemType() {
+    override fun update(item: Item, localDate: LocalDate): Item {
+        requireNotNull(item.sellByDate)
+        val degradation = when {
+            localDate.isAfter(item.sellByDate) -> 2
+            else -> 1
+        }
+        return item.copy(quality = subtract(item.quality, degradation))
+    }
+}
+
 class Undated : ItemType() {
     override fun update(item: Item, localDate: LocalDate): Item {
         return item
@@ -56,17 +67,6 @@ class Conjured : ItemType() {
         val degradation = when {
             localDate.isAfter(item.sellByDate) -> 4
             else -> 2
-        }
-        return item.copy(quality = subtract(item.quality, degradation))
-    }
-}
-
-class Standard : ItemType() {
-    override fun update(item: Item, localDate: LocalDate): Item {
-        requireNotNull(item.sellByDate)
-        val degradation = when {
-            localDate.isAfter(item.sellByDate) -> 2
-            else -> 1
         }
         return item.copy(quality = subtract(item.quality, degradation))
     }
