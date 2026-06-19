@@ -35,21 +35,21 @@ abstract class ValueElfContract(
         val client = valueElfClient(uri, handler)
     }
 
-    context(Fixture)
+    context(fixture: Fixture)
     @Test
-    fun `returns price when there is one`() {
+    fun `returns price when there is one`() = with(fixture) {
         assertEquals(expectedPrice, client(aFoundItem))
     }
 
-    context(Fixture)
+    context(fixture: Fixture)
     @Test
-    fun `returns null when no price`() {
+    fun `returns null when no price`() = with(fixture) {
         assertEquals(null, client(aNotFoundItem))
     }
 
-    context(Fixture)
+    context(fixture: Fixture)
     @Test
-    fun `returns BAD_REQUEST for invalid query strings`() {
+    fun `returns BAD_REQUEST for invalid query strings`() = with(fixture) {
         val request = Request(Method.GET, uri.toString())
         val returnsBadRequest: Matcher<Response> = hasStatus(BAD_REQUEST)
         check(request, returnsBadRequest)

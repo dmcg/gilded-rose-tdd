@@ -2,7 +2,7 @@
 
 package com.gildedrose.foundation
 
-context(C) fun <C> magic() : C = this@C
+context(it: C) fun <C> magic() : C = it
 
 // replaced with wrappedWith
 fun <C, T, R> (context(C) (T) -> R).transformedBy(

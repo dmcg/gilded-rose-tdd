@@ -19,7 +19,7 @@ class Stock(
     private val zoneId: ZoneId,
     private val itemUpdate: (Item).(days: Int, on: LocalDate) -> Item = Item::updatedBy
 ) {
-    context(TXContext)
+    context(_: TXContext)
     fun loadAndUpdateStockList(now: Instant): Result4k<StockList, StockListLoadingError> =
         items.load().flatMap { loadedStockList ->
             val daysOutOfDate = loadedStockList.lastModified.daysTo(now, zoneId)
