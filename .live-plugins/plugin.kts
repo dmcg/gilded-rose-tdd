@@ -343,7 +343,7 @@ fun loadKodeeIcon(name: String) =
     IconLoader.getIcon(name, this::class.java)
         .let { IconUtil.scale(it, null, 12f / (UISettingsUtils.getInstance().currentIdeScale / 1.75f)) }
 
-val sound = Sound(File("/Users/dk/Projects/_plugins/friday-mario/resources/fridaymario/sounds/smb_powerup.au").readBytes())
+val sound = Sound(File("/Users/dk/Downloads/alexis_gaming_cam-ding-cartoon-346093.wav").readBytes())
 
 open class Sound(private val bytes: ByteArray) {
     private var clip: Clip? = null
