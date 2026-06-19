@@ -98,7 +98,7 @@ fun Balloon.showIn(project: Project?) = apply {
 // - displayed text cannot be customised, e.g. remove "Move Caret " prefix
 
 val shortcutsBalloon = NotificationBalloon(pluginDisposable)
-ShortcutsPresenter(shortcutsBalloon, pluginDisposable).init()
+//ShortcutsPresenter(shortcutsBalloon, pluginDisposable).init()
 
 class ShortcutsPresenter(
     private val notificationBalloon: NotificationBalloon,
