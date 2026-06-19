@@ -1,4 +1,3 @@
-
 import com.intellij.ide.ui.UISettingsUtils
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
@@ -23,6 +22,15 @@ import liveplugin.registerAction
 import liveplugin.show
 import java.awt.*
 import java.awt.event.KeyEvent
+import java.io.BufferedInputStream
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.io.InputStream
+import java.util.concurrent.atomic.AtomicReference
+import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.Clip
+import javax.sound.sampled.LineEvent
+import javax.sound.sampled.LineListener
 import javax.swing.*
 
 var counter = 0
@@ -33,6 +41,7 @@ registerAction("Increment refactorings counter", keyStroke = "meta alt shift F12
     balloon = createCounterBalloon(++counter).showIn(it.project)
     shortcutsBalloon.hide()
     showAnimatedKodee(relativeTo = (balloon as BalloonImpl).component)
+    sound.play()
 }
 
 registerAction("Decrement refactorings counter", keyStroke = "meta alt shift F11") {
@@ -106,14 +115,14 @@ class ShortcutsPresenter(
                 val lastKeyStroke = (event.inputEvent as? KeyEvent)?.let(KeyStroke::getKeyStrokeForEvent) ?: return
                 val actionId = actionManager.getId(action)
                 val actionDescription = event.presentation.text
-                        ?.replace("Move Caret to ", "")
-                        ?.replace("Move Caret ", "")
-                        ?.replace(" in Text Component", "")
-                    if (actionId in excludedActions || actionDescription == null) return
+                    ?.replace("Move Caret to ", "")
+                    ?.replace("Move Caret ", "")
+                    ?.replace(" in Text Component", "")
+                if (actionId in excludedActions || actionDescription == null) return
 
-                    if (showActionId) show(actionId)
-                    notificationBalloon.showShortcut(lastKeyStroke.toPresentableString(), actionDescription, project)
-                }
+                if (showActionId) show(actionId)
+                notificationBalloon.showShortcut(lastKeyStroke.toPresentableString(), actionDescription, project)
+            }
         }
         ApplicationManager.getApplication().messageBus.connect(parentDisposable)
             .subscribe(AnActionListener.TOPIC as com.intellij.util.messages.Topic<AnActionListener>, listener)
@@ -298,6 +307,7 @@ fun showAnimatedKodee(relativeTo: JComponent? = null) {
 
 class SlidingWrapper(content: JComponent) : JPanel(BorderLayout()) {
     private var offsetX = 0
+
     init {
         isOpaque = false
         add(content, BorderLayout.CENTER)
@@ -332,3 +342,40 @@ val kodeeIcons by lazy {
 fun loadKodeeIcon(name: String) =
     IconLoader.getIcon(name, this::class.java)
         .let { IconUtil.scale(it, null, 12f / (UISettingsUtils.getInstance().currentIdeScale / 1.75f)) }
+
+val sound = Sound(File("/Users/dk/Projects/_plugins/friday-mario/resources/fridaymario/sounds/smb_powerup.au").readBytes())
+
+open class Sound(private val bytes: ByteArray) {
+    private var clip: Clip? = null
+
+    open fun play() {
+        playSoundFromStream(ByteArrayInputStream(bytes))
+    }
+
+    open fun stop() {
+        clip?.stop()
+    }
+
+    /**
+     * Originally copied from [com.intellij.util.ui.UIUtil].
+     */
+    private fun playSoundFromStream(inputStream: InputStream, loopCount: Int = 0) {
+        val clip = AudioSystem.getClip()
+        var stream = inputStream
+        if (!stream.markSupported()) stream = BufferedInputStream(stream)
+        clip.open(AudioSystem.getAudioInputStream(stream))
+        val lineListener = AtomicReference<LineListener>()
+        val listener = LineListener { event: LineEvent ->
+            if (event.type === LineEvent.Type.STOP) {
+                clip.close()
+                clip.removeLineListener(lineListener.get())
+            }
+        }
+        lineListener.set(listener)
+        clip.addLineListener(lineListener.get())
+        this.clip = clip
+
+        // The wrapper thread is unnecessary, unless it blocks on the Clip finishing;
+        Thread { clip.loop(loopCount) }.start()
+    }
+}
